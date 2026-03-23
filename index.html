@@ -1,11 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Hub - AIThor Interface</title>
 <style>
+/* --- BASE & LAYOUT --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #010409; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+
 .wrap {
   background: #020B18; border-radius: 20px; overflow: hidden;
   position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  min-height: 740px; display: flex; flex-direction: column;
+  width: 95vw; height: 90vh; max-width: 1200px; display: flex; flex-direction: column;
+  border: 1px solid rgba(0,230,255,0.1);
 }
+
 .bg-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+/* --- TOPBAR --- */
 .topbar {
   position: relative; z-index: 20; padding: 22px 28px 0;
   display: flex; align-items: center; justify-content: space-between;
@@ -19,48 +32,14 @@
 .brand-name { color: #fff; font-size: 17px; font-weight: 500; letter-spacing: -0.02em; }
 .brand-dept { color: rgba(0,230,255,0.38); font-size: 11px; margin-top: 2px; letter-spacing: 0.03em; }
 
-/* AI AGENT BADGE - MODIFICADO PARA TAMAÑO MÁS PEQUEÑO Y NUEVA UBICACIÓN */
-.ai-badge {
-  display: flex; align-items: center; gap: 7px; /* Gap reducido */
-  background: rgba(0,90,130,0.15);
-  border: 1px solid rgba(0,230,255,0.25);
-  border-radius: 10px; /* Radio reducido */
-  padding: 5px 10px 5px 6px; /* Padding reducido */
-  cursor: default;
-  position: absolute; /* Posicionamiento absoluto */
-  bottom: 12px; /* Un poco más abajo */
-  right: 14px;
-  z-index: 50; /* Por encima de otros elementos */
-}
-.ai-orb {
-  width: 30px; height: 30px; border-radius: 50%; /* Tamaño reducido */
-  background: #001828;
-  border: 1px solid rgba(0,230,255,0.45); /* Borde más fino */
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; position: relative;
-}
-.ai-orb-ring {
-  position: absolute; width: 36px; height: 36px; border-radius: 50%; /* Tamaño reducido */
-  border: 1px solid rgba(0,230,255,0.15);
-  animation: ai-pulse 2.5s ease-in-out infinite;
-}
-@keyframes ai-pulse { 0%,100%{opacity:.2;transform:scale(1);} 50%{opacity:.7;transform:scale(1.06);} }
-.ai-texts { display: flex; flex-direction: column; gap: 1px; } /* Gap reducido */
-.ai-status { display: flex; align-items: center; gap: 4px; } /* Gap reducido */
-.ai-dot {
-  width: 4px; height: 4px; border-radius: 50%; background: #00E6FF; /* Tamaño reducido */
-  animation: blink 1.8s ease-in-out infinite;
-}
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
-.ai-status-text { color: rgba(0,230,255,0.5); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; } /* Fuente reducida */
-.ai-name { color: rgba(0,230,255,0.9); font-size: 11px; font-weight: 500; letter-spacing: -0.01em; } /* Fuente reducida */
-
+/* --- SCENE & NODES --- */
 .scene {
   flex: 1; position: relative; z-index: 5;
   display: flex; align-items: center; justify-content: center;
-  padding: 20px 20px 0; min-height: 560px;
+  padding: 20px; min-height: 400px;
 }
 .orbit-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+
 .hub {
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
@@ -70,6 +49,7 @@
 }
 .hp { position: absolute; border-radius: 50%; border: 1px solid rgba(0,230,255,0.15); animation: pulsar 3s ease-in-out infinite; }
 @keyframes pulsar { 0%,100%{opacity:.2;transform:scale(1);} 50%{opacity:.9;transform:scale(1.07);} }
+
 .node {
   position: absolute; transform: translate(-50%,-50%);
   display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -79,8 +59,10 @@
 .node:hover { transform: translate(-50%,-50%) scale(1.14); }
 .bubble { border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid rgba(0,230,255,0.15); transition: border-color 0.2s; }
 .node:hover .bubble { border-color: rgba(0,230,255,0.65); }
-.node-label { font-size: 12px; font-weight: 500; color: rgba(0,200,230,0.45); text-align: center; line-height: 1.2; max-width: 80px; transition: color 0.2s; }
+.node-label { font-size: 12px; font-weight: 500; color: rgba(0,200,230,0.45); text-align: center; line-height: 1.2; max-width: 80px; }
 .node:hover .node-label { color: #00E6FF; }
+
+/* --- DETAIL PANEL --- */
 .detail {
   position: relative; z-index: 20; display: flex; align-items: center; gap: 18px;
   padding: 0 28px; min-height: 96px;
@@ -89,18 +71,73 @@
 }
 .detail.off { opacity: 0; pointer-events: none; }
 .d-orb { width: 54px; height: 54px; border-radius: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,230,255,0.2); }
-.d-title { color: #E0F7FF; font-size: 19px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 3px; }
+.d-title { color: #E0F7FF; font-size: 19px; font-weight: 500; margin-bottom: 3px; }
 .d-desc  { color: rgba(0,200,230,0.42); font-size: 12px; line-height: 1.5; max-width: 450px; }
-.d-cta { flex-shrink: 0; margin-left: auto; padding: 11px 22px; border-radius: 10px; background: transparent; border: 1.5px solid rgba(0,230,255,0.5); color: #00E6FF; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s; }
+.d-cta { flex-shrink: 0; margin-left: auto; padding: 11px 22px; border-radius: 10px; background: transparent; border: 1.5px solid rgba(0,230,255,0.5); color: #00E6FF; cursor: pointer; transition: 0.2s; }
 .d-cta:hover { background: rgba(0,230,255,0.1); border-color: #00E6FF; }
-.hint { position: absolute; bottom: 108px; left: 50%; transform: translateX(-50%); color: rgba(0,230,255,0.13); font-size: 11px; letter-spacing: .1em; pointer-events: none; z-index: 6; white-space: nowrap; }
-@keyframes spin-cw  { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-@keyframes spin-ccw { from{transform:rotate(0)} to{transform:rotate(-360deg)} }
-.rcw  { animation: spin-cw   80s linear infinite; transform-origin: 350px 265px; }
-.rccw { animation: spin-ccw 120s linear infinite; transform-origin: 350px 265px; }
+
+/* --- AITHOR CHAT UI --- */
+.aithor-btn {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 1000; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.aithor-btn-orb {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #3B0764, #1E0533);
+  border: 2px solid rgba(168,85,247,0.6);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; animation: aithor-float 3.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(139,92,246,0.5));
+}
+@keyframes aithor-float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+.aithor-panel {
+  position: fixed; bottom: 110px; right: 24px;
+  width: 350px; height: 500px;
+  background: #040D1C; border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 16px; overflow: hidden;
+  display: flex; flex-direction: column; z-index: 999;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+}
+.aithor-panel.hidden { opacity: 0; pointer-events: none; transform: translateY(20px) scale(0.95); }
+
+.aithor-header {
+  padding: 15px; background: rgba(30,5,51,0.8);
+  border-bottom: 1px solid rgba(168,85,247,0.2);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.aithor-messages {
+  flex: 1; overflow-y: auto; padding: 15px;
+  display: flex; flex-direction: column; gap: 12px;
+  scrollbar-width: thin; scrollbar-color: #3B0764 transparent;
+}
+.msg { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.4; max-width: 85%; }
+.msg.bot { background: rgba(0,40,70,0.6); color: #E0F7FF; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid rgba(0,230,255,0.1); }
+.msg.user { background: rgba(60,10,100,0.5); color: #F3E8FF; align-self: flex-end; border-bottom-right-radius: 2px; border: 1px solid rgba(168,85,247,0.2); }
+
+.aithor-input-area {
+  padding: 12px; border-top: 1px solid rgba(168,85,247,0.1);
+  display: flex; gap: 8px; background: #02060F;
+}
+.aithor-input {
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 8px; padding: 8px 12px; color: white; outline: none;
+}
+.aithor-send {
+  background: #581C87; border: none; color: white; padding: 0 15px;
+  border-radius: 8px; cursor: pointer; font-weight: bold;
+}
+
+/* Animations for SVG Scanner */
 @keyframes scan { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
 .scanner { animation: scan 8s linear infinite; transform-origin: 350px 265px; }
+.rcw { animation: spin-cw 80s linear infinite; transform-origin: 350px 265px; }
+@keyframes spin-cw { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 </style>
+</head>
+<body>
 
 <div class="wrap" id="app">
   <canvas class="bg-canvas" id="bgc"></canvas>
@@ -124,463 +161,163 @@
 
   <div class="scene" id="scene">
     <svg class="orbit-svg" viewBox="0 0 700 530" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <radialGradient id="cg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(0,200,255,0.13)"/>
-          <stop offset="55%" stop-color="rgba(0,80,160,0.04)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <radialGradient id="bg2" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="rgba(0,230,255,0.18)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-      </defs>
-      <circle cx="350" cy="265" r="300" fill="url(#cg)"/>
-      <circle cx="350" cy="265" r="160" fill="url(#bg2)"/>
-      <polyline points="350,265 420,265 420,180 480,180" fill="none" stroke="rgba(0,180,255,0.18)" stroke-width="1.2"/>
-      <polyline points="420,180 520,180 520,120" fill="none" stroke="rgba(0,180,255,0.12)" stroke-width="1"/>
-      <polyline points="350,265 460,265 460,320 530,320" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
-      <polyline points="350,265 440,200 520,200 580,200" fill="none" stroke="rgba(0,160,230,0.1)" stroke-width="1"/>
-      <polyline points="350,265 280,265 280,180 220,180" fill="none" stroke="rgba(0,180,255,0.18)" stroke-width="1.2"/>
-      <polyline points="280,180 180,180 180,120" fill="none" stroke="rgba(0,180,255,0.12)" stroke-width="1"/>
-      <polyline points="350,265 240,265 240,320 170,320" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
-      <polyline points="350,265 260,200 180,200 120,200" fill="none" stroke="rgba(0,160,230,0.1)" stroke-width="1"/>
-      <polyline points="350,265 350,200 290,160 290,80" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
-      <polyline points="350,265 350,200 410,160 410,80" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
-      <polyline points="350,265 350,60" fill="none" stroke="rgba(0,200,255,0.2)" stroke-width="1.5"/>
-      <polyline points="350,265 350,330 290,370 290,460" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
-      <polyline points="350,265 350,330 410,370 410,460" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
-      <circle cx="420" cy="180" r="3" fill="rgba(0,230,255,0.5)"/>
-      <circle cx="520" cy="180" r="2.5" fill="rgba(0,200,255,0.4)"/>
-      <circle cx="460" cy="320" r="3" fill="rgba(0,230,255,0.45)"/>
-      <circle cx="280" cy="180" r="3" fill="rgba(0,230,255,0.5)"/>
-      <circle cx="180" cy="180" r="2.5" fill="rgba(0,200,255,0.4)"/>
-      <circle cx="240" cy="320" r="3" fill="rgba(0,230,255,0.45)"/>
-      <circle cx="290" cy="160" r="3" fill="rgba(0,200,255,0.4)"/>
-      <circle cx="410" cy="160" r="3" fill="rgba(0,200,255,0.4)"/>
-      <rect x="98"  y="118" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.25)" stroke-width="1"/>
-      <rect x="590" y="118" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.25)" stroke-width="1"/>
-      <rect x="98"  y="378" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.2)"  stroke-width="1"/>
-      <rect x="590" y="378" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.2)"  stroke-width="1"/>
-      <rect x="178" y="316" width="6" height="6" rx="1" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="1"/>
-      <rect x="516" y="316" width="6" height="6" rx="1" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="1"/>
-      <path d="M310,230 Q290,210 295,235 Q285,255 300,260 Q290,280 310,278 Q315,295 330,290 Q340,305 355,295 Q370,305 385,290 Q400,295 395,278 Q415,280 405,260 Q420,235 410,235 Q415,210 390,230 Q375,215 355,220 Q335,215 310,230 Z" fill="none" stroke="rgba(0,230,255,0.22)" stroke-width="1.1"/>
-      <path d="M320,248 Q335,240 350,248 Q365,240 380,248" fill="none" stroke="rgba(0,200,255,0.16)" stroke-width="0.8"/>
-      <path d="M325,260 Q340,255 355,262 Q370,255 382,260" fill="none" stroke="rgba(0,200,255,0.14)" stroke-width="0.8"/>
-      <path d="M350,225 L350,270" fill="none" stroke="rgba(0,220,255,0.15)" stroke-width="0.8"/>
-      <circle class="rcw"  cx="350" cy="265" r="132" fill="none" stroke="rgba(0,230,255,0.1)" stroke-width="1"/>
-      <circle class="rccw" cx="350" cy="265" r="215" fill="none" stroke="rgba(0,180,255,0.05)" stroke-width="1" stroke-dasharray="2 14"/>
-      <line class="scanner" x1="350" y1="265" x2="350" y2="133" stroke="rgba(0,230,255,0.25)" stroke-width="1.5"/>
-      <circle class="scanner" cx="350" cy="133" r="3" fill="rgba(0,230,255,0.55)"/>
-      <line x1="350" y1="265" x2="350" y2="133" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
-      <line x1="350" y1="265" x2="465" y2="199" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
-      <line x1="350" y1="265" x2="465" y2="331" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
-      <line x1="350" y1="265" x2="350" y2="397" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
-      <line x1="350" y1="265" x2="235" y2="331" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
-      <line x1="350" y1="265" x2="235" y2="199" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
-      <g stroke="rgba(0,230,255,0.35)" stroke-width="1">
-        <line x1="350" y1="133" x2="350" y2="125"/>
-        <line x1="465" y1="199" x2="471" y2="195"/>
-        <line x1="465" y1="331" x2="471" y2="335"/>
-        <line x1="350" y1="397" x2="350" y2="405"/>
-        <line x1="235" y1="331" x2="229" y2="335"/>
-        <line x1="235" y1="199" x2="229" y2="195"/>
-      </g>
-      <line x1="308" y1="265" x2="333" y2="265" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
-      <line x1="367" y1="265" x2="392" y2="265" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
-      <line x1="350" y1="223" x2="350" y2="248" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
-      <line x1="350" y1="282" x2="350" y2="307" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
-      <g stroke="rgba(0,230,255,0.35)" stroke-width="1.2" fill="none">
-        <polyline points="30,30 30,50 50,50"/>
-        <polyline points="670,30 670,50 650,50"/>
-        <polyline points="30,500 30,480 50,480"/>
-        <polyline points="670,500 670,480 650,480"/>
-      </g>
-      <text x="60"  y="16" fill="rgba(0,200,255,0.18)" font-size="8" font-family="monospace">01001010 11010010</text>
-      <text x="360" y="16" fill="rgba(0,200,255,0.15)" font-size="8" font-family="monospace">10110101 00110011</text>
-      <text x="60"  y="520" fill="rgba(0,200,255,0.18)" font-size="8" font-family="monospace">11001001 01011010</text>
-      <text x="360" y="520" fill="rgba(0,200,255,0.15)" font-size="8" font-family="monospace">00110110 10100101</text>
-      <text x="14" y="200" fill="rgba(0,180,255,0.2)" font-size="7" font-family="monospace" transform="rotate(-90,14,200)">SYS.CORE v2.4</text>
-      <text x="686" y="300" fill="rgba(0,180,255,0.2)" font-size="7" font-family="monospace" transform="rotate(90,686,300)">NET.ACTIVE</text>
+      <circle cx="350" cy="265" r="300" fill="none" stroke="rgba(0,180,255,0.05)"/>
+      <circle class="rcw" cx="350" cy="265" r="132" fill="none" stroke="rgba(0,230,255,0.1)" stroke-width="1"/>
+      <line class="scanner" x1="350" y1="265" x2="350" y2="133" stroke="rgba(0,230,255,0.3)" stroke-width="2"/>
     </svg>
-
-    <div class="ai-badge">
-      <div class="ai-orb">
-        <div class="ai-orb-ring"></div>
-        <svg width="22" height="22" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g transform="scale(0.85 0.85) translate(8 10)"> <path d="M10 20C10 20 25 5 45 15C55 20 60 35 60 50C60 65 55 80 45 85C35 90 20 85 15 75C10 65 10 50 10 50" fill="none" stroke="#22D3EE" stroke-width="2"/>
-            <path d="M50 15L55 10H65M60 25L65 20M55 40L65 35M60 55L65 50" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
-            <path d="M50 85L55 90H65" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="40" cy="50" r="5" fill="#22D3EE"/>
-            <path d="M30 75L45 70" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="68" cy="10" r="1.5" fill="#22D3EE"/>
-            <circle cx="68" cy="20" r="1.5" fill="#22D3EE"/>
-            <circle cx="68" cy="35" r="1.5" fill="#22D3EE"/>
-            <circle cx="68" cy="50" r="1.5" fill="#22D3EE"/>
-            <circle cx="68" cy="90" r="1.5" fill="#22D3EE"/>
-          </g>
-        </svg>
-      </div>
-      <div class="ai-texts">
-        <div class="ai-status">
-          <div class="ai-dot"></div>
-          <span class="ai-status-text">Agente activo</span>
-        </div>
-        <span class="ai-name">AIThor</span>
-      </div>
-    </div>
 
     <div class="hub">
       <div class="hp" style="width:138px;height:138px;"></div>
-      <div class="hp" style="width:164px;height:164px;animation-delay:.9s;"></div>
-      <svg width="78" height="78" viewBox="0 0 78 78" fill="none">
-        <circle cx="39" cy="39" r="37" stroke="#00E6FF" stroke-width="1.5" fill="none" opacity="0.7"/>
-        <circle cx="39" cy="39" r="30" stroke="rgba(0,230,255,0.3)" stroke-width="0.8" fill="none"/>
-        <ellipse cx="39" cy="39" rx="37" ry="14" stroke="#00E6FF" stroke-width="1.2" fill="none" opacity="0.5"/>
-        <circle cx="39" cy="39" r="16" fill="#021A30" stroke="#00E6FF" stroke-width="1.5"/>
-        <path d="M28,33 Q39,29 50,33" fill="none" stroke="rgba(0,230,255,0.45)" stroke-width="1"/>
-        <path d="M26,39 Q39,35 52,39" fill="none" stroke="rgba(0,230,255,0.35)" stroke-width="0.8"/>
-        <path d="M28,45 Q39,41 50,45" fill="none" stroke="rgba(0,230,255,0.25)" stroke-width="0.7"/>
-        <circle cx="33" cy="34" r="3" fill="rgba(0,230,255,0.55)"/>
-        <circle cx="33" cy="34" r="1.5" fill="rgba(255,255,255,0.7)"/>
-        <circle cx="72" cy="39" r="2.5" fill="#00E6FF" opacity="0.8"/>
-        <circle cx="6"  cy="39" r="2"   fill="rgba(0,230,255,0.5)"/>
+      <svg width="60" height="60" viewBox="0 0 78 78">
+         <circle cx="39" cy="39" r="30" stroke="#00E6FF" stroke-width="2" fill="none" opacity="0.6"/>
       </svg>
     </div>
 
-    <div class="node" style="left:50%;top:16.5%;" data-k="reportes">
-      <div class="bubble" style="width:76px;height:76px;background:rgba(0,22,42,0.92);">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M3 26l7-10 6 5 6-11 6 7" stroke="#00E6FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
+    <div class="node" style="left:50%;top:16%;" data-k="reportes">
+      <div class="bubble" style="width:70px;height:70px;background:#00162A;"><svg width="24" height="24" stroke="#00E6FF" fill="none"><path d="M3 26l7-10 6 5 6-11 6 7"/></svg></div>
       <span class="node-label">Reportes</span>
     </div>
-    <div class="node" style="left:79.5%;top:30%;" data-k="cobros">
-      <div class="bubble" style="width:76px;height:76px;background:rgba(0,26,36,0.92);">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="11" stroke="#00CFCF" stroke-width="1.7"/><path d="M15 10v5.5l4 2.5" stroke="#00CFCF" stroke-width="1.7" stroke-linecap="round"/></svg>
-      </div>
+    <div class="node" style="left:80%;top:35%;" data-k="cobros">
+      <div class="bubble" style="width:70px;height:70px;background:#001A24;"><svg width="24" height="24" stroke="#00CFCF" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
       <span class="node-label">Cobros</span>
     </div>
-    <div class="node" style="left:79.5%;top:70%;" data-k="check">
-      <div class="bubble" style="width:76px;height:76px;background:rgba(0,26,46,0.92);">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="3" y="3" width="24" height="24" rx="4" stroke="#00E6FF" stroke-width="1.7"/><path d="M8 15l5 5 9-9" stroke="#00E6FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <span class="node-label">Check</span>
+    <div class="node" style="left:80%;top:65%;" data-k="check">
+        <div class="bubble" style="width:70px;height:70px;background:#001A2E;"><svg width="24" height="24" stroke="#00E6FF" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-5"/></svg></div>
+        <span class="node-label">Check</span>
     </div>
-    <div class="node" style="left:50%;top:83.5%;" data-k="seguimientos">
-      <div class="bubble" style="width:76px;height:76px;background:rgba(0,18,40,0.92);">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="11" r="5.5" stroke="#5DADE2" stroke-width="1.7"/><path d="M4 27c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="#5DADE2" stroke-width="1.7" stroke-linecap="round"/><circle cx="23" cy="22" r="4" fill="#010D1A" stroke="#5DADE2" stroke-width="1.4"/><path d="M21.5 22h3M23 20.5v3" stroke="#5DADE2" stroke-width="1.2" stroke-linecap="round"/></svg>
-      </div>
-      <span class="node-label">Seguimientos</span>
+    <div class="node" style="left:50%;top:84%;" data-k="seguimientos">
+        <div class="bubble" style="width:70px;height:70px;background:#001228;"><svg width="24" height="24" stroke="#5DADE2" fill="none"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg></div>
+        <span class="node-label">Seguimientos</span>
     </div>
-    <div class="node" style="left:20.5%;top:70%;" data-k="manuales">
-      <div class="bubble" style="width:76px;height:76px;background:rgba(0,21,32,0.92);">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="4" y="2" width="22" height="26" rx="3" stroke="#22D3EE" stroke-width="1.7"/><path d="M9 10h12M9 15h12M9 20h8" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      <span class="node-label">Manuales</span>
+    <div class="node" style="left:20%;top:65%;" data-k="manuales">
+        <div class="bubble" style="width:70px;height:70px;background:#001520;"><svg width="24" height="24" stroke="#22D3EE" fill="none"><path d="M4 19h16M4 5h16M4 12h11"/></svg></div>
+        <span class="node-label">Manuales</span>
     </div>
-    <div class="node" style="left:20.5%;top:30%;" data-k="comisiones">
-      <div class="bubble" style="width:76px;height:76px;background:rgba(0,24,32,0.92);">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="10" cy="10" r="4" stroke="#40C8E0" stroke-width="1.7"/><circle cx="20" cy="20" r="4" stroke="#40C8E0" stroke-width="1.7"/><line x1="6" y1="24" x2="24" y2="6" stroke="#40C8E0" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="1.5" fill="#40C8E0"/><circle cx="20" cy="20" r="1.5" fill="#40C8E0"/></svg>
-      </div>
-      <span class="node-label">Comisiones</span>
+    <div class="node" style="left:20%;top:35%;" data-k="comisiones">
+        <div class="bubble" style="width:70px;height:70px;background:#001820;"><svg width="24" height="24" stroke="#40C8E0" fill="none"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="16" r="3"/><path d="M18 6L6 18"/></svg></div>
+        <span class="node-label">Comisiones</span>
     </div>
-    <div class="node" style="left:76%;top:10%;" data-k="convo">
-      <div class="bubble" style="width:64px;height:64px;background:rgba(0,10,30,0.92);border:1.5px solid rgba(0,230,255,0.35);">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="2" y="3" width="22" height="16" rx="3" stroke="#00BFFF" stroke-width="1.6"/><path d="M7 23l3-4h9l3 4" stroke="#00BFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 9h12M7 14h7" stroke="#00BFFF" stroke-width="1.4" stroke-linecap="round"/></svg>
-      </div>
-      <span class="node-label" style="font-size:11px;color:rgba(0,191,255,0.6);">Convo '27</span>
-    </div>
-
-    <div class="hint" id="hint">toca una herramienta</div>
   </div>
 
   <div class="detail off" id="panel">
     <div class="d-orb" id="d-orb"></div>
     <div>
-      <div class="d-title" id="d-title"></div>
-      <div class="d-desc"  id="d-desc"></div>
+      <div class="d-title" id="d-title">Selecciona Herramienta</div>
+      <div class="d-desc"  id="d-desc">Información del módulo...</div>
     </div>
-    <button class="d-cta" id="d-cta">Abrir →</button>
+    <button class="d-cta" id="d-cta">Consultar a AIThor →</button>
   </div>
 </div>
 
+<div class="aithor-btn" id="aiBtn">
+    <div class="aithor-btn-orb">
+        <svg width="30" height="30" viewBox="0 0 100 120" fill="none">
+            <path d="M10 50C10 30 30 10 50 10C70 10 90 30 90 50C90 70 70 90 50 90" stroke="#A855F7" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="10" fill="#A855F7"/>
+        </svg>
+    </div>
+    <span style="color:#A855F7; font-size:10px; font-weight:bold; letter-spacing:1px;">AITHOR ACTIVE</span>
+</div>
+
+<div class="aithor-panel hidden" id="aiPanel">
+    <div class="aithor-header">
+        <span style="color:#E0F7FF; font-weight:500;">AIThor Intelligence</span>
+        <button class="aithor-send" id="closeAi" style="background:transparent; color:#A855F7;">✕</button>
+    </div>
+    <div class="aithor-messages" id="aiMessages">
+        <div class="msg bot">Hola. Soy AIThor. He mapeado todos los módulos de Gestión de Cobros. ¿En qué puedo ayudarte hoy?</div>
+    </div>
+    <div class="aithor-input-area">
+        <input type="text" class="aithor-input" id="aiInput" placeholder="Escribe tu consulta...">
+        <button class="aithor-send" id="sendBtn">ENVIAR</button>
+    </div>
+</div>
+
 <script>
+const API_KEY = "AIzaSyAAAgd9UdGiu1KNzi7pkqdrjO4CtL-0cyg"; // Tu clave API
 const D = {
-  reportes:     { label:"Reportes",      desc:"Analítica operativa y financiera: dashboards por línea editorial, comparativas mensuales y exportación.",      bg:"#00162A", ic:"#00E6FF", prompt:"Diseña el módulo de Reportes del Admin Hub" },
-  cobros:       { label:"Cobros",        desc:"Ciclo completo de cobro: vencimientos, pipeline de reclamación por fases y estado en tiempo real por cliente.", bg:"#001A24", ic:"#00CFCF", prompt:"Diseña el módulo de Cobros del Admin Hub" },
-  check:        { label:"Check",         desc:"Validación y verificación de operaciones: control de calidad, revisiones pendientes y aprobaciones del equipo.", bg:"#001A2E", ic:"#00E6FF", prompt:"Diseña el módulo de Check del Admin Hub" },
-  seguimientos: { label:"Seguimientos",  desc:"Seguimiento de clientes y expedientes: histórico de interacciones, alertas de contacto y estado de gestión.",   bg:"#001228", ic:"#5DADE2", prompt:"Diseña el módulo de Seguimientos del Admin Hub" },
-  manuales:     { label:"Manuales",      desc:"Repositorio de manuales operativos, guías de procedimiento y documentación interna del departamento.",          bg:"#001520", ic:"#22D3EE", prompt:"Diseña el módulo de Manuales del Admin Hub" },
-  comisiones:   { label:"Comisiones",    desc:"Cálculo y seguimiento de comisiones: estructuras por agente, liquidaciones periódicas y trazabilidad completa.", bg:"#001820", ic:"#40C8E0", prompt:"Diseña el módulo de Comisiones del Admin Hub" },
-  convo:        { label:"Convo '27",     desc:"Convocatoria 2027: planning, documentación, hitos del calendario y seguimiento de objetivos del ejercicio.",    bg:"#000E28", ic:"#00BFFF", prompt:"Diseña el módulo Convo 27 del Admin Hub" }
+  reportes: { label:"Reportes", desc:"Analítica operativa y financiera: dashboards y exportación.", bg:"#00162A", prompt:"Explícame qué puedo ver en el módulo de Reportes de cobros." },
+  cobros: { label:"Cobros", desc:"Ciclo completo de cobro y pipeline de reclamación.", bg:"#001A24", prompt:"¿Cómo está funcionando el pipeline de cobros actualmente?" },
+  check: { label:"Check", desc:"Validación y control de calidad de operaciones.", bg:"#001A2E", prompt:"¿Qué revisiones de calidad tengo pendientes en Check?" },
+  seguimientos: { label:"Seguimientos", desc:"Histórico de interacciones y alertas de contacto.", bg:"#001228", prompt:"Resúmeme los seguimientos de clientes más urgentes." },
+  manuales: { label:"Manuales", desc:"Guías de procedimiento y documentación interna.", bg:"#001520", prompt:"¿Dónde encuentro el manual para devoluciones?" },
+  comisiones: { label:"Comisiones", desc:"Cálculo de estructuras por agente y liquidaciones.", bg:"#001820", prompt:"¿Cómo se calculan las comisiones este mes?" }
 };
-const ICONS = {
-  reportes:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M2.5 22l6-8.5 5 4 5-9 5.5 6" stroke="{c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  cobros:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="{c}" stroke-width="1.5"/><path d="M13 8.5v5.5l3.5 2.5" stroke="{c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-  check:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="3" width="20" height="20" rx="3.5" stroke="{c}" stroke-width="1.5"/><path d="M7 13l4.5 4.5 7.5-8" stroke="{c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  seguimientos:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="9" r="5" stroke="{c}" stroke-width="1.5"/><path d="M4 24c0-4.97 4.03-9 9-9s9 4.03 9 9" stroke="{c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-  manuales:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="1.5" width="20" height="23" rx="2.5" stroke="{c}" stroke-width="1.5"/><path d="M7 9h12M7 14h12M7 19h8" stroke="{c}" stroke-width="1.4" stroke-linecap="round"/></svg>`,
-  comisiones:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="9" cy="9" r="3.5" stroke="{c}" stroke-width="1.5"/><circle cx="17" cy="17" r="3.5" stroke="{c}" stroke-width="1.5"/><line x1="5.5" y1="20.5" x2="20.5" y2="5.5" stroke="{c}" stroke-width="1.4" stroke-linecap="round"/></svg>`,
-  convo:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="2" y="3" width="22" height="15" rx="2.5" stroke="{c}" stroke-width="1.5"/><path d="M7 22l2.5-4h7l2.5 4" stroke="{c}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 9h12M7 13.5h6" stroke="{c}" stroke-width="1.4" stroke-linecap="round"/></svg>`
-};
+
+// --- LOGICA DEL HUB ---
 document.querySelectorAll('.node').forEach(n => {
   n.addEventListener('click', () => {
     const k = n.dataset.k, d = D[k];
-    if (!d) return;
-    document.getElementById('hint').style.display = 'none';
     const panel = document.getElementById('panel');
     panel.classList.remove('off');
-    const orb = document.getElementById('d-orb');
-    orb.style.background = d.bg;
-    orb.innerHTML = ICONS[k].replace(/\{c\}/g, d.ic);
     document.getElementById('d-title').textContent = d.label;
-    document.getElementById('d-desc').textContent  = d.desc;
-    document.getElementById('d-cta').onclick = () => sendPrompt(d.prompt);
+    document.getElementById('d-desc').textContent = d.desc;
+    document.getElementById('d-cta').onclick = () => askAIThor(d.prompt);
   });
 });
-document.getElementById('scene').addEventListener('click', e => {
-  if (!e.target.closest('.node')) document.getElementById('panel').classList.add('off');
-});
+
+// --- LÓGICA AITHOR & GEMINI API ---
+const aiPanel = document.getElementById('aiPanel');
+const aiBtn = document.getElementById('aiBtn');
+const aiMessages = document.getElementById('aiMessages');
+const aiInput = document.getElementById('aiInput');
+const sendBtn = document.getElementById('sendBtn');
+
+aiBtn.onclick = () => aiPanel.classList.toggle('hidden');
+document.getElementById('closeAi').onclick = () => aiPanel.classList.add('hidden');
+
+async function askAIThor(text) {
+  if(!text) return;
+  aiPanel.classList.remove('hidden');
+  
+  // Agregar mensaje usuario
+  addMessage(text, 'user');
+  aiInput.value = '';
+
+  // Indicador de carga
+  const loadingMsg = addMessage('Procesando...', 'bot');
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: `Eres AIThor, un asistente experto en un sistema de Gestión de Cobros. Responde de forma concisa y profesional: ${text}` }] }]
+      })
+    });
+
+    const data = await response.json();
+    const aiText = data.candidates[0].content.parts[0].text;
+    loadingMsg.textContent = aiText;
+
+  } catch (error) {
+    loadingMsg.textContent = "Error de conexión con el núcleo de IA. Verifica la API Key.";
+  }
+}
+
+function addMessage(text, side) {
+  const m = document.createElement('div');
+  m.className = `msg ${side}`;
+  m.textContent = text;
+  aiMessages.appendChild(m);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+  return m;
+}
+
+sendBtn.onclick = () => askAIThor(aiInput.value);
+aiInput.onkeypress = (e) => { if(e.key === 'Enter') askAIThor(aiInput.value); };
+
+// --- FONDO ANIMADO ---
 const cv = document.getElementById('bgc');
 const ctx = cv.getContext('2d');
 function drawBg() {
-  cv.width = cv.offsetWidth; cv.height = cv.offsetHeight;
-  const W = cv.width, H = cv.height;
-  ctx.clearRect(0,0,W,H);
-  ctx.lineWidth = 0.5;
-  for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.strokeStyle='rgba(0,160,220,0.05)';ctx.stroke();}
-  for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.strokeStyle='rgba(0,160,220,0.05)';ctx.stroke();}
-  for(let x=0;x<W;x+=36){for(let y=0;y<H;y+=36){ctx.beginPath();ctx.arc(x,y,0.9,0,Math.PI*2);ctx.fillStyle=Math.random()>.72?'rgba(0,230,255,0.28)':'rgba(255,255,255,0.06)';ctx.fill();}}
-  for(let i=0;i<90;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.1+0.15;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=Math.random()>.5?`rgba(0,220,255,${Math.random()*.35+.05})`:`rgba(255,255,255,${Math.random()*.18+.03})`;ctx.fill();}
-  const hexPts=[{x:.06,y:.2},{x:.94,y:.2},{x:.06,y:.75},{x:.94,y:.75},{x:.12,y:.5},{x:.88,y:.5},{x:.35,y:.07},{x:.65,y:.07},{x:.35,y:.93},{x:.65,y:.93}];
-  hexPts.forEach(h=>{const hx=h.x*W,hy=h.y*H,hs=8+Math.random()*10;ctx.beginPath();for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6,px=hx+hs*Math.cos(a),py=hy+hs*Math.sin(a);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}ctx.closePath();ctx.strokeStyle=Math.random()>.45?'rgba(0,230,255,0.2)':'rgba(255,255,255,0.08)';ctx.lineWidth=0.8;ctx.stroke();});
-  const br=22;[[22,22,1,1],[W-22,22,-1,1],[22,H-22,1,-1],[W-22,H-22,-1,-1]].forEach(([bx,by,sx,sy])=>{ctx.beginPath();ctx.moveTo(bx,by+sy*br);ctx.lineTo(bx,by);ctx.lineTo(bx+sx*br,by);ctx.strokeStyle='rgba(0,230,255,0.4)';ctx.lineWidth=1.3;ctx.stroke();});
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  ctx.strokeStyle = 'rgba(0,160,220,0.05)';
+  for(let x=0; x<cv.width; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,cv.height); ctx.stroke(); }
+  for(let y=0; y<cv.height; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cv.width,y); ctx.stroke(); }
 }
-drawBg(); window.addEventListener('resize', drawBg);
-  <style>
-.aithor-btn {
-  position: fixed; bottom: 24px; right: 24px;
-  z-index: 1000; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-}
-.aithor-btn-orb {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #3B0764, #1E0533);
-  border: 2px solid rgba(168,85,247,0.6);
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-  animation: aithor-float 3.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 12px rgba(139,92,246,0.5));
-  transition: border-color 0.2s;
-}
-.aithor-btn-orb:hover { border-color: rgba(192,132,252,0.9); transform: scale(1.08); }
-.aithor-ring {
-  position: absolute; border-radius: 50%;
-  border: 1px solid rgba(168,85,247,0.2);
-  width: 78px; height: 78px;
-  animation: aithor-pulse 2.5s ease-in-out infinite;
-}
-.aithor-ring2 { width: 92px; height: 92px; animation-delay: 0.8s; }
-@keyframes aithor-float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
-@keyframes aithor-pulse { 0%,100%{opacity:.2;transform:scale(1);} 50%{opacity:.6;transform:scale(1.04);} }
-.aithor-btn-label {
-  display: flex; align-items: center; gap: 5px;
-  background: rgba(60,10,100,0.3);
-  border: 1px solid rgba(168,85,247,0.35);
-  border-radius: 16px; padding: 3px 10px 3px 6px;
-}
-.aithor-btn-dot { width: 5px; height: 5px; border-radius: 50%; background: #A855F7; animation: aithor-blink 2s ease-in-out infinite; }
-@keyframes aithor-blink { 0%,100%{opacity:1;} 50%{opacity:.15;} }
-.aithor-btn-name { color: rgba(196,130,255,0.9); font-size: 11px; font-weight: 500; letter-spacing: 0.05em; font-family: sans-serif; }
-.aithor-panel {
-  position: fixed; bottom: 110px; right: 24px;
-  width: 340px; max-height: 480px;
-  background: #040D1C;
-  border: 1px solid rgba(0,230,255,0.18);
-  border-radius: 16px; overflow: hidden;
-  display: flex; flex-direction: column;
-  z-index: 999;
-  transition: opacity 0.25s, transform 0.25s;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  font-family: sans-serif;
-}
-.aithor-panel.hidden { opacity: 0; pointer-events: none; transform: translateY(12px) scale(0.97); }
-.aithor-panel-header {
-  padding: 12px 16px; border-bottom: 1px solid rgba(0,230,255,0.1);
-  display: flex; align-items: center; justify-content: space-between;
-  background: rgba(0,20,40,0.8);
-}
-.aithor-panel-title { display: flex; align-items: center; gap: 8px; }
-.aithor-header-orb {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #3B0764, #1E0533);
-  border: 1px solid rgba(168,85,247,0.5);
-  display: flex; align-items: center; justify-content: center;
-}
-.aithor-panel-name { color: #E0F7FF; font-size: 13px; font-weight: 500; }
-.aithor-panel-sub  { color: rgba(0,230,255,0.4); font-size: 10px; }
-.aithor-close { background: none; border: none; color: rgba(0,230,255,0.4); font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-.aithor-close:hover { color: #00E6FF; }
-.aithor-messages {
-  flex: 1; overflow-y: auto; padding: 14px 14px 8px;
-  display: flex; flex-direction: column; gap: 10px;
-  scrollbar-width: thin; scrollbar-color: rgba(0,230,255,0.15) transparent;
-  min-height: 200px;
-}
-.aithor-msg { max-width: 88%; font-size: 12.5px; line-height: 1.5; padding: 9px 12px; border-radius: 12px; }
-.aithor-msg.bot { background: rgba(0,40,70,0.7); color: rgba(0,230,255,0.85); border: 1px solid rgba(0,230,255,0.1); align-self: flex-start; border-bottom-left-radius: 4px; }
-.aithor-msg.user { background: rgba(60,10,100,0.5); color: rgba(220,180,255,0.9); border: 1px solid rgba(168,85,247,0.2); align-self: flex-end; border-bottom-right-radius: 4px; }
-.aithor-msg.thinking { background: rgba(0,40,70,0.5); color: rgba(0,230,255,0.4); border: 1px solid rgba(0,230,255,0.08); align-self: flex-start; font-style: italic; font-size: 11px; }
-.aithor-input-row {
-  padding: 10px 12px; border-top: 1px solid rgba(0,230,255,0.08);
-  display: flex; gap: 8px; align-items: center;
-  background: rgba(0,10,22,0.9);
-}
-.aithor-input {
-  flex: 1; background: rgba(0,30,50,0.6); border: 1px solid rgba(0,230,255,0.2);
-  border-radius: 8px; padding: 8px 12px; color: #E0F7FF; font-size: 12px;
-  outline: none; transition: border-color 0.15s; font-family: sans-serif;
-}
-.aithor-input::placeholder { color: rgba(0,230,255,0.25); }
-.aithor-input:focus { border-color: rgba(0,230,255,0.5); }
-.aithor-send {
-  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
-  background: rgba(0,100,160,0.4); border: 1px solid rgba(0,230,255,0.35);
-  color: #00E6FF; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
-}
-.aithor-send:hover { background: rgba(0,130,200,0.5); }
-.aithor-api-setup { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.aithor-api-label { color: rgba(0,230,255,0.6); font-size: 11px; }
-.aithor-api-input { background: rgba(0,30,50,0.6); border: 1px solid rgba(0,230,255,0.2); border-radius: 8px; padding: 8px 12px; color: #E0F7FF; font-size: 12px; outline: none; width: 100%; font-family: sans-serif; }
-.aithor-api-input:focus { border-color: rgba(0,230,255,0.5); }
-.aithor-api-btn { padding: 9px; border-radius: 8px; background: rgba(0,100,160,0.5); border: 1px solid rgba(0,230,255,0.4); color: #00E6FF; font-size: 12px; font-weight: 500; cursor: pointer; font-family: sans-serif; }
-.aithor-api-btn:hover { background: rgba(0,130,200,0.6); }
-.aithor-api-link { color: rgba(0,180,230,0.6); font-size: 10px; text-align: center; }
-.aithor-api-link a { color: rgba(0,210,255,0.7); }
-</style>
-
-<!-- Botón AIThor flotante -->
-<div class="aithor-btn" id="aithorBtn">
-  <div class="aithor-btn-orb">
-    <div class="aithor-ring"></div>
-    <div class="aithor-ring aithor-ring2"></div>
-    <svg width="32" height="38" viewBox="0 0 32 38" fill="none">
-      <path d="M6,28 L5,23 L4,18 L5,12 L8,7 L13,4 L16,3" stroke="#7C3AED" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-      <path d="M16,3 L20,4 L24,7 L26,12 L26,17" stroke="#A855F7" stroke-width="1" fill="none" stroke-dasharray="2 2"/>
-      <path d="M5,18 L5,22 L7,26 L10,29 L16,31 L22,29 L25,26 L27,22 L26,17" stroke="#7C3AED" stroke-width="1.2" fill="none"/>
-      <ellipse cx="11" cy="15" rx="3.5" ry="3" fill="none" stroke="#A855F7" stroke-width="1.2"/>
-      <circle cx="11" cy="15" r="1.2" fill="#C084FC"/>
-      <circle cx="11.8" cy="13.8" r="0.4" fill="rgba(255,255,255,0.8)"/>
-      <path d="M20,13 Q23,13 23,16 Q23,19 20,19" stroke="#A855F7" stroke-width="1.2" fill="none"/>
-      <circle cx="21" cy="16" r="1" fill="#C084FC"/>
-      <path d="M11,24 Q13.5,26 16,26 Q18.5,26 21,24" stroke="#A855F7" stroke-width="1" fill="none" stroke-linecap="round"/>
-      <line x1="24" y1="14" x2="31" y2="14" stroke="#C084FC" stroke-width="0.9"/>
-      <line x1="25" y1="17" x2="31" y2="17" stroke="#A855F7" stroke-width="0.8"/>
-      <line x1="24" y1="20" x2="30" y2="20" stroke="#9333EA" stroke-width="0.7"/>
-      <circle cx="24" cy="13" r="1.5" fill="none" stroke="#C084FC" stroke-width="0.9"/>
-      <circle cx="24" cy="13" r="0.5" fill="#A855F7"/>
-      <path d="M12,31 L11,36 L21,36 L20,31" stroke="#6D28D9" stroke-width="1" fill="none"/>
-    </svg>
-  </div>
-  <div class="aithor-btn-label">
-    <div class="aithor-btn-dot"></div>
-    <span class="aithor-btn-name">AIThor</span>
-  </div>
-</div>
-
-<!-- Panel de chat AIThor -->
-<div class="aithor-panel hidden" id="aithorPanel">
-  <div class="aithor-panel-header">
-    <div class="aithor-panel-title">
-      <div class="aithor-header-orb">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="7" r="6" stroke="#A855F7" stroke-width="1"/>
-          <circle cx="4.5" cy="6.5" r="1.5" fill="#C084FC"/>
-          <circle cx="9.5" cy="6.5" r="1.5" fill="#C084FC"/>
-          <path d="M4.5 9.5 Q7 11 9.5 9.5" stroke="#A855F7" stroke-width="0.8" fill="none"/>
-        </svg>
-      </div>
-      <div>
-        <div class="aithor-panel-name">AIThor</div>
-        <div class="aithor-panel-sub">Agente Gemini · Admin Hub</div>
-      </div>
-    </div>
-    <button class="aithor-close" id="aithorClose">×</button>
-  </div>
-  <div class="aithor-api-setup" id="aithorSetup">
-    <div class="aithor-api-label">Introduce tu API Key de Google Gemini:</div>
-    <input class="aithor-api-input" id="aithorApiKey" type="password" placeholder="AIza..."/>
-    <button class="aithor-api-btn" id="aithorSaveKey">Activar AIThor →</button>
-    <div class="aithor-api-link">Key gratuita en <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></div>
-  </div>
-  <div id="aithorChat" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-    <div class="aithor-messages" id="aithorMessages"></div>
-    <div class="aithor-input-row">
-      <input class="aithor-input" id="aithorInput" placeholder="Pregunta al agente..." autocomplete="off"/>
-      <button class="aithor-send" id="aithorSend">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l10-5-5 10V7H2z" fill="#00E6FF"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function(){
-  const SYSTEM = "Eres AIThor, agente de inteligencia artificial del departamento de Administración Comercial y Cobros de Grupo Planeta. Eres experto en gestión de cobros, facturación, seguimiento de clientes, comisiones y reportes editoriales. Responde siempre en español, de forma concisa y profesional.";
-  let apiKey = localStorage.getItem('aithor_gemini_key') || '';
-  let history = [];
-  const btn = document.getElementById('aithorBtn');
-  const panel = document.getElementById('aithorPanel');
-  const closeBtn = document.getElementById('aithorClose');
-  const setup = document.getElementById('aithorSetup');
-  const chat = document.getElementById('aithorChat');
-  const keyInput = document.getElementById('aithorApiKey');
-  const saveKeyBtn = document.getElementById('aithorSaveKey');
-  const messages = document.getElementById('aithorMessages');
-  const input = document.getElementById('aithorInput');
-  const sendBtn = document.getElementById('aithorSend');
-  function openPanel(){ panel.classList.remove('hidden'); if(apiKey) showChat(); }
-  function closePanel(){ panel.classList.add('hidden'); }
-  function showChat(){
-    setup.style.display='none'; chat.style.display='flex';
-    if(!messages.children.length) addMsg('bot','¡Hola! Soy AIThor, tu agente de Admin Hub. ¿En qué puedo ayudarte?');
-    setTimeout(()=>input.focus(),100);
-  }
-  function addMsg(role,text){
-    const d=document.createElement('div'); d.className='aithor-msg '+role; d.textContent=text;
-    messages.appendChild(d); messages.scrollTop=messages.scrollHeight; return d;
-  }
-  async function send(){
-    const text=input.value.trim(); if(!text||!apiKey) return;
-    input.value=''; addMsg('user',text);
-    history.push({role:'user',parts:[{text}]});
-    const t=addMsg('thinking','AIThor está pensando...');
-    try{
-      const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+apiKey,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM}]},contents:history})
-      });
-      const data=await res.json(); t.remove();
-      if(data.candidates&&data.candidates[0]){
-        const reply=data.candidates[0].content.parts[0].text;
-        addMsg('bot',reply); history.push({role:'model',parts:[{text:reply}]});
-        if(history.length>20) history=history.slice(-20);
-      } else { addMsg('bot','Error: '+(data.error?.message||'API key inválida')); }
-    }catch(e){ t.remove(); addMsg('bot','No pude conectar con Gemini. Revisa tu conexión.'); }
-  }
-  btn.addEventListener('click',openPanel);
-  closeBtn.addEventListener('click',closePanel);
-  saveKeyBtn.addEventListener('click',()=>{ const k=keyInput.value.trim(); if(!k) return; apiKey=k; localStorage.setItem('aithor_gemini_key',k); showChat(); });
-  sendBtn.addEventListener('click',send);
-  input.addEventListener('keydown',e=>{ if(e.key==='Enter') send(); });
-})();
+window.onresize = drawBg;
+drawBg();
 </script>
-`;
-document.getElementById('code').textContent = code;
-</script>
-AIzaSyAAAgd9UdGiu1KNzi7pkqdrjO4CtL-0cyg
 </body>
 </html>
-
-</script>
