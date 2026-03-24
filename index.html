@@ -6,7 +6,7 @@
 <title>Admin Hub</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-.wrap { background: #020B18; border-radius: 20px; overflow: hidden; position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 740px; display: flex; flex-direction: column; }
+.wrap { background: #020B18; border-radius: 20px; position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 740px; display: flex; flex-direction: column; }
 .bg-image { position: absolute; inset: 0; z-index: 0; pointer-events: none; background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExMVFhUXGSEbGRgYGBsaIRobHx8dGCAhHxsgHigiHSAlHR0eIjEjJSorLi4wHR8zODMtNygtLisBCgoKDg0OGxAQGy0mICUtNy8vLy8wLTUvLS0vLS0vLS8tLS0vLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQADBgIBBwj/xABJEAACAQIEBAMFBgIGBwoDAAABAhEDIQAEEjEFIkFREzJhBkJxgZEUI1KhsfBiwTNDcoLR4SRTVGOy8RZzg5KToqPCw9IVNOL/xAAaAQADAQEBAQAAAAAAAAAAAAACAwQBAAUG/8QALxEAAgIBAgMFCQEAAwAAAAAAAAECEQMSITFB8AQiUWGBEzJxkaGxwdHh8SNScv/aAAwDAQACEQMRAD8AdVGqqYc6luVcElQNlOrUWVipuwAXzWuDgZ6hBNz37XmfhuJMdb9sD5ZiQpMgpTVQIiDALfnAv+E4hb9/vb/lj3oxpHgz7QnLTzr7q/p/PAu8U97+ptJt1sPgbHuMRM1MI2oETBAJZTuQAb1FjzUm5gLjUACOUYGdR0wN7CJ7k2A+IKn44HzlEgDUpEgRaI/CLm19kZon+jqA2xkq4B48bW664XGRVYtpZRUrIAlUFtJUSNSlRzpBMwDURgGbUqh8ZFM+2psvXmnWpqKCFSyl11G2rYHVBDWUy2reRpKmdKyHgqzSZLKCy3JJgNTqqblwA6/1ixFXC/jWSSrTCvdUBWm0BTTdyGAqBTpBNjIlHBlNJI1pk0tn114F8VRhc6lSlVOssxJMkzLHY7+8J69+oN+KikH9R/l0/e/VxT1S6VAKnglQGU7ktCydyZIggWuDvhe9IhoBGiLEfK3qes9b/AClyStj0xjl86n2cU1oprD6jVkhmBBAVrQVBvbsLbkl5z2jdKC09WoAytydWkys+iEAnqTpEmHwqy2TYgAKSJ3MAbdz+9sFLl11qxYa1EDsI2MwQI6b7g3i5Y4pvcBtWH5LPsgp03GkNYH8Bm69ArBSRME3dZB1AOwYAYbLMCw0cwN58wIAMGOjHSADQ84lRp5jJiyUmpQtieUg2AsLyZHUyRYsY59n6yKyeOCxA5gLCCB2IJ6gi0dR0NMVqVpA2c1GVlnoo2/ikg7QTe5JEg2MOwy7fZlCgBFiCWgkdJBFgL3gNAJv0xvhQg7ASwALAXMdySAPniZymtSFWm0AkHTffoD2nA+ePXkfH4HBlSL0MkYFkYEbEd/b+Wxi7I8Qek4qUVVXBuGBIPcHqCDuDgjhnHnXSlUq1V5VAPKbFrSYMn3R+rFh4jUqBgBLsAJiGjr6bDe3U4RtR2FUGzpNRQTqGYwFJkGRHLABkj3yJGxBsTfBuayfKqsxFTrEkWFwY3uLW+vTE4dxGpULCqXCqRpVFsNuoEEkFj0i7H07YNr5Sn4dVi6lWBdJJtYqvMBY7gEWE/LE43cpJ0v7UGt9JQPF3cCqASxB5kKh5EzpUA6TyExJ5dRsTqNmxlXiJoMVAUBRrUtOsCRJ0qDqMCFE3ImSANs3lqJWkFF'); background-size: cover; background-position: center; opacity: 0.18; }
 .bg-overlay { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at center, rgba(0,10,25,0.55) 0%, rgba(2,11,24,0.88) 70%, rgba(2,11,24,0.97) 100%); }
 .bg-canvas { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
@@ -89,41 +89,6 @@
 </style>
 </head>
 <body>
-<div class="modal-overlay" id="aitorModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-header-orb">
-        <div class="modal-header-ring"></div>
-        <svg width="20" height="20" viewBox="0 0 100 120" fill="none">
-          <g transform="scale(0.85 0.85) translate(8 10)">
-            <path d="M10 20C10 20 25 5 45 15C55 20 60 35 60 50C60 65 55 80 45 85C35 90 20 85 15 75C10 65 10 50 10 50" fill="none" stroke="#22D3EE" stroke-width="2"/>
-            <path d="M50 15L55 10H65M60 25L65 20M55 40L65 35M60 55L65 50" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="40" cy="50" r="5" fill="#22D3EE"/>
-            <circle cx="68" cy="10" r="1.5" fill="#22D3EE"/>
-            <circle cx="68" cy="35" r="1.5" fill="#22D3EE"/>
-            <circle cx="68" cy="50" r="1.5" fill="#22D3EE"/>
-          </g>
-        </svg>
-      </div>
-      <div class="modal-title">
-        <h2>AITOR — Agente IA</h2>
-        <p>Asistente de Gesti&#243;n de Cobros &middot; Gemini</p>
-      </div>
-      <button class="modal-close" id="modalClose">&#x2715;</button>
-    </div>
-    <div id="chatSection" style="display:flex;flex:1;flex-direction:column;overflow:hidden;">
-      <div class="chat-area" id="chatArea"></div>
-      <div class="chat-footer">
-        <textarea class="chat-input" id="chatInput" placeholder="Escribe tu consulta&#8230;" rows="1"></textarea>
-        <button class="send-btn" id="sendBtn">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M2 9l13-7-5 7 5 7z" fill="#00E6FF"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 <div class="wrap" id="app">
   <div class="bg-image"></div>
   <div class="bg-overlay"></div>
@@ -313,8 +278,9 @@
   </div>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 // ══ CONFIGURACION — PON AQUI TU API KEY DE GOOGLE AI STUDIO ══
-const GEMINI_KEY = AIzaSyCa2Pyaf9-T_CJ_1UTgnVYKRLelNO3GYJg;
+const GEMINI_KEY = 'AIzaSyCa2Pyaf9-T_CJ_1UTgnVYKRLelNO3GYJg';
 // Modelos disponibles (de mas barato a mas potente):
 //   'gemini-2.0-flash'      <- recomendado: rapido y economico
 //   'gemini-1.5-flash'      <- alternativa clasica
@@ -476,6 +442,42 @@ function appendTyping() {
   chatArea.scrollTop = chatArea.scrollHeight;
   return div;
 }
+}); // fin DOMContentLoaded
 </script>
+<div class="modal-overlay" id="aitorModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-orb">
+        <div class="modal-header-ring"></div>
+        <svg width="20" height="20" viewBox="0 0 100 120" fill="none">
+          <g transform="scale(0.85 0.85) translate(8 10)">
+            <path d="M10 20C10 20 25 5 45 15C55 20 60 35 60 50C60 65 55 80 45 85C35 90 20 85 15 75C10 65 10 50 10 50" fill="none" stroke="#22D3EE" stroke-width="2"/>
+            <path d="M50 15L55 10H65M60 25L65 20M55 40L65 35M60 55L65 50" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="40" cy="50" r="5" fill="#22D3EE"/>
+            <circle cx="68" cy="10" r="1.5" fill="#22D3EE"/>
+            <circle cx="68" cy="35" r="1.5" fill="#22D3EE"/>
+            <circle cx="68" cy="50" r="1.5" fill="#22D3EE"/>
+          </g>
+        </svg>
+      </div>
+      <div class="modal-title">
+        <h2>AITOR — Agente IA</h2>
+        <p>Asistente de Gesti&#243;n de Cobros &middot; Gemini</p>
+      </div>
+      <button class="modal-close" id="modalClose">&#x2715;</button>
+    </div>
+    <div id="chatSection" style="display:flex;flex:1;flex-direction:column;overflow:hidden;">
+      <div class="chat-area" id="chatArea"></div>
+      <div class="chat-footer">
+        <textarea class="chat-input" id="chatInput" placeholder="Escribe tu consulta&#8230;" rows="1"></textarea>
+        <button class="send-btn" id="sendBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M2 9l13-7-5 7 5 7z" fill="#00E6FF"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
