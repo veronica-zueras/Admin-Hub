@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Hub</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .wrap {
@@ -5,7 +11,18 @@
   position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   min-height: 740px; display: flex; flex-direction: column;
 }
-.bg-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.bg-image {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExMVFhUXGSEbGRgYGBsaIRobHx8dGCAhHxsgHigiHSAlHR0eIjEjJSorLi4wHR8zODMtNygtLisBCgoKDg0OGxAQGy0mICUtNy8vLy8wLTUvLS0vLS0vLS8tLS0vLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQADBgIBBwj/xABJEAACAQIEBAMFBgIGBwoDAAABAhEDIQAEEjEFIkFREzJhBkJxgZEUI1KhsfBiwTNDcoLR4SRTVGOy8RZzg5KToqPCw9IVNOL/xAAaAQADAQEBAQAAAAAAAAAAAAACAwQBAAUG/8QALxEAAgIBAgMFCQEAAwAAAAAAAAECEQMSITFB8AQiUWGBEzJxkaGxwdHh8SNScv/aAAwDAQACEQMRAD8AdVGqqYc6luVcElQNlOrUWVipuwAXzWuDgZ6hBNz37XmfhuJMdb9sD5ZiQpMgpTVQIiDALfnAv+E4hb9/vb/lj3oxpHgz7QnLTzr7q/p/PAu8U97+ptJt1sPgbHuMRM1MI2oETBAJZTuQAb1FjzUm5gLjUACOUYGdR0wN7CJ7k2A+IKn44HzlEgDUpEgRaI/CLm19kZon+jqA2xkq4B48bW666/FgnGRVYtpZRUrIAlUFtJUSNSlRzpBMwDURgGbUqh8ZFM+2psvXmnWpqKCFSyl11G2rYHVBDWUy2reRpKmdKyHgqzSZLKCy3JJgNTqqblwA6/1ixFXC/jWSSrTCvdUBWm0BTTdyGAqBTpBNjIlHBlNJI1pk0tn114F8VRhc6lSlVOssxJMkzLHY7+8J69+oN+KikH9R/l0/e/VxT1S6VAKnglQGU7ktCydyZIggWuDvhe9IhoBGiLEfK3qes9b/AClyStj0xjl86n2cU1oprD6jVkhmBBAVrQVBvbsLbkl5z2jdKC09WoAytydWkys+iEAnqTpEmHwqy2TYgAKSJ3MAbdz+9sFLl11qxYa1EDsI2MwQI6b7g3i5Y4pvcBtWH5LPsgp03GkNYH8Bm69ArBSRME3dZB1AOwYAYbLMCw0cwN58wIAMGOjHSADQ84lRp5jJiyUmpQtieUg2AsLyZHUyRYsY59n6yKyeOCxA5gLCCB2IJ6gi0dR0NMVqVpA2c1GVlnoo2/ikg7QTe5JEg2MOwy7fZlCgBFiCWgkdJBFgL3gNAJv0xvhQg7ASwALAXMdySAPniZymtSFWm0AkHTffoD2nA+ePXkfH4HBlSL0MkYFkYEbEd/b+Wxi7I8Qek4qUVVXBuGBIPcHqCDuDgjhnHnXSlUq1V5VAPKbFrSYMn3R+rFh4jUqBgBLsAJiGjr6bDe3U4RtR2FUGzpNRQTqGYwFJkGRHLABkj3yJGxBsTfBuayfKqsxFTrEkWFwY3uLW+vTE4dxGpULCqXCqRpVFsNuoEEkFj0i7H07YNr5Sn4dVi6lWBdJJtYqvMBY7gEWE/LE43cpJ0v7UGt9JQPF3cCqASxB5kKh5EzpUA6TyExJ5dRsTqNmxlXiJoMVAUBRrUtOsCRJ0qDqMCFE3ImSANs3lqJWkFF');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+}
+.bg-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0,10,25,0.55) 0%, rgba(2,11,24,0.88) 70%, rgba(2,11,24,0.97) 100%);
+}
+.bg-canvas { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .topbar {
   position: relative; z-index: 20; padding: 22px 28px 0;
   display: flex; align-items: center; justify-content: space-between;
@@ -18,15 +35,13 @@
 }
 .brand-name { color: #fff; font-size: 17px; font-weight: 500; letter-spacing: -0.02em; }
 .brand-dept { color: rgba(0,230,255,0.38); font-size: 11px; margin-top: 2px; letter-spacing: 0.03em; }
-
-/* AI AGENT BADGE - AHORA COMO ENLACE */
 .ai-badge {
   display: flex; align-items: center; gap: 7px;
   background: rgba(0,90,130,0.15);
   border: 1px solid rgba(0,230,255,0.25);
   border-radius: 10px;
   padding: 5px 10px 5px 6px;
-  text-decoration: none; /* Quitar subrayado */
+  text-decoration: none;
   position: absolute;
   bottom: 12px;
   right: 14px;
@@ -60,7 +75,6 @@
 @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
 .ai-status-text { color: rgba(0,230,255,0.5); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
 .ai-name { color: rgba(0,230,255,0.9); font-size: 11px; font-weight: 500; letter-spacing: -0.01em; }
-
 .scene {
   flex: 1; position: relative; z-index: 5;
   display: flex; align-items: center; justify-content: center;
@@ -111,6 +125,8 @@
 <body>
 
 <div class="wrap" id="app">
+  <div class="bg-image"></div>
+  <div class="bg-overlay"></div>
   <canvas class="bg-canvas" id="bgc"></canvas>
 
   <div class="topbar">
@@ -146,25 +162,88 @@
       <circle cx="350" cy="265" r="300" fill="url(#cg)"/>
       <circle cx="350" cy="265" r="160" fill="url(#bg2)"/>
       <polyline points="350,265 420,265 420,180 480,180" fill="none" stroke="rgba(0,180,255,0.18)" stroke-width="1.2"/>
+      <polyline points="420,180 520,180 520,120" fill="none" stroke="rgba(0,180,255,0.12)" stroke-width="1"/>
       <polyline points="350,265 460,265 460,320 530,320" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
+      <polyline points="350,265 440,200 520,200 580,200" fill="none" stroke="rgba(0,160,230,0.1)" stroke-width="1"/>
       <polyline points="350,265 280,265 280,180 220,180" fill="none" stroke="rgba(0,180,255,0.18)" stroke-width="1.2"/>
+      <polyline points="280,180 180,180 180,120" fill="none" stroke="rgba(0,180,255,0.12)" stroke-width="1"/>
       <polyline points="350,265 240,265 240,320 170,320" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
+      <polyline points="350,265 260,200 180,200 120,200" fill="none" stroke="rgba(0,160,230,0.1)" stroke-width="1"/>
+      <polyline points="350,265 350,200 290,160 290,80" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
+      <polyline points="350,265 350,200 410,160 410,80" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
+      <polyline points="350,265 350,60" fill="none" stroke="rgba(0,200,255,0.2)" stroke-width="1.5"/>
+      <polyline points="350,265 350,330 290,370 290,460" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
+      <polyline points="350,265 350,330 410,370 410,460" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.2"/>
+      <circle cx="420" cy="180" r="3" fill="rgba(0,230,255,0.5)"/>
+      <circle cx="520" cy="180" r="2.5" fill="rgba(0,200,255,0.4)"/>
+      <circle cx="460" cy="320" r="3" fill="rgba(0,230,255,0.45)"/>
+      <circle cx="280" cy="180" r="3" fill="rgba(0,230,255,0.5)"/>
+      <circle cx="180" cy="180" r="2.5" fill="rgba(0,200,255,0.4)"/>
+      <circle cx="240" cy="320" r="3" fill="rgba(0,230,255,0.45)"/>
+      <circle cx="290" cy="160" r="3" fill="rgba(0,200,255,0.4)"/>
+      <circle cx="410" cy="160" r="3" fill="rgba(0,200,255,0.4)"/>
+      <rect x="98"  y="118" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.25)" stroke-width="1"/>
+      <rect x="590" y="118" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.25)" stroke-width="1"/>
+      <rect x="98"  y="378" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.2)"  stroke-width="1"/>
+      <rect x="590" y="378" width="8" height="8" rx="1.5" fill="none" stroke="rgba(0,180,255,0.2)"  stroke-width="1"/>
+      <rect x="178" y="316" width="6" height="6" rx="1" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="1"/>
+      <rect x="516" y="316" width="6" height="6" rx="1" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="1"/>
+      <path d="M310,230 Q290,210 295,235 Q285,255 300,260 Q290,280 310,278 Q315,295 330,290 Q340,305 355,295 Q370,305 385,290 Q400,295 395,278 Q415,280 405,260 Q420,235 410,235 Q415,210 390,230 Q375,215 355,220 Q335,215 310,230 Z" fill="none" stroke="rgba(0,230,255,0.22)" stroke-width="1.1"/>
+      <path d="M320,248 Q335,240 350,248 Q365,240 380,248" fill="none" stroke="rgba(0,200,255,0.16)" stroke-width="0.8"/>
+      <path d="M325,260 Q340,255 355,262 Q370,255 382,260" fill="none" stroke="rgba(0,200,255,0.14)" stroke-width="0.8"/>
+      <path d="M350,225 L350,270" fill="none" stroke="rgba(0,220,255,0.15)" stroke-width="0.8"/>
       <circle class="rcw"  cx="350" cy="265" r="132" fill="none" stroke="rgba(0,230,255,0.1)" stroke-width="1"/>
       <circle class="rccw" cx="350" cy="265" r="215" fill="none" stroke="rgba(0,180,255,0.05)" stroke-width="1" stroke-dasharray="2 14"/>
       <line class="scanner" x1="350" y1="265" x2="350" y2="133" stroke="rgba(0,230,255,0.25)" stroke-width="1.5"/>
       <circle class="scanner" cx="350" cy="133" r="3" fill="rgba(0,230,255,0.55)"/>
+      <line x1="350" y1="265" x2="350" y2="133" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="350" y1="265" x2="465" y2="199" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="350" y1="265" x2="465" y2="331" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="350" y1="265" x2="350" y2="397" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="350" y1="265" x2="235" y2="331" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <line x1="350" y1="265" x2="235" y2="199" stroke="rgba(0,230,255,0.1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <g stroke="rgba(0,230,255,0.35)" stroke-width="1">
+        <line x1="350" y1="133" x2="350" y2="125"/>
+        <line x1="465" y1="199" x2="471" y2="195"/>
+        <line x1="465" y1="331" x2="471" y2="335"/>
+        <line x1="350" y1="397" x2="350" y2="405"/>
+        <line x1="235" y1="331" x2="229" y2="335"/>
+        <line x1="235" y1="199" x2="229" y2="195"/>
+      </g>
+      <line x1="308" y1="265" x2="333" y2="265" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
+      <line x1="367" y1="265" x2="392" y2="265" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
+      <line x1="350" y1="223" x2="350" y2="248" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
+      <line x1="350" y1="282" x2="350" y2="307" stroke="rgba(0,230,255,0.2)" stroke-width="0.5"/>
+      <g stroke="rgba(0,230,255,0.35)" stroke-width="1.2" fill="none">
+        <polyline points="30,30 30,50 50,50"/>
+        <polyline points="670,30 670,50 650,50"/>
+        <polyline points="30,500 30,480 50,480"/>
+        <polyline points="670,500 670,480 650,480"/>
+      </g>
+      <text x="60"  y="16" fill="rgba(0,200,255,0.18)" font-size="8" font-family="monospace">01001010 11010010</text>
+      <text x="360" y="16" fill="rgba(0,200,255,0.15)" font-size="8" font-family="monospace">10110101 00110011</text>
+      <text x="60"  y="520" fill="rgba(0,200,255,0.18)" font-size="8" font-family="monospace">11001001 01011010</text>
+      <text x="360" y="520" fill="rgba(0,200,255,0.15)" font-size="8" font-family="monospace">00110110 10100101</text>
+      <text x="14" y="200" fill="rgba(0,180,255,0.2)" font-size="7" font-family="monospace" transform="rotate(-90,14,200)">SYS.CORE v2.4</text>
+      <text x="686" y="300" fill="rgba(0,180,255,0.2)" font-size="7" font-family="monospace" transform="rotate(90,686,300)">NET.ACTIVE</text>
     </svg>
 
+    <!-- AITOR como enlace clickable a Gemini -->
     <a href="https://gemini.google.com/" target="_blank" class="ai-badge" id="ai-link">
       <div class="ai-orb">
         <div class="ai-orb-ring"></div>
         <svg width="22" height="22" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g transform="scale(0.85 0.85) translate(8 10)"> 
+          <g transform="scale(0.85 0.85) translate(8 10)">
             <path d="M10 20C10 20 25 5 45 15C55 20 60 35 60 50C60 65 55 80 45 85C35 90 20 85 15 75C10 65 10 50 10 50" fill="none" stroke="#22D3EE" stroke-width="2"/>
             <path d="M50 15L55 10H65M60 25L65 20M55 40L65 35M60 55L65 50" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
+            <path d="M50 85L55 90H65" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
             <circle cx="40" cy="50" r="5" fill="#22D3EE"/>
+            <path d="M30 75L45 70" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/>
             <circle cx="68" cy="10" r="1.5" fill="#22D3EE"/>
+            <circle cx="68" cy="20" r="1.5" fill="#22D3EE"/>
             <circle cx="68" cy="35" r="1.5" fill="#22D3EE"/>
+            <circle cx="68" cy="50" r="1.5" fill="#22D3EE"/>
+            <circle cx="68" cy="90" r="1.5" fill="#22D3EE"/>
           </g>
         </svg>
       </div>
@@ -176,7 +255,6 @@
         <span class="ai-name">AITOR (Abrir Gemini)</span>
       </div>
     </a>
-
 
     <div class="hub">
       <div class="hp" style="width:138px;height:138px;"></div>
@@ -287,7 +365,9 @@ document.querySelectorAll('.node').forEach(n => {
   });
 });
 document.getElementById('scene').addEventListener('click', e => {
-  if (!e.target.closest('.node')) document.getElementById('panel').classList.add('off');
+  if (!e.target.closest('.node') && !e.target.closest('.ai-badge')) {
+    document.getElementById('panel').classList.add('off');
+  }
 });
 const cv = document.getElementById('bgc');
 const ctx = cv.getContext('2d');
@@ -306,3 +386,5 @@ function drawBg() {
 }
 drawBg(); window.addEventListener('resize', drawBg);
 </script>
+</body>
+</html>
