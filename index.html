@@ -61,6 +61,10 @@
 .send-btn { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; background: rgba(0,80,130,0.35); border: 1.5px solid rgba(0,230,255,0.4); color: #00E6FF; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
 .send-btn:hover { background: rgba(0,230,255,0.12); border-color: #00E6FF; }
 .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.quick-btns { display: flex; flex-direction: column; gap: 6px; padding: 4px 0 8px; width: 100%; }
+.quick-btn { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 10px; background: rgba(0,30,55,0.8); border: 1px solid rgba(0,230,255,0.15); color: rgba(0,210,255,0.85); font-size: 12.5px; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%; }
+.quick-btn:hover { background: rgba(0,100,160,0.3); border-color: rgba(0,230,255,0.5); color: #00E6FF; padding-left: 18px; }
+.quick-btn .qicon { font-size: 15px; flex-shrink: 0; }
 .scene { flex: 1; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; padding: 20px 20px 0; min-height: 560px; }
 .orbit-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
 .hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 114px; height: 114px; border-radius: 50%; background: rgba(1,10,22,0.92); border: 2px solid rgba(0,230,255,0.6); display: flex; align-items: center; justify-content: center; z-index: 30; }
@@ -282,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ══ UNICA LINEA A CAMBIAR: URL de tu Cloudflare Worker ══
 const WORKER_URL = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-2.0-flash';
 
 const SYSTEM = `Eres AITOR, el asistente de inteligencia artificial del Admin Hub de Gestion de Cobros. Ayudas al equipo con consultas sobre cobros, reportes, seguimientos de clientes, comisiones, manuales operativos y convocatorias. Responde siempre en espanol, de forma concisa y profesional. Cuando no tengas informacion especifica sobre los datos internos, orienta al usuario hacia los modulos del hub.`;
 
@@ -354,7 +358,10 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.classList.r
 
 function openModal(prompt) {
   modal.classList.add('open');
-  if (messages.length === 0) appendMsg('model', 'Hola! Soy **AITOR**, tu asistente de Gestion de Cobros. En que puedo ayudarte?');
+  if (messages.length === 0) {
+    appendMsg('model', 'Hola! Soy **AITOR**, tu asistente de Gestion de Cobros. En que puedo ayudarte?');
+    appendQuickButtons();
+  }
   if (prompt) setTimeout(() => { chatInput.value = prompt; sendMessage(); }, 350);
   else setTimeout(() => chatInput.focus(), 150);
 }
@@ -377,11 +384,8 @@ async function sendMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: GEMINI_MODEL,
-        contents: [
-  { role: 'user', parts: [{ text: SYSTEM }] },
-  { role: 'model', parts: [{ text: 'Entendido, soy AITOR y estoy listo para ayudar.' }] },
-  ...messages.slice(-12)
-],
+        systemInstruction: { parts: [{ text: SYSTEM }] },
+        contents: messages.slice(-12),
         generationConfig: { maxOutputTokens: 1024, temperature: 0.7 }
       })
     });
@@ -427,6 +431,35 @@ function appendMsg(role, text) {
   chatArea.scrollTop = chatArea.scrollHeight;
   return div;
 }
+const QUICK_BTNS = [
+  { icon: '📊', label: 'Ver reportes del mes' },
+  { icon: '💰', label: 'Cobros pendientes' },
+  { icon: '🎓', label: 'Buscar Alumno' },
+  { icon: '📈', label: 'Histórico de Comisiones' },
+  { icon: '🏅', label: 'Becas' },
+  { icon: '📋', label: 'Búsqueda rápida en manuales' },
+  { icon: '✅', label: 'Tareas pendientes de ADMC' },
+];
+
+function appendQuickButtons() {
+  const wrap = document.createElement('div');
+  wrap.className = 'quick-btns';
+  wrap.id = 'quickBtns';
+  QUICK_BTNS.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.innerHTML = `<span class="qicon">${b.icon}</span>${b.label}`;
+    btn.addEventListener('click', () => {
+      wrap.remove();
+      chatInput.value = b.label;
+      sendMessage();
+    });
+    wrap.appendChild(btn);
+  });
+  chatArea.appendChild(wrap);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
 function appendTyping() {
   const div = document.createElement('div');
   div.className = 'msg assistant';
