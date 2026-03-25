@@ -279,12 +279,9 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-// ══ CONFIGURACION — PON AQUI TU API KEY DE GOOGLE AI STUDIO ══
-const GEMINI_KEY = 'AIzaSyA2r0LomjT07DorvWnkn809-z5iliUXPAc';
-// Modelos disponibles (de mas barato a mas potente):
-//   'gemini-2.0-flash'      <- recomendado: rapido y economico
-//   'gemini-1.5-flash'      <- alternativa clasica
-//   'gemini-1.5-flash-8b'   <- el mas barato
+
+// ══ UNICA LINEA A CAMBIAR: URL de tu Cloudflare Worker ══
+const WORKER_URL = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
 const GEMINI_MODEL = 'gemini-2.0-flash';
 
 const SYSTEM = `Eres AITOR, el asistente de inteligencia artificial del Admin Hub de Gestion de Cobros. Ayudas al equipo con consultas sobre cobros, reportes, seguimientos de clientes, comisiones, manuales operativos y convocatorias. Responde siempre en espanol, de forma concisa y profesional. Cuando no tengas informacion especifica sobre los datos internos, orienta al usuario hacia los modulos del hub.`;
@@ -343,8 +340,7 @@ function drawBg() {
 drawBg();
 window.addEventListener('resize', drawBg);
 
-// ══ AITOR / GEMINI API ══
-// El historial usa formato Gemini: role es 'user' o 'model' (no 'assistant')
+// ══ AITOR / GEMINI via Cloudflare Worker ══
 let messages = [];
 
 const modal     = document.getElementById('aitorModal');
@@ -371,21 +367,17 @@ async function sendMessage() {
   sendBtn.disabled = true;
   appendMsg('user', text);
 
-  // Gemini usa { role: 'user'|'model', parts: [{text: '...'}] }
   messages.push({ role: 'user', parts: [{ text }] });
 
   const typing = appendTyping();
   try {
-    // URL de Gemini — la key va como parametro en la URL
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`;
-
-    const res = await fetch(url, {
+    // Llamada al Worker (sin key, el Worker la añade internamente)
+    const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        // El "system prompt" en Gemini va aqui, separado del historial
+        model: GEMINI_MODEL,
         systemInstruction: { parts: [{ text: SYSTEM }] },
-        // El historial de la conversacion
         contents: messages.slice(-12),
         generationConfig: { maxOutputTokens: 1024, temperature: 0.7 }
       })
@@ -394,8 +386,6 @@ async function sendMessage() {
     const data = await res.json();
     typing.remove();
 
-    // Gemini devuelve la respuesta en: data.candidates[0].content.parts[0].text
-    // (Anthropic la devolvia en: data.content[0].text)
     if (data.error) throw new Error(data.error.message);
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '(sin respuesta)';
 
