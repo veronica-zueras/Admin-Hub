@@ -382,7 +382,7 @@ async function sendMessage() {
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+      body: JSON.stringify({
         model: GEMINI_MODEL,
         contents: [
           { role: 'user', parts: [{ text: SYSTEM }] },
@@ -391,6 +391,7 @@ async function sendMessage() {
         ],
         generationConfig: { maxOutputTokens: 1024, temperature: 0.7 }
       })
+    });
 
     const data = await res.json();
     typing.remove();
