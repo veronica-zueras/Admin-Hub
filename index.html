@@ -296,7 +296,7 @@
     <!-- ⚠️ Si el vídeo está en la raíz del repo: src="Admin_Hub.mp4"
          Si lo mueves a /assets/:              src="assets/Admin_Hub.mp4" -->
     <div class="avatar-3d-panel">
-      <video class="avatar-video" id="avatarVideo" autoplay loop muted playsinline src="Admin_Hub.mp4"></video>
+      <video class="avatar-video" id="avatarVideo" autoplay muted playsinline src="Admin_Hub.mp4"></video>
       <div class="avatar-rim"></div>
       <div class="avatar-fade-bottom"></div>
       <div class="avatar-scanlines"></div>
@@ -395,8 +395,9 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.classList.add('open');
     const v=document.getElementById('avatarVideo');
     if(v){
-      v.muted=false;   // activa sonido al primer clic del usuario
-      v.play().catch(()=>{ v.muted=true; v.play(); }); // fallback silencioso si el navegador bloquea
+      v.muted=false;
+      v.currentTime=0;
+      v.play().catch(()=>{ v.muted=true; v.play(); });
     }
     spawnParticles();
     if(messages.length===0){
