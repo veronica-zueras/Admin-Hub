@@ -27,16 +27,10 @@ body { background: #020B18; margin: 0; padding: 0; }
 @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
 .ai-status-text { color: rgba(0,230,255,0.5); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
 .ai-name { color: rgba(0,230,255,0.9); font-size: 11px; font-weight: 500; letter-spacing: -0.01em; }
-
-/* ── MODAL OVERLAY ── */
 .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,5,15,0.82); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-/* ── WRAPPER modal + avatar ── */
 .aitor-wrapper { display: flex; align-items: flex-end; gap: 0; transform: scale(0.93) translateY(20px); transition: transform 0.35s cubic-bezier(0.34,1.4,0.64,1); }
 .modal-overlay.open .aitor-wrapper { transform: scale(1) translateY(0); }
-
-/* ── MODAL ── */
 .modal { width: min(620px, 94vw); height: min(600px, 88vh); background: #030E1E; border: 1px solid rgba(0,230,255,0.3); border-radius: 20px 0 0 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,180,255,0.15), 0 0 120px rgba(0,80,180,0.08); order: 1; }
 .modal-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid rgba(0,230,255,0.1); background: rgba(0,20,40,0.6); flex-shrink: 0; }
 .modal-header-orb { width: 38px; height: 38px; border-radius: 50%; background: #001828; border: 1.5px solid rgba(0,230,255,0.5); display: flex; align-items: center; justify-content: center; position: relative; }
@@ -73,8 +67,6 @@ body { background: #020B18; margin: 0; padding: 0; }
 .quick-btn { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 10px; background: rgba(0,30,55,0.8); border: 1px solid rgba(0,230,255,0.15); color: rgba(0,210,255,0.85); font-size: 12.5px; cursor: pointer; transition: all 0.2s; text-align: left; width: 100%; }
 .quick-btn:hover { background: rgba(0,100,160,0.3); border-color: rgba(0,230,255,0.5); color: #00E6FF; padding-left: 18px; }
 .quick-btn .qicon { font-size: 15px; flex-shrink: 0; }
-
-/* ── SCENE ── */
 .scene { flex: 1; position: relative; z-index: 5; display: flex; align-items: center; justify-content: center; padding: 20px 20px 0; min-height: 560px; }
 .orbit-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
 .hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 114px; height: 114px; border-radius: 50%; background: rgba(1,10,22,0.92); border: 2px solid rgba(0,230,255,0.6); display: flex; align-items: center; justify-content: center; z-index: 30; }
@@ -100,41 +92,9 @@ body { background: #020B18; margin: 0; padding: 0; }
 .rccw { animation: spin-ccw 120s linear infinite; transform-origin: 350px 265px; }
 @keyframes scan { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
 .scanner { animation: scan 8s linear infinite; transform-origin: 350px 265px; }
-
-/* ══════════════════════════════════════
-   AVATAR 3D — PANEL DERECHO DEL MODAL
-   ══════════════════════════════════════ */
-.avatar-3d-panel {
-  order: 2;
-  width: 180px;
-  height: min(600px, 88vh);
-  flex-shrink: 0;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  background: linear-gradient(180deg,rgba(0,8,20,0.0) 0%,rgba(0,8,20,0.6) 100%);
-  border: 1px solid rgba(0,230,255,0.3);
-  border-left: none;
-  border-radius: 0 20px 20px 0;
-  overflow: hidden;
-  padding-bottom: 18px;
-}
-.avatar-video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: top center;
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 0 18px rgba(0,200,255,0.55)) drop-shadow(0 0 50px rgba(0,200,255,0.2)) brightness(1.12) contrast(1.05);
-  animation: float3d 7s ease-in-out infinite;
-  transform-origin: center bottom;
-}
-@keyframes float3d {
-  0%,100% { transform: perspective(600px) rotateY(-8deg) rotateX(2deg) translateY(0px); }
-  30%     { transform: perspective(600px) rotateY(-4deg) rotateX(1deg) translateY(-10px); }
-  65%     { transform: perspective(600px) rotateY(-11deg) rotateX(3deg) translateY(-6px); }
-}
+.avatar-3d-panel { order: 2; width: 180px; height: min(600px, 88vh); flex-shrink: 0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; background: linear-gradient(180deg,rgba(0,8,20,0.0) 0%,rgba(0,8,20,0.6) 100%); border: 1px solid rgba(0,230,255,0.3); border-left: none; border-radius: 0 20px 20px 0; overflow: hidden; padding-bottom: 18px; }
+.avatar-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; mix-blend-mode: screen; filter: drop-shadow(0 0 18px rgba(0,200,255,0.55)) drop-shadow(0 0 50px rgba(0,200,255,0.2)) brightness(1.12) contrast(1.05); animation: float3d 7s ease-in-out infinite; transform-origin: center bottom; }
+@keyframes float3d { 0%,100% { transform: perspective(600px) rotateY(-8deg) rotateX(2deg) translateY(0px); } 30% { transform: perspective(600px) rotateY(-4deg) rotateX(1deg) translateY(-10px); } 65% { transform: perspective(600px) rotateY(-11deg) rotateX(3deg) translateY(-6px); } }
 .avatar-rim { position: absolute; left: 0; top: 8%; bottom: 8%; width: 2px; background: linear-gradient(to bottom,transparent,rgba(0,230,255,0.7),rgba(0,230,255,0.3),transparent); filter: blur(2px); animation: rim-pulse 4s ease-in-out infinite; z-index: 5; }
 @keyframes rim-pulse { 0%,100%{opacity:.4;} 50%{opacity:1;} }
 .avatar-fade-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to top,rgba(3,14,30,1) 0%,transparent 100%); z-index: 4; pointer-events: none; }
@@ -168,7 +128,6 @@ body { background: #020B18; margin: 0; padding: 0; }
         <div class="brand-dept">Gestión Cobros</div>
       </div>
     </div>
-    <!-- ══ LOGO GRUPO PLANETA INTRANET (derecha) ══ -->
     <img src="logo_letra_sin_fondo.png" alt="Grupo Planeta Intranet"
          style="height:64px;object-fit:contain;filter:brightness(1.15) contrast(1.1);opacity:0.95;">
   </div>
@@ -246,7 +205,6 @@ body { background: #020B18; margin: 0; padding: 0; }
     <div class="hub">
       <div class="hp" style="width:138px;height:138px;"></div>
       <div class="hp" style="width:164px;height:164px;animation-delay:.9s;"></div>
-      <!-- ══ LOGO CIRCULAR GRUPO PLANETA en el centro del hub ══ -->
       <img src="logo_sin_fondo.png" alt="Grupo Planeta"
            style="width:80px;height:80px;object-fit:contain;
                   filter:drop-shadow(0 0 8px rgba(0,200,255,0.5)) brightness(1.1);
@@ -255,7 +213,23 @@ body { background: #020B18; margin: 0; padding: 0; }
 
     <div class="node" style="left:50%;top:16.5%;" data-k="reportes"><div class="bubble" style="width:76px;height:76px;background:rgba(0,22,42,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M3 26l7-10 6 5 6-11 6 7" stroke="#00E6FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="node-label">Reportes</span></div>
     <div class="node" style="left:79.5%;top:30%;" data-k="cobros"><div class="bubble" style="width:76px;height:76px;background:rgba(0,26,36,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="11" stroke="#00CFCF" stroke-width="1.7"/><path d="M15 10v5.5l4 2.5" stroke="#00CFCF" stroke-width="1.7" stroke-linecap="round"/></svg></div><span class="node-label">Cobros</span></div>
-    <div class="node" style="left:79.5%;top:70%;" data-k="seguimientos"><div class="bubble" style="width:76px;height:76px;background:rgba(0,26,46,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="3" y="3" width="24" height="24" rx="4" stroke="#00E6FF" stroke-width="1.7"/><path d="M8 15l5 5 9-9" stroke="#00E6FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="node-label">Seguimientos</span></div>
+
+    <!-- ═══ SEGUIMIENTOS — icono lista con check (CAMBIADO) ═══ -->
+    <div class="node" style="left:79.5%;top:70%;" data-k="seguimientos">
+      <div class="bubble" style="width:76px;height:76px;background:rgba(0,26,46,0.92);">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="4" y="2" width="22" height="26" rx="3" stroke="#5DADE2" stroke-width="1.7"/>
+          <path d="M10 9h10" stroke="#5DADE2" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M10 14h10" stroke="#5DADE2" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M10 19h10" stroke="#5DADE2" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M7 9l1.5 1.5 2.5-3"  stroke="#5DADE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 14l1.5 1.5 2.5-3" stroke="#5DADE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 19l1.5 1.5 2.5-3" stroke="#5DADE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="node-label">Seguimientos</span>
+    </div>
+
     <div class="node" style="left:50%;top:83.5%;" data-k="convo"><div class="bubble" style="width:76px;height:76px;background:rgba(0,18,40,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="11" r="5.5" stroke="#5DADE2" stroke-width="1.7"/><path d="M4 27c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="#5DADE2" stroke-width="1.7" stroke-linecap="round"/><circle cx="23" cy="22" r="4" fill="#010D1A" stroke="#5DADE2" stroke-width="1.4"/><path d="M21.5 22h3M23 20.5v3" stroke="#5DADE2" stroke-width="1.2" stroke-linecap="round"/></svg></div><span class="node-label">Convo '27</span></div>
     <div class="node" style="left:20.5%;top:70%;" data-k="manuales"><div class="bubble" style="width:76px;height:76px;background:rgba(0,21,32,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="4" y="2" width="22" height="26" rx="3" stroke="#22D3EE" stroke-width="1.7"/><path d="M9 10h12M9 15h12M9 20h8" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="node-label">Manuales</span></div>
     <div class="node" style="left:20.5%;top:30%;" data-k="comisiones"><div class="bubble" style="width:76px;height:76px;background:rgba(0,24,32,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="10" cy="10" r="4" stroke="#40C8E0" stroke-width="1.7"/><circle cx="20" cy="20" r="4" stroke="#40C8E0" stroke-width="1.7"/><line x1="6" y1="24" x2="24" y2="6" stroke="#40C8E0" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="1.5" fill="#40C8E0"/><circle cx="20" cy="20" r="1.5" fill="#40C8E0"/></svg></div><span class="node-label">Comisiones</span></div>
@@ -273,8 +247,6 @@ body { background: #020B18; margin: 0; padding: 0; }
 <!-- ══ MODAL con AVATAR 3D al lado derecho ══ -->
 <div class="modal-overlay" id="aitorModal">
   <div class="aitor-wrapper">
-
-    <!-- CHAT -->
     <div class="modal">
       <div class="modal-header">
         <div class="modal-header-orb">
@@ -297,8 +269,6 @@ body { background: #020B18; margin: 0; padding: 0; }
         </div>
       </div>
     </div>
-
-    <!-- AVATAR 3D DERECHO -->
     <div class="avatar-3d-panel">
       <video class="avatar-video" id="avatarVideo" autoplay muted playsinline src="Admin_Hub.mp4"></video>
       <div class="avatar-rim"></div>
@@ -308,7 +278,6 @@ body { background: #020B18; margin: 0; padding: 0; }
       <div class="avatar-shadow"></div>
       <div class="avatar-platform"></div>
       <div class="avatar-hud">SYS.ACTIVE</div>
-
       <button class="sound-btn" id="soundBtn" title="Activar sonido">
         <svg id="soundIconOff" width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M11 5L6 9H2v6h4l5 4V5z" stroke="#00E6FF" stroke-width="1.6" stroke-linejoin="round"/>
@@ -322,7 +291,6 @@ body { background: #020B18; margin: 0; padding: 0; }
         </svg>
       </button>
     </div>
-
   </div>
 </div>
 
@@ -336,16 +304,25 @@ document.addEventListener('DOMContentLoaded', function() {
     reportes:    {label:'Reportes',    desc:'Analitica operativa y financiera: dashboards por linea editorial, comparativas mensuales y exportacion.',        bg:'#00162A',ic:'#00E6FF',prompt:'Ayudame con el modulo de Reportes del Admin Hub.'},
     cobros:      {label:'Cobros',      desc:'Ciclo completo de cobro: vencimientos, pipeline de reclamacion por fases y estado en tiempo real por cliente.',  bg:'#001A24',ic:'#00CFCF',prompt:'Ayudame con el modulo de Cobros del Admin Hub.'},
     check:       {label:'Check',       desc:'Validacion y verificacion de operaciones: control de calidad, revisiones pendientes y aprobaciones del equipo.', bg:'#001A2E',ic:'#00E6FF',prompt:'Ayudame con el modulo de Check y validaciones del Admin Hub.'},
-    seguimientos:{label:'Seguimientos',desc:'Archivo Maestro de Excel: Seguimiento detallado de clientes y expedientes alojado en Teams.',                   bg:'#001228',ic:'#5DADE2',excelUrl:'Seguimiento CC, Bajas y Devoluciones..xlsx'},
+    /* ═══ CAMBIO 1 — URL SharePoint añadida ═══ */
+    seguimientos:{
+      label:'Seguimientos',
+      desc:'Archivo Maestro de Excel: Seguimiento CC, Bajas y Devoluciones alojado en Teams.',
+      bg:'#001228',
+      ic:'#5DADE2',
+      excelUrl:'https://gplaneta.sharepoint.com/:x:/r/sites/AdministracinComercialyCobros-AdministracinComercial2.0/_layouts/15/Doc.aspx?sourcedoc=%7BDB9CB695-6DCC-423C-8DBB-0ED9CF40DDB9%7D&file=Seguimiento%20CC%2C%20Bajas%20y%20Devoluciones..xlsx&action=default&mobileredirect=true'
+    },
     manuales:    {label:'Manuales',    desc:'Repositorio de manuales operativos, guias de procedimiento y documentacion interna del departamento.',          bg:'#001520',ic:'#22D3EE',prompt:'Ayudame con los Manuales operativos del Admin Hub.'},
     comisiones:  {label:'Comisiones',  desc:'Calculo y seguimiento de comisiones: estructuras por agente, liquidaciones periodicas y trazabilidad completa.',bg:'#001820',ic:'#40C8E0',prompt:'Ayudame con el modulo de Comisiones del Admin Hub.'},
     convo:       {label:"Convo '27",   desc:'Convocatoria 2027: planning, documentacion, hitos del calendario y seguimiento de objetivos del ejercicio.',    bg:'#000E28',ic:'#00BFFF',prompt:'Ayudame con la Convocatoria 2027 del Admin Hub.'}
   };
+
   const ICONS={
     reportes:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M2.5 22l6-8.5 5 4 5-9 5.5 6" stroke="{c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     cobros:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="{c}" stroke-width="1.5"/><path d="M13 8.5v5.5l3.5 2.5" stroke="{c}" stroke-width="1.5" stroke-linecap="round"/></svg>`,
     check:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="3" width="20" height="20" rx="3.5" stroke="{c}" stroke-width="1.5"/><path d="M7 13l4.5 4.5 7.5-8" stroke="{c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    seguimientos:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 4h18v18H4V4z" fill="#217346"/><path d="M10 8h8v2h-8V8zm0 4h8v2h-8v-2zm0 4h8v2h-8v-2zM7 8h2v2H7V8zm0 4h2v2H7v-2zm0 4h2v2H7v-2z" fill="white"/></svg>`,
+    /* ═══ CAMBIO 2 — icono lista con check en panel detalle ═══ */
+    seguimientos:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="1.5" width="20" height="23" rx="2.5" stroke="{c}" stroke-width="1.5"/><path d="M8.5 8h9" stroke="{c}" stroke-width="1.3" stroke-linecap="round"/><path d="M8.5 13h9" stroke="{c}" stroke-width="1.3" stroke-linecap="round"/><path d="M8.5 18h9" stroke="{c}" stroke-width="1.3" stroke-linecap="round"/><path d="M6 8l1.2 1.2 2-2.5" stroke="{c}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 13l1.2 1.2 2-2.5" stroke="{c}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 18l1.2 1.2 2-2.5" stroke="{c}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     manuales:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="1.5" width="20" height="23" rx="2.5" stroke="{c}" stroke-width="1.5"/><path d="M7 9h12M7 14h12M7 19h8" stroke="{c}" stroke-width="1.4" stroke-linecap="round"/></svg>`,
     comisiones:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="9" cy="9" r="3.5" stroke="{c}" stroke-width="1.5"/><circle cx="17" cy="17" r="3.5" stroke="{c}" stroke-width="1.5"/><line x1="5.5" y1="20.5" x2="20.5" y2="5.5" stroke="{c}" stroke-width="1.4" stroke-linecap="round"/></svg>`,
     convo:`<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="2" y="3" width="22" height="15" rx="2.5" stroke="{c}" stroke-width="1.5"/><path d="M7 22l2.5-4h7l2.5 4" stroke="{c}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 9h12M7 13.5h6" stroke="{c}" stroke-width="1.4" stroke-linecap="round"/></svg>`
@@ -360,15 +337,23 @@ document.addEventListener('DOMContentLoaded', function() {
       orb.innerHTML=ICONS[k].replace(/\{c\}/g,d.ic);
       document.getElementById('d-title').textContent=d.label;
       document.getElementById('d-desc').textContent=d.desc;
-      document.getElementById('d-cta').onclick=()=>openAitor(d.prompt);
+      /* ═══ CAMBIO 3 — botón abre Excel si hay excelUrl ═══ */
+      const cta=document.getElementById('d-cta');
+      if(d.excelUrl){
+        cta.textContent='Abrir Excel \u2192';
+        cta.onclick=()=>window.open(d.excelUrl,'_blank');
+      } else {
+        cta.textContent='Abrir \u2192';
+        cta.onclick=()=>openAitor(d.prompt);
+      }
     });
   });
+
   document.getElementById('scene').addEventListener('click',e=>{
     if(!e.target.closest('.node')&&!e.target.closest('.ai-badge'))
       document.getElementById('panel').classList.add('off');
   });
 
-  // Canvas
   const cv=document.getElementById('bgc'),ctx=cv.getContext('2d');
   function drawBg(){
     cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;
@@ -383,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   drawBg();window.addEventListener('resize',drawBg);
 
-  // Chat
   let messages=[];
   const modal=document.getElementById('aitorModal');
   const chatArea=document.getElementById('chatArea');
@@ -397,16 +381,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function openModal(prompt){
     modal.classList.add('open');
     const v=document.getElementById('avatarVideo');
-    if(v){
-      v.muted=false;
-      v.currentTime=0;
-      v.play().catch(()=>{ v.muted=true; v.play(); });
-    }
+    if(v){v.muted=false;v.currentTime=0;v.play().catch(()=>{v.muted=true;v.play();});}
     spawnParticles();
-    if(messages.length===0){
-      appendMsg('model','Hola! Soy **AITOR**, tu asistente de Gestión de Cobros. ¿En qué puedo ayudarte?');
-      appendQuickButtons();
-    }
+    if(messages.length===0){appendMsg('model','Hola! Soy **AITOR**, tu asistente de Gestión de Cobros. ¿En qué puedo ayudarte?');appendQuickButtons();}
     if(prompt)setTimeout(()=>{chatInput.value=prompt;sendMessage();},350);
     else setTimeout(()=>chatInput.focus(),150);
   }
@@ -424,14 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function spawnParticles(){
     const c=document.getElementById('avatarParticles');c.innerHTML='';
-    for(let i=0;i<14;i++){
-      const p=document.createElement('div');p.className='av-particle';
-      p.style.left=Math.random()*100+'%';
-      p.style.animationDuration=(3+Math.random()*6)+'s';
-      p.style.animationDelay=(Math.random()*5)+'s';
-      p.style.width=p.style.height=(1+Math.random()*2)+'px';
-      c.appendChild(p);
-    }
+    for(let i=0;i<14;i++){const p=document.createElement('div');p.className='av-particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(3+Math.random()*6)+'s';p.style.animationDelay=(Math.random()*5)+'s';p.style.width=p.style.height=(1+Math.random()*2)+'px';c.appendChild(p);}
   }
 
   async function sendMessage(){
