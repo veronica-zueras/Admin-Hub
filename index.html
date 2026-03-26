@@ -144,7 +144,6 @@
 .avatar-hud { position: absolute; top: 14px; right: 10px; background: rgba(0,5,20,0.85); border: 1px solid rgba(0,230,255,0.4); border-radius: 6px; padding: 3px 9px; font-family: 'Courier New',monospace; font-size: 9px; letter-spacing: 2px; color: rgba(0,230,255,0.9); text-shadow: 0 0 6px rgba(0,230,255,0.6); z-index: 7; }
 .avatar-scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px); pointer-events: none; z-index: 6; }
 .avatar-particles { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
-
 </style>
 </head>
 <body>
@@ -168,6 +167,9 @@
         <div class="brand-dept">Gestión Cobros</div>
       </div>
     </div>
+    <!-- ══ LOGO GRUPO PLANETA INTRANET (derecha) ══ -->
+    <img src="logo_letra_sin_fondo.png" alt="Grupo Planeta Intranet"
+         style="height:34px;object-fit:contain;filter:brightness(0) invert(1);opacity:0.85;">
   </div>
 
   <div class="scene" id="scene">
@@ -243,7 +245,11 @@
     <div class="hub">
       <div class="hp" style="width:138px;height:138px;"></div>
       <div class="hp" style="width:164px;height:164px;animation-delay:.9s;"></div>
-      <svg width="78" height="78" viewBox="0 0 78 78" fill="none"><circle cx="39" cy="39" r="37" stroke="#00E6FF" stroke-width="1.5" fill="none" opacity="0.7"/><circle cx="39" cy="39" r="30" stroke="rgba(0,230,255,0.3)" stroke-width="0.8" fill="none"/><ellipse cx="39" cy="39" rx="37" ry="14" stroke="#00E6FF" stroke-width="1.2" fill="none" opacity="0.5"/><circle cx="39" cy="39" r="16" fill="#021A30" stroke="#00E6FF" stroke-width="1.5"/><path d="M28,33 Q39,29 50,33" fill="none" stroke="rgba(0,230,255,0.45)" stroke-width="1"/><path d="M26,39 Q39,35 52,39" fill="none" stroke="rgba(0,230,255,0.35)" stroke-width="0.8"/><path d="M28,45 Q39,41 50,45" fill="none" stroke="rgba(0,230,255,0.25)" stroke-width="0.7"/><circle cx="33" cy="34" r="3" fill="rgba(0,230,255,0.55)"/><circle cx="33" cy="34" r="1.5" fill="rgba(255,255,255,0.7)"/><circle cx="72" cy="39" r="2.5" fill="#00E6FF" opacity="0.8"/><circle cx="6" cy="39" r="2" fill="rgba(0,230,255,0.5)"/></svg>
+      <!-- ══ LOGO CIRCULAR GRUPO PLANETA en el centro del hub ══ -->
+      <img src="logo_sin_fondo.png" alt="Grupo Planeta"
+           style="width:80px;height:80px;object-fit:contain;
+                  filter:drop-shadow(0 0 8px rgba(0,200,255,0.5)) brightness(1.1);
+                  animation:ai-pulse 2.5s ease-in-out infinite;">
     </div>
 
     <div class="node" style="left:50%;top:16.5%;" data-k="reportes"><div class="bubble" style="width:76px;height:76px;background:rgba(0,22,42,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M3 26l7-10 6 5 6-11 6 7" stroke="#00E6FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="node-label">Reportes</span></div>
@@ -252,7 +258,6 @@
     <div class="node" style="left:50%;top:83.5%;" data-k="convo"><div class="bubble" style="width:76px;height:76px;background:rgba(0,18,40,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="11" r="5.5" stroke="#5DADE2" stroke-width="1.7"/><path d="M4 27c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="#5DADE2" stroke-width="1.7" stroke-linecap="round"/><circle cx="23" cy="22" r="4" fill="#010D1A" stroke="#5DADE2" stroke-width="1.4"/><path d="M21.5 22h3M23 20.5v3" stroke="#5DADE2" stroke-width="1.2" stroke-linecap="round"/></svg></div><span class="node-label">Convo '27</span></div>
     <div class="node" style="left:20.5%;top:70%;" data-k="manuales"><div class="bubble" style="width:76px;height:76px;background:rgba(0,21,32,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><rect x="4" y="2" width="22" height="26" rx="3" stroke="#22D3EE" stroke-width="1.7"/><path d="M9 10h12M9 15h12M9 20h8" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="node-label">Manuales</span></div>
     <div class="node" style="left:20.5%;top:30%;" data-k="comisiones"><div class="bubble" style="width:76px;height:76px;background:rgba(0,24,32,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="10" cy="10" r="4" stroke="#40C8E0" stroke-width="1.7"/><circle cx="20" cy="20" r="4" stroke="#40C8E0" stroke-width="1.7"/><line x1="6" y1="24" x2="24" y2="6" stroke="#40C8E0" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="1.5" fill="#40C8E0"/><circle cx="20" cy="20" r="1.5" fill="#40C8E0"/></svg></div><span class="node-label">Comisiones</span></div>
-    
 
     <div class="hint" id="hint">toca una herramienta</div>
   </div>
@@ -293,8 +298,6 @@
     </div>
 
     <!-- AVATAR 3D DERECHO -->
-    <!-- ⚠️ Si el vídeo está en la raíz del repo: src="Admin_Hub.mp4"
-         Si lo mueves a /assets/:              src="assets/Admin_Hub.mp4" -->
     <div class="avatar-3d-panel">
       <video class="avatar-video" id="avatarVideo" autoplay muted playsinline src="Admin_Hub.mp4"></video>
       <div class="avatar-rim"></div>
@@ -305,7 +308,6 @@
       <div class="avatar-platform"></div>
       <div class="avatar-hud">SYS.ACTIVE</div>
 
-      <!-- Botón sonido -->
       <button class="sound-btn" id="soundBtn" title="Activar sonido">
         <svg id="soundIconOff" width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M11 5L6 9H2v6h4l5 4V5z" stroke="#00E6FF" stroke-width="1.6" stroke-linejoin="round"/>
@@ -333,13 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
     reportes:    {label:'Reportes',    desc:'Analitica operativa y financiera: dashboards por linea editorial, comparativas mensuales y exportacion.',        bg:'#00162A',ic:'#00E6FF',prompt:'Ayudame con el modulo de Reportes del Admin Hub.'},
     cobros:      {label:'Cobros',      desc:'Ciclo completo de cobro: vencimientos, pipeline de reclamacion por fases y estado en tiempo real por cliente.',  bg:'#001A24',ic:'#00CFCF',prompt:'Ayudame con el modulo de Cobros del Admin Hub.'},
     check:       {label:'Check',       desc:'Validacion y verificacion de operaciones: control de calidad, revisiones pendientes y aprobaciones del equipo.', bg:'#001A2E',ic:'#00E6FF',prompt:'Ayudame con el modulo de Check y validaciones del Admin Hub.'},
-    seguimientos: { 
-    label:"Seguimientos",  
-    desc:"Archivo Maestro de Excel: Seguimiento detallado de clientes y expedientes alojado en Teams.",   
-    bg:"#001228", 
-    ic:"#5DADE2", 
-    excelUrl: "Seguimiento CC, Bajas y Devoluciones..xlsx" // 
-  },
+    seguimientos:{label:'Seguimientos',desc:'Archivo Maestro de Excel: Seguimiento detallado de clientes y expedientes alojado en Teams.',                   bg:'#001228',ic:'#5DADE2',excelUrl:'Seguimiento CC, Bajas y Devoluciones..xlsx'},
     manuales:    {label:'Manuales',    desc:'Repositorio de manuales operativos, guias de procedimiento y documentacion interna del departamento.',          bg:'#001520',ic:'#22D3EE',prompt:'Ayudame con los Manuales operativos del Admin Hub.'},
     comisiones:  {label:'Comisiones',  desc:'Calculo y seguimiento de comisiones: estructuras por agente, liquidaciones periodicas y trazabilidad completa.',bg:'#001820',ic:'#40C8E0',prompt:'Ayudame con el modulo de Comisiones del Admin Hub.'},
     convo:       {label:"Convo '27",   desc:'Convocatoria 2027: planning, documentacion, hitos del calendario y seguimiento de objetivos del ejercicio.',    bg:'#000E28',ic:'#00BFFF',prompt:'Ayudame con la Convocatoria 2027 del Admin Hub.'}
@@ -416,7 +412,6 @@ document.addEventListener('DOMContentLoaded', function() {
   function closeModal(){modal.classList.remove('open');}
   function openAitor(prompt){openModal(prompt);}
 
-  // Parallax 3D mouse
   document.addEventListener('mousemove',e=>{
     if(!modal.classList.contains('open'))return;
     const v=document.getElementById('avatarVideo');if(!v)return;
