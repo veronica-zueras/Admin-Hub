@@ -72,8 +72,8 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
 /* La burbuja circular */
 .cat-node .bubble {
-  width: 82px;
-  height: 82px;
+  width: 102px;
+  height: 102px;
   border-radius: 50%;
   background: rgba(0,21,32,0.92);
   border: 1.5px solid rgba(0,230,255,0.15);
@@ -114,7 +114,9 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   padding: 1px 6px;
   border: 1.5px solid #020B18;
   min-width: 20px; text-align: center;
-  display: none;
+  display: flex;
+   align-items: center;
+justify-content: center;
 }
 .cat-node .bubble .cat-count.show { display: block; }
 
