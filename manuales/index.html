@@ -38,13 +38,13 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .back-btn:hover { background:rgba(0,230,255,0.1); border-color:rgba(0,230,255,0.6); color:#00E6FF; }
 
 /* ── Page head ── */
-.page-head { position:relative; z-index:10; padding:26px 32px 0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:14px; }
+.page-head { position:relative; z-index:10; padding:26px 32px 0; display:flex; align-items:flex-end; justify-content:center; flex-wrap:wrap; gap:14px; }
 .page-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(0,230,255,0.35); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
 .page-eyebrow::before { content:''; display:inline-block; width:18px; height:1px; background:rgba(0,230,255,0.3); }
 .page-title { font-size:26px; font-weight:600; letter-spacing:-0.03em; color:#E0F7FF; display:flex; align-items:center; gap:12px; }
 .page-title svg { filter:drop-shadow(0 0 8px rgba(0,230,255,0.5)); }
 .page-sub { color:rgba(0,200,230,0.35); font-size:12px; margin-top:5px; }
-.add-btn { display:flex; align-items:center; gap:8px; background:rgba(0,80,130,0.3); border:1.5px solid rgba(0,230,255,0.4); border-radius:10px; padding:10px 18px; color:#00E6FF; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; font-family:inherit; }
+.add-btn { display:flex; align-items:center; gap:8px; background:rgba(0,80,130,0.3); border:1.5px solid rgba(0,230,255,0.4); border-radius:10px; padding:10px 18px; color:#00E6FF; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; font-family:inherit; position:absolute; top:20px; right:28px; z-index:20; }
 .add-btn:hover { background:rgba(0,230,255,0.12); border-color:#00E6FF; transform:translateY(-1px); }
 
 /* ── Toolbar ── */
