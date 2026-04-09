@@ -499,8 +499,9 @@ function renderGrid() {
   }
   grid.innerHTML = filtered.map((m,fi)=>{
     const ri=items.indexOf(m);
-    return `<div class="m-card" draggable="true" data-idx="${ri}" style="animation-delay:${fi*0.045}s"
-      ondragstart="onDragStart(event,${ri})" ondragend="onDragEnd()">
+  return `<div class="m-card" draggable="true" data-idx="${ri}" style="animation-delay:${fi*0.045}s"
+      ondragstart="onDragStart(event,${ri})" ondragend="onDragEnd()"
+      onclick="if(!event.target.closest('.icon-btn')&&!event.target.closest('.drag-handle')&&'${esc(m.url)}') window.open('${esc(m.url)}','_blank')">
       <div class="drag-handle" title="Arrastrá a una categoría">⠿</div>
       <div class="card-top">
         <div class="card-icon">${iconFor(m.tag)}</div>
