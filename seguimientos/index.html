@@ -17,8 +17,263 @@ body {
   background: radial-gradient(circle at center, rgba(0,60,110,0.45) 0%, rgba(4,28,46,0.85) 60%, #041C2E 100%);
 }
 canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-
 .corner { position: fixed; width: 28px; height: 28px; z-index: 5; pointer-events: none; }
 .corner.tl { top:14px; left:14px; border-top:1.5px solid rgba(0,212,240,0.35); border-left:1.5px solid rgba(0,212,240,0.35); }
 .corner.tr { top:14px; right:14px; border-top:1.5px solid rgba(0,212,240,0.35); border-right:1.5px solid rgba(0,212,240,0.35); }
-.corner.bl { bottom:14px; left:14px; border-bottom:1.5px solid rgba(0,212,240,0.35); border-left:1.5px solid rgba(
+.corner.bl { bottom:14px; left:14px; border-bottom:1.5px solid rgba(0,212,240,0.35); border-left:1.5px solid rgba(0,212,240,0.35); }
+.corner.br { bottom:14px; right:14px; border-bottom:1.5px solid rgba(0,212,240,0.35); border-right:1.5px solid rgba(0,212,240,0.35); }
+.sys-tag { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); font-family:'Courier New',monospace; font-size:9px; letter-spacing:0.14em; color:rgba(0,200,255,0.15); z-index:5; pointer-events:none; white-space:nowrap; }
+
+/* Topbar */
+.topbar { position:relative; z-index:20; padding:20px 28px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(0,212,240,0.08); }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand-sq { width:40px; height:40px; border-radius:11px; background:#003A5C; border:1px solid rgba(0,212,240,0.4); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.brand-name { color:#fff; font-size:17px; font-weight:500; letter-spacing:-0.02em; }
+.brand-dept { color:rgba(0,212,240,0.38); font-size:11px; margin-top:2px; letter-spacing:0.03em; }
+.back-btn { display:flex; align-items:center; gap:7px; background:rgba(0,90,130,0.15); border:1px solid rgba(0,212,240,0.25); border-radius:10px; padding:7px 14px; color:rgba(0,212,240,0.8); font-size:12px; cursor:pointer; text-decoration:none; transition:all 0.2s; }
+.back-btn:hover { background:rgba(0,212,240,0.1); border-color:rgba(0,212,240,0.6); color:#00D4F0; }
+
+/* Page head */
+.page-head { position:relative; z-index:10; padding:26px 32px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; }
+.page-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(0,212,240,0.35); margin-bottom:6px; display:flex; align-items:center; gap:6px; justify-content:center; }
+.page-eyebrow::before { content:''; display:inline-block; width:18px; height:1px; background:rgba(0,212,240,0.3); }
+.page-title { font-size:26px; font-weight:600; letter-spacing:-0.03em; color:#E0F7FF; display:flex; align-items:center; gap:12px; }
+.page-title svg { filter:drop-shadow(0 0 8px rgba(0,212,240,0.5)); }
+.page-sub { color:rgba(0,200,230,0.35); font-size:12px; margin-top:5px; }
+
+/* Nodes */
+.nodes-area { position:relative; z-index:10; padding:32px 32px 0; display:flex; justify-content:center; align-items:center; min-height:260px; }
+.connector-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+.nodes-row { position:relative; z-index:2; display:flex; justify-content:center; gap:56px; flex-wrap:wrap; }
+.node { display:flex; flex-direction:column; align-items:center; gap:12px; cursor:pointer; transition:transform 0.28s cubic-bezier(0.34,1.56,0.64,1); position:relative; }
+.node:hover { transform:scale(1.1); }
+.node.active { transform:scale(1.08); }
+.bubble { width:108px; height:108px; border-radius:50%; background:rgba(3,10,20,0.92); border:1.5px solid rgba(0,212,240,0.15); display:flex; align-items:center; justify-content:center; position:relative; transition:border-color 0.2s, box-shadow 0.2s, background 0.2s; box-shadow:inset 0 0 22px rgba(0,80,140,0.1); }
+.node:hover .bubble { border-color:rgba(0,212,240,0.6); box-shadow:0 0 22px rgba(0,212,240,0.14), inset 0 0 22px rgba(0,100,160,0.12); }
+.node.active .bubble { border-color:rgba(0,212,240,0.72); background:rgba(0,38,62,0.95); box-shadow:0 0 26px rgba(0,212,240,0.2), inset 0 0 24px rgba(0,180,255,0.07); }
+.node.active .bubble::after { content:''; position:absolute; width:106px; height:106px; border-radius:50%; border:1px solid rgba(0,212,240,0.18); animation:node-pulse 2.5s ease-in-out infinite; }
+@keyframes node-pulse { 0%,100%{opacity:.2;transform:scale(1);} 50%{opacity:.75;transform:scale(1.07);} }
+.status-badge { position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; border-radius:50%; border:2.5px solid #041C2E; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; }
+.badge-ok   { background:#16a96b; color:#fff; }
+.badge-warn { background:#d9911a; color:#fff; }
+.badge-info { background:#1e7fc0; color:#fff; }
+.node-label { font-size:12px; font-weight:500; color:rgba(0,190,220,0.45); text-align:center; line-height:1.3; max-width:110px; transition:color 0.2s; }
+.node:hover .node-label, .node.active .node-label { color:#00D4F0; }
+
+/* Divider */
+.divider { position:relative; z-index:10; margin:28px 32px 0; height:1px; background:rgba(0,212,240,0.07); }
+
+/* Stats */
+.stats-grid { position:relative; z-index:10; padding:22px 32px 60px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.stat-card { background:rgba(0,16,32,0.85); border:1px solid rgba(0,212,240,0.1); border-radius:13px; padding:16px 18px; display:flex; flex-direction:column; gap:4px; transition:border-color 0.2s, transform 0.2s; animation:fadeUp 0.4s ease both; cursor:pointer; }
+.stat-card:hover { border-color:rgba(0,212,240,0.3); transform:translateY(-2px); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.stat-card::before { content:''; display:block; height:2px; border-radius:2px; margin-bottom:10px; }
+.stat-card.ok::before   { background:linear-gradient(90deg,#16a96b,transparent); }
+.stat-card.warn::before { background:linear-gradient(90deg,#d9911a,transparent); }
+.stat-card.info::before { background:linear-gradient(90deg,#1e7fc0,transparent); }
+.stat-card.teal::before { background:linear-gradient(90deg,#00D4F0,transparent); }
+.stat-label { font-size:10px; letter-spacing:0.09em; text-transform:uppercase; color:rgba(0,180,210,0.38); }
+.stat-value { font-size:42px; font-weight:600; line-height:1.1; }
+.stat-value.ok   { color:#1dcc84; }
+.stat-value.warn { color:#f0a830; }
+.stat-value.info { color:#3aabf0; }
+.stat-value.teal { color:#00D4F0; }
+.stat-name { font-size:13px; font-weight:500; color:rgba(0,200,230,0.6); margin-top:2px; }
+.stat-sub { font-size:11px; color:rgba(0,200,230,0.28); margin-top:2px; }
+
+@media(max-width:700px){
+  .topbar,.page-head,.stats-grid{ padding-left:16px; padding-right:16px; }
+  .nodes-row { gap:28px; }
+  .bubble { width:82px; height:82px; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:400px){
+  .stats-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-overlay"></div>
+<canvas id="bgc"></canvas>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="sys-tag">SYS.SEGUIMIENTOS v1.0 · NET.ACTIVE</div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-sq">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#00D4F0"/>
+        <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#00D4F0"/>
+        <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#00D4F0"/>
+        <rect x="11" y="11" width="7" height="7" rx="1.5" fill="rgba(0,212,240,0.28)"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">Admin Hub</div>
+      <div class="brand-dept">Gestión Cobros</div>
+    </div>
+  </div>
+  <a href="../index.html" class="back-btn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Volver al Hub
+  </a>
+</div>
+
+<!-- Page header -->
+<div class="page-head">
+  <div class="page-eyebrow">módulo · seguimiento</div>
+  <div class="page-title">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+      <rect x="4" y="2" width="22" height="26" rx="3" stroke="#5DADE2" stroke-width="1.7"/>
+      <path d="M10 9h10M10 14h10M10 19h10" stroke="#5DADE2" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M7 9l1.5 1.5 2.5-3M7 14l1.5 1.5 2.5-3M7 19l1.5 1.5 2.5-3" stroke="#5DADE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Seguimientos
+  </div>
+  <div class="page-sub">Gestión operativa · Administración Comercial y Cobros</div>
+</div>
+
+<!-- Nodes -->
+<div class="nodes-area">
+  <svg class="connector-svg" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
+    <line x1="450" y1="130" x2="150" y2="130" stroke="rgba(0,200,240,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
+    <line x1="450" y1="130" x2="300" y2="130" stroke="rgba(0,200,240,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
+    <line x1="450" y1="130" x2="600" y2="130" stroke="rgba(0,200,240,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
+    <line x1="450" y1="130" x2="750" y2="130" stroke="rgba(0,200,240,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
+    <circle cx="150" cy="130" r="2.5" fill="rgba(0,212,240,0.2)"/>
+    <circle cx="300" cy="130" r="2.5" fill="rgba(0,212,240,0.2)"/>
+    <circle cx="450" cy="130" r="3.5" fill="rgba(0,212,240,0.4)"/>
+    <circle cx="600" cy="130" r="2.5" fill="rgba(0,212,240,0.2)"/>
+    <circle cx="750" cy="130" r="2.5" fill="rgba(0,212,240,0.2)"/>
+    <circle cx="450" cy="130" r="55"  fill="none" stroke="rgba(0,180,220,0.06)" stroke-width="1"/>
+    <circle cx="450" cy="130" r="110" fill="none" stroke="rgba(0,180,220,0.04)" stroke-width="1"/>
+    <circle cx="450" cy="130" r="165" fill="none" stroke="rgba(0,180,220,0.03)" stroke-width="1"/>
+  </svg>
+
+  <div class="nodes-row">
+
+    <!-- Correos → abre Excel -->
+    <div class="node active" data-node="correos"
+         onclick="window.open('https://gplaneta.sharepoint.com/:x:/r/sites/AdministracinComercialyCobros-AdministracinComercial2.0/_layouts/15/Doc.aspx?sourcedoc=%7BDB9CB695-6DCC-423C-8DBB-0ED9CF40DDB9%7D&file=Seguimiento%20CC%2C%20Bajas%20y%20Devoluciones..xlsx&action=default&mobileredirect=true','_blank')">
+      <div class="bubble">
+        <div class="status-badge badge-ok">✓</div>
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+          <rect x="4" y="10" width="30" height="20" rx="3" stroke="#00D4F0" stroke-width="1.6"/>
+          <path d="M4 14l15 9 15-9" stroke="#00D4F0" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="node-label">Correos</span>
+    </div>
+
+    <!-- Bajas y Cambios → abre Excel -->
+    <div class="node" data-node="bajas"
+         onclick="window.open('https://gplaneta.sharepoint.com/:x:/r/sites/AdministracinComercialyCobros-AdministracinComercial2.0/_layouts/15/Doc.aspx?sourcedoc=%7BDB9CB695-6DCC-423C-8DBB-0ED9CF40DDB9%7D&file=Seguimiento%20CC%2C%20Bajas%20y%20Devoluciones..xlsx&action=default&mobileredirect=true','_blank')">
+      <div class="bubble">
+        <div class="status-badge badge-warn">!</div>
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+          <rect x="7" y="4" width="24" height="30" rx="3" stroke="#40C8E0" stroke-width="1.6"/>
+          <path d="M12 13h14M12 18h10" stroke="#40C8E0" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M22 26l4-4m0 4l-4-4" stroke="#f0a830" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="node-label">Bajas y Cambios</span>
+    </div>
+
+    <!-- Bootcamps → solo activa estado -->
+    <div class="node" data-node="bootcamps" onclick="setActive(this)">
+      <div class="bubble">
+        <div class="status-badge badge-info">i</div>
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+          <rect x="4" y="8" width="30" height="22" rx="3" stroke="#22D3EE" stroke-width="1.6"/>
+          <path d="M4 14h30" stroke="#22D3EE" stroke-width="1.3"/>
+          <circle cx="19" cy="24" r="4" stroke="#22D3EE" stroke-width="1.4"/>
+          <path d="M17 24l1.5 1.5 2.5-3" stroke="#22D3EE" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="node-label">Bootcamps</span>
+    </div>
+
+    <!-- Ampliaciones y Renovaciones UCMA → solo activa estado -->
+    <div class="node" data-node="ampliaciones" onclick="setActive(this)">
+      <div class="bubble">
+        <div class="status-badge badge-ok">✓</div>
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+          <path d="M10 19a9 9 0 1 1 2.5 6.2" stroke="#22D3EE" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M10 25v-6h6" stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M26 13v6M23 16h6" stroke="#1dcc84" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="node-label">Ampliaciones y Renovaciones UCMA</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Stats -->
+<div class="stats-grid">
+
+  <div class="stat-card ok" style="animation-delay:0s"
+       onclick="window.open('https://gplaneta.sharepoint.com/:x:/r/sites/AdministracinComercialyCobros-AdministracinComercial2.0/_layouts/15/Doc.aspx?sourcedoc=%7BDB9CB695-6DCC-423C-8DBB-0ED9CF40DDB9%7D&file=Seguimiento%20CC%2C%20Bajas%20y%20Devoluciones..xlsx&action=default&mobileredirect=true','_blank')">
+    <div class="stat-label">Correos</div>
+    <div class="stat-value ok">47</div>
+    <div class="stat-name">Correos</div>
+    <div class="stat-sub">casos activos</div>
+  </div>
+
+  <div class="stat-card warn" style="animation-delay:0.06s"
+       onclick="window.open('https://gplaneta.sharepoint.com/:x:/r/sites/AdministracinComercialyCobros-AdministracinComercial2.0/_layouts/15/Doc.aspx?sourcedoc=%7BDB9CB695-6DCC-423C-8DBB-0ED9CF40DDB9%7D&file=Seguimiento%20CC%2C%20Bajas%20y%20Devoluciones..xlsx&action=default&mobileredirect=true','_blank')">
+    <div class="stat-label">Bajas y Cambios</div>
+    <div class="stat-value warn">23</div>
+    <div class="stat-name">Bajas y Cambios</div>
+    <div class="stat-sub">casos activos</div>
+  </div>
+
+  <div class="stat-card info" style="animation-delay:0.12s">
+    <div class="stat-label">Bootcamps</div>
+    <div class="stat-value info">31</div>
+    <div class="stat-name">Bootcamps</div>
+    <div class="stat-sub">casos activos</div>
+  </div>
+
+  <div class="stat-card teal" style="animation-delay:0.18s">
+    <div class="stat-label">Ampliaciones y Renovaciones UCMA</div>
+    <div class="stat-value teal">18</div>
+    <div class="stat-name">Amp. y Renov. UCMA</div>
+    <div class="stat-sub">casos activos</div>
+  </div>
+
+</div>
+
+<script>
+const cv = document.getElementById('bgc'), ctx = cv.getContext('2d');
+function drawBg() {
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.strokeStyle='rgba(0,160,220,0.07)';ctx.lineWidth=.5;ctx.stroke();}
+  for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.strokeStyle='rgba(0,160,220,0.07)';ctx.stroke();}
+  for(let x=0;x<W;x+=36) for(let y=0;y<H;y+=36){
+    ctx.beginPath();ctx.arc(x,y,.9,0,Math.PI*2);
+    ctx.fillStyle=Math.random()>.72?'rgba(0,212,240,0.22)':'rgba(255,255,255,0.04)';ctx.fill();
+  }
+  for(let i=0;i<80;i++){
+    const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.1+.15;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=Math.random()>.5?`rgba(0,212,240,${Math.random()*.25+.04})`:`rgba(255,255,255,${Math.random()*.1+.02})`;ctx.fill();
+  }
+}
+drawBg(); window.addEventListener('resize', drawBg);
+
+function setActive(el) {
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
