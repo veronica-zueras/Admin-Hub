@@ -431,8 +431,8 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
         if (attempt === MAX_RETRIES) {
           typing.remove();
           const isOverload = lastError.toLowerCase().includes('high demand') || lastError.includes('RESOURCE_EXHAUSTED') || lastError.includes('overloaded') || lastError.toLowerCase().includes('quota');
-          if (isOverload) {
-            appendMsg('model', '⏳ AITOR está procesando muchas solicitudes ahora mismo. Por favor, inténtalo de nuevo en unos segundos.');
+         if (isOverload) {
+            appendMsg('model', `⏳ Error técnico: ${lastError}`);
           } else {
             appendMsg('model', `No he podido conectar con AITOR en este momento. Inténtalo de nuevo. _(${lastError})_`);
           }
