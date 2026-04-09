@@ -492,7 +492,7 @@ const filtered = items.filter(m => {
     return aP - bP;
   });
   updateBadges();
-  const grid = document.getElementById('grid');
+ const grid = document.getElementById('grid');
   if(!filtered.length){
     grid.innerHTML=`<div class="empty-state">
       <svg width="44" height="44" viewBox="0 0 30 30" fill="none"><rect x="4" y="2" width="22" height="26" rx="3" stroke="#22D3EE" stroke-width="1.4"/><path d="M9 10h12M9 15h12M9 20h8" stroke="#22D3EE" stroke-width="1.2" stroke-linecap="round"/></svg>
@@ -501,9 +501,13 @@ const filtered = items.filter(m => {
     </div>`;
     return;
   }
-  grid.innerHTML = filtered.map((m,fi)=>{
-    const ri=items.indexOf(m);
-  return `<div class="m-card" draggable="true" data-idx="${ri}" style="animation-delay:${fi*0.045}s"
+
+  const pinned  = filtered.filter(m => m.title.toLowerCase().startsWith('protocolo general'));
+  const rest    = filtered.filter(m => !m.title.toLowerCase().startsWith('protocolo general'));
+
+  function cardHtml(m, fi) {
+    const ri = items.indexOf(m);
+    return `<div class="m-card" draggable="true" data-idx="${ri}" style="animation-delay:${fi*0.045}s"
       ondragstart="onDragStart(event,${ri})" ondragend="onDragEnd()"
       onclick="if(!event.target.closest('.icon-btn')&&!event.target.closest('.drag-handle')&&'${esc(m.url)}') window.open('${esc(m.url)}','_blank')">
       <div class="drag-handle" title="Arrastrá a una categoría">⠿</div>
@@ -530,7 +534,16 @@ const filtered = items.filter(m => {
         </div>
       </div>
     </div>`;
-  }).join('');
+  }
+
+  let html = '';
+  if (pinned.length) {
+    html += `<div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(${pinned.length},minmax(270px,1fr));gap:14px;">
+      ${pinned.map((m,fi) => cardHtml(m,fi)).join('')}
+    </div>`;
+  }
+  html += rest.map((m,fi) => cardHtml(m, fi + pinned.length)).join('');
+  grid.innerHTML = html;
 }
 
 /* ── Drag & Drop ── */
