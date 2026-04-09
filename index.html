@@ -290,7 +290,7 @@ body { background: #0a2540; margin: 0; padding: 0; }
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const WORKER_URL   = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
-  const GEMINI_MODEL = 'gemini-2.5-flash';
+  const GEMINI_MODEL = 'gemini-1.5-flash';
   const SYSTEM = `Eres AITOR, el asistente de inteligencia artificial del Admin Hub de Gestion de Cobros. Ayudas al equipo con consultas sobre cobros, reportes, seguimientos de clientes, comisiones, manuales operativos y convocatorias. Responde siempre en espanol, de forma concisa y profesional. Cuando no tengas informacion especifica sobre los datos internos, orienta al usuario hacia los modulos del hub.`;
 
   const D = {
@@ -431,7 +431,7 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
         if (attempt === MAX_RETRIES) {
           typing.remove();
           const isOverload = lastError.toLowerCase().includes('high demand') || lastError.includes('RESOURCE_EXHAUSTED') || lastError.includes('overloaded');
-          if (isOverload) {
+          if (isOverload)  || lastError.toLowerCase().includes('quota');  //{
             appendMsg('model', '⏳ AITOR está procesando muchas solicitudes ahora mismo. Por favor, inténtalo de nuevo en unos segundos.');
           } else {
             appendMsg('model', `No he podido conectar con AITOR en este momento. Inténtalo de nuevo. _(${lastError})_`);
