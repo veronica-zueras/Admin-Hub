@@ -100,6 +100,22 @@ body { background: #0a2540; margin: 0; padding: 0; }
 .avatar-hud { position: absolute; top: 14px; right: 10px; background: rgba(0,5,20,0.85); border: 1px solid rgba(0,230,255,0.4); border-radius: 6px; padding: 3px 9px; font-family: 'Courier New',monospace; font-size: 9px; letter-spacing: 2px; color: rgba(0,230,255,0.9); text-shadow: 0 0 6px rgba(0,230,255,0.6); z-index: 7; }
 .avatar-scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px); pointer-events: none; z-index: 6; }
 .avatar-particles { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
+
+/* ── Accesos Rápidos ── */
+.accesos-card { position:absolute; right:14px; top:50%; transform:translateY(-50%); z-index:30; background:rgba(2,12,28,0.92); border:1px solid rgba(240,168,48,0.4); border-radius:13px; padding:10px 13px; cursor:pointer; display:flex; align-items:center; gap:9px; transition:border-color 0.2s; }
+.accesos-card:hover { border-color:rgba(240,168,48,0.8); }
+.accesos-icon { width:32px; height:32px; border-radius:8px; background:rgba(240,168,48,0.1); border:1px solid rgba(240,168,48,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.accesos-title { font-size:11px; font-weight:600; color:#f0a830; line-height:1.3; }
+.accesos-pulse { position:absolute; top:-4px; right:-4px; width:9px; height:9px; border-radius:50%; background:#f0a830; animation:apulse 2s ease-in-out infinite; }
+@keyframes apulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.4);} }
+.accesos-dropdown { position:absolute; right:14px; top:50%; transform:translateY(calc(-50% + 56px)); z-index:29; width:155px; background:rgba(2,12,28,0.96); border:1px solid rgba(240,168,48,0.3); border-top:none; border-radius:0 0 13px 13px; padding:8px 10px 10px; display:none; }
+.accesos-dropdown.open { display:block; }
+.accesos-link { display:flex; align-items:center; gap:6px; padding:5px 7px; border-radius:6px; background:rgba(240,168,48,0.05); border:1px solid rgba(240,168,48,0.1); cursor:pointer; margin-bottom:5px; transition:background 0.15s; }
+.accesos-link:last-child { margin-bottom:0; }
+.accesos-link:hover { background:rgba(240,168,48,0.12); }
+.accesos-link-dot { width:5px; height:5px; border-radius:50%; background:#f0a830; flex-shrink:0; }
+.accesos-link-text { font-size:10px; color:rgba(240,168,48,0.7); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.accesos-link-arrow { color:rgba(240,168,48,0.3); font-size:11px; }
 </style>
 </head>
 <body>
@@ -231,12 +247,26 @@ body { background: #0a2540; margin: 0; padding: 0; }
 
     <div class="node" style="left:20.5%;top:30%;" data-k="comisiones"><div class="bubble" style="width:76px;height:76px;background:rgba(0,24,32,0.92);"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="10" cy="10" r="4" stroke="#40C8E0" stroke-width="1.7"/><circle cx="20" cy="20" r="4" stroke="#40C8E0" stroke-width="1.7"/><line x1="6" y1="24" x2="24" y2="6" stroke="#40C8E0" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="1.5" fill="#40C8E0"/><circle cx="20" cy="20" r="1.5" fill="#40C8E0"/></svg></div><span class="node-label">Comisiones</span></div>
 
+    <div class="accesos-card" id="accesosCard">
+      <div class="accesos-pulse"></div>
+      <div class="accesos-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f0a830" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="accesos-title">Accesos<br>Rápidos</div>
+    </div>
+    <div class="accesos-dropdown" id="accesosDropdown">
+      <div class="accesos-link" onclick="window.location.href='accesos/index.html'"><div class="accesos-link-dot"></div><span class="accesos-link-text">Ver todos</span><span class="accesos-link-arrow">›</span></div>
+      <div class="accesos-link"><div class="accesos-link-dot"></div><span class="accesos-link-text">Hermes</span><span class="accesos-link-arrow">›</span></div>
+      <div class="accesos-link"><div class="accesos-link-dot"></div><span class="accesos-link-text">Bloqueo Campus</span><span class="accesos-link-arrow">›</span></div>
+      <div class="accesos-link"><div class="accesos-link-dot"></div><span class="accesos-link-text">Puntuación Master</span><span class="accesos-link-arrow">›</span></div>
+      <div class="accesos-link"><div class="accesos-link-dot"></div><span class="accesos-link-text">Cal. Comisiones</span><span class="accesos-link-arrow">›</span></div>
+    </div>
+
     <div class="hint">toca una herramienta</div>
   </div>
 </div>
 
 <!-- ══ MODAL AITOR ══ -->
-
 
 <div class="modal-overlay" id="aitorModal">
   <div class="aitor-wrapper">
@@ -301,17 +331,13 @@ Cuando no tengas información específica sobre datos internos, orienta al usuar
 
   const D = {
     reportes:     { label:'Reportes',     url:'reportes/index.html' },
-   cobros: { label:'Cobros', url:'cobros/index.html' },
-   seguimientos: {
-      label:'Seguimientos',
-      url:'seguimientos/index.html'
-    },
-    convo: { label:"Convo '27", url:"convo/index.html" },
-manuales: { label:'Manuales', url: 'manuales/index.html'},
+    cobros:       { label:'Cobros',        url:'cobros/index.html' },
+    seguimientos: { label:'Seguimientos', url:'seguimientos/index.html' },
+    convo:        { label:"Convo '27",     url:"convo/index.html" },
+    manuales:     { label:'Manuales',      url:'manuales/index.html' },
     comisiones:   { label:'Comisiones',    prompt:'Ayudame con el modulo de Comisiones del Admin Hub.' }
   };
 
-  // Clic directo: Excel si hay URL, AITOR si hay prompt
   document.querySelectorAll('.node').forEach(n => {
     n.addEventListener('click', () => {
       const d = D[n.dataset.k];
@@ -326,7 +352,6 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
     });
   });
 
-  // Canvas background
   const cv = document.getElementById('bgc'), ctx = cv.getContext('2d');
   function drawBg() {
     cv.width = cv.offsetWidth; cv.height = cv.offsetHeight;
@@ -341,7 +366,6 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
   }
   drawBg(); window.addEventListener('resize', drawBg);
 
-  // AITOR modal
   let messages = [];
   const modal     = document.getElementById('aitorModal');
   const chatArea  = document.getElementById('chatArea');
@@ -394,17 +418,14 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
     appendMsg('user', text);
     messages.push({ role:'user', parts:[{text}] });
     const typing = appendTyping();
-   
     const MAX_RETRIES = 3;
     let lastError = null;
-
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
         if (attempt > 1) {
-          // Actualiza el mensaje del typing para informar al usuario
           const typingBubble = typing.querySelector('.msg-bubble');
           if (typingBubble) typingBubble.innerHTML = `<em style="color:rgba(0,200,255,0.55);font-size:12px;">⏳ Un momento, reintentando… (${attempt}/${MAX_RETRIES})</em>`;
-          await new Promise(r => setTimeout(r, 1200 * attempt)); // 2.4s, 3.6s
+          await new Promise(r => setTimeout(r, 1200 * attempt));
         }
         const res = await fetch(WORKER_URL, {
           method: 'POST',
@@ -433,11 +454,11 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
         lastError = null;
         break;
       } catch(err) {
-        lastError = err.message; 
+        lastError = err.message;
         if (attempt === MAX_RETRIES) {
           typing.remove();
           const isOverload = lastError.toLowerCase().includes('high demand') || lastError.includes('RESOURCE_EXHAUSTED') || lastError.includes('overloaded') || lastError.toLowerCase().includes('quota');
-         if (isOverload) {
+          if (isOverload) {
             appendMsg('model', '⏳ AITOR está procesando muchas solicitudes ahora mismo. Por favor, inténtalo de nuevo en unos segundos.');
           } else {
             appendMsg('model', `No he podido conectar con AITOR en este momento. Inténtalo de nuevo. _(${lastError})_`);
@@ -490,6 +511,18 @@ manuales: { label:'Manuales', url: 'manuales/index.html'},
     div.innerHTML = `<div class="msg-avatar">${AI_AV}</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
     chatArea.appendChild(div); chatArea.scrollTop = chatArea.scrollHeight; return div;
   }
+
+  // Accesos Rápidos
+  document.getElementById('accesosCard').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('accesosDropdown').classList.toggle('open');
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#accesosCard') && !e.target.closest('#accesosDropdown')) {
+      document.getElementById('accesosDropdown').classList.remove('open');
+    }
+  });
+
 });
 </script>
 </body>
