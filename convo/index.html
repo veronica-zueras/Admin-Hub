@@ -91,6 +91,13 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .days-left.ok   { background:rgba(29,204,132,0.12); color:#1dcc84; border:1px solid rgba(29,204,132,0.2); }
 .days-left.past { background:rgba(90,90,110,0.2); color:rgba(180,200,220,0.4); border:1px solid rgba(90,90,110,0.3); }
 
+/* Loading */
+.loading-state { text-align:center; padding:3rem 1rem; color:rgba(0,200,230,0.28); grid-column:1/-1; }
+.loading-dots { display:inline-flex; gap:6px; margin-bottom:12px; }
+.loading-dots span { width:6px; height:6px; border-radius:50%; background:rgba(0,212,240,0.4); animation:ldot 1.2s ease-in-out infinite; }
+.loading-dots span:nth-child(2){animation-delay:.2s;} .loading-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes ldot { 0%,60%,100%{transform:translateY(0);opacity:.4;} 30%{transform:translateY(-6px);opacity:1;} }
+
 /* Modal */
 .overlay { position:fixed; inset:0; z-index:200; background:rgba(0,5,15,0.85); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:1rem; }
 .overlay.open { display:flex; }
@@ -188,7 +195,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
   <div class="nodes-row">
 
-    <!-- Herramienta Check -->
     <div class="node active" data-node="check" onclick="setActive(this)">
       <div class="bubble">
         <div class="status-badge badge-pend">⊙</div>
@@ -199,7 +205,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
       <span class="node-label">Herramienta Check</span>
     </div>
 
-    <!-- Nuevo Convo -->
     <div class="node" data-node="nuevo" onclick="setActive(this)">
       <div class="bubble">
         <div class="status-badge badge-ok">✓</div>
@@ -211,7 +216,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
       <span class="node-label">Nuevo Convo</span>
     </div>
 
-    <!-- Seguimientos Campaña -->
     <div class="node" data-node="seguimientos" onclick="setActive(this)">
       <div class="bubble">
         <div class="status-badge badge-warn">!</div>
@@ -239,7 +243,12 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 </div>
 
 <!-- Brands grid -->
-<div class="brands-grid" id="brandsGrid"></div>
+<div class="brands-grid" id="brandsGrid">
+  <div class="loading-state" style="grid-column:1/-1">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <p>Cargando fechas…</p>
+  </div>
+</div>
 
 <!-- Modal edición -->
 <div class="overlay" id="editOverlay">
@@ -284,7 +293,9 @@ function setActive(el) {
   el.classList.add('active');
 }
 
-const STORE_KEY = 'adminhub_convo27_fechas';
+const WORKER_URL = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
+const STORE_KEY  = 'adminhub_convo27_fechas';
+
 const BRANDS = [
   { id:'obs',      name:'OBS',      color:'#1dcc84' },
   { id:'inesdi',   name:'INESDI',   color:'#a878f0' },
@@ -292,8 +303,8 @@ const BRANDS = [
   { id:'ucma',     name:'UCMA',     color:'#3aabf0' }
 ];
 const DATE_FIELDS = [
-  { key:'inicio',  label:'Inicio clases' },
-  { key:'cierre',  label:'Cierre contable' },
+  { key:'inicio',    label:'Inicio clases' },
+  { key:'cierre',    label:'Cierre contable' },
   { key:'matricula', label:'Fin matrícula' }
 ];
 const DEFAULTS = {
@@ -304,11 +315,29 @@ const DEFAULTS = {
 };
 
 let data = {};
-function load() {
-  try { data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || JSON.parse(JSON.stringify(DEFAULTS)); }
-  catch(e) { data = JSON.parse(JSON.stringify(DEFAULTS)); }
+
+async function load() {
+  try {
+    const res = await fetch(`${WORKER_URL}/kv?key=${STORE_KEY}`);
+    const result = await res.json();
+    data = result.value ? JSON.parse(result.value) : JSON.parse(JSON.stringify(DEFAULTS));
+  } catch(e) {
+    data = JSON.parse(JSON.stringify(DEFAULTS));
+  }
+  renderGrid();
 }
-function persist() { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+
+async function persist() {
+  try {
+    await fetch(`${WORKER_URL}/kv`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: STORE_KEY, value: data })
+    });
+  } catch(e) {
+    console.error('Error guardando en KV:', e);
+  }
+}
 
 function daysLeft(dateStr) {
   const parts = dateStr.split('/');
@@ -317,6 +346,7 @@ function daysLeft(dateStr) {
   const diff = Math.round((d - new Date()) / 86400000);
   return diff;
 }
+
 function daysTag(dateStr) {
   const d = daysLeft(dateStr);
   if (d === null) return '';
@@ -362,8 +392,12 @@ function openModal() {
   `).join('');
   document.getElementById('editOverlay').classList.add('open');
 }
-function closeModal() { document.getElementById('editOverlay').classList.remove('open'); }
-function saveDates() {
+
+function closeModal() {
+  document.getElementById('editOverlay').classList.remove('open');
+}
+
+async function saveDates() {
   BRANDS.forEach(b => {
     if (!data[b.id]) data[b.id] = {};
     DATE_FIELDS.forEach(f => {
@@ -371,7 +405,7 @@ function saveDates() {
       if (val) data[b.id][f.key] = val;
     });
   });
-  persist();
+  await persist();
   renderGrid();
   closeModal();
 }
@@ -381,7 +415,6 @@ document.getElementById('editOverlay').addEventListener('click', e => {
 });
 
 load();
-renderGrid();
 </script>
 </body>
 </html>
