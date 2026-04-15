@@ -563,6 +563,10 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
             <p class="cruce-file-name" id="labelA" style="color:rgba(79,142,247,0.6);">Clic para subir .xlsx</p>
             <input type="file" id="cruceFileA" accept=".xlsx" style="display:none" onchange="loadCruceFile('A',this)">
           </div>
+          <div id="sheetSelectorA" style="display:none;margin-top:8px;">
+            <p style="color:rgba(79,142,247,0.7);font-size:10px;margin:0 0 5px;letter-spacing:0.4px;">PESTAÑA A USAR</p>
+            <select class="cruce-select" style="margin-bottom:0;" onchange="onSheetChange('A',this)"></select>
+          </div>
         </div>
         <div>
           <p class="cruce-file-label-top" style="color:#FF5252;">FICHERO B · Listado general</p>
@@ -573,6 +577,10 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,82,82,0.5)" stroke-width="1.5" style="display:block;margin:0 auto 10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             <p class="cruce-file-name" id="labelB" style="color:rgba(255,82,82,0.6);">Clic para subir .xlsx</p>
             <input type="file" id="cruceFileB" accept=".xlsx" style="display:none" onchange="loadCruceFile('B',this)">
+          </div>
+          <div id="sheetSelectorB" style="display:none;margin-top:8px;">
+            <p style="color:rgba(255,82,82,0.7);font-size:10px;margin:0 0 5px;letter-spacing:0.4px;">PESTAÑA A USAR</p>
+            <select class="cruce-select" style="margin-bottom:0;" onchange="onSheetChange('B',this)"></select>
           </div>
         </div>
       </div>
@@ -640,7 +648,7 @@ function setActive(el) {
 }
 
 // ===== MODAL CRUCE DE DATOS =====
-const cruceState = { mode: null, fileA: null, fileB: null, dataA: null, dataB: null, colsA: [], colsB: [] };
+const cruceState = { mode: null, fileA: null, fileB: null, dataA: null, dataB: null, colsA: [], colsB: [], wbA: null, wbB: null };
 
 const stepLabels = ['Paso 1 de 3 · Tipo de análisis','Paso 2 de 3 · Cargar ficheros','Paso 3 de 3 · Configurar cruce'];
 
@@ -705,28 +713,59 @@ function loadCruceFile(which, input) {
   reader.onload = function(e) {
     try {
       const wb = XLSX.read(e.target.result, {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(ws, {defval:''});
-      const cols = data.length > 0 ? Object.keys(data[0]) : [];
-      if(which==='A') { cruceState.fileA=file; cruceState.dataA=data; cruceState.colsA=cols; }
-      else            { cruceState.fileB=file; cruceState.dataB=data; cruceState.colsB=cols; }
-      // Actualizar UI zona
-      const color = which==='A' ? '#4F8EF7' : '#FF5252';
-      const label = document.getElementById('label'+which);
-      const zone  = document.getElementById('zone'+which);
-      label.textContent = '✓ ' + file.name + ' (' + data.length + ' filas)';
-      label.style.color = color;
-      zone.style.borderStyle='solid'; zone.style.borderColor=color;
-      // Habilitar continuar si ambos cargados
-      if(cruceState.fileA && cruceState.fileB) {
-        const btn = document.getElementById('btnNext2');
-        btn.className = 'cruce-btn-next enabled';
+      // Guardar workbook para poder cambiar de pestaña después
+      if(which==='A') cruceState.wbA = wb;
+      else            cruceState.wbB = wb;
+
+      const sheets = wb.SheetNames;
+      const sheetName = sheets[0];
+
+      // Cargar datos de la primera pestaña
+      aplicarHoja(which, wb, sheetName, file);
+
+      // Mostrar selector solo si tiene más de una pestaña
+      const selector = document.getElementById('sheetSelector'+which);
+      const sel = selector.querySelector('select');
+      if(sheets.length > 1) {
+        sel.innerHTML = sheets.map((s,i) =>
+          '<option value="'+s+'"'+(i===0?' selected':'')+'>'+s+'</option>'
+        ).join('');
+        selector.style.display = 'block';
+      } else {
+        selector.style.display = 'none';
       }
     } catch(err) {
       alert('Error al leer el fichero. Asegúrate de que es un .xlsx válido.');
     }
   };
   reader.readAsArrayBuffer(file);
+}
+
+function aplicarHoja(which, wb, sheetName, file) {
+  const ws = wb.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(ws, {defval:''});
+  const cols = data.length > 0 ? Object.keys(data[0]) : [];
+  const fileRef = file || (which==='A' ? cruceState.fileA : cruceState.fileB);
+  if(which==='A') { cruceState.fileA=fileRef; cruceState.dataA=data; cruceState.colsA=cols; }
+  else            { cruceState.fileB=fileRef; cruceState.dataB=data; cruceState.colsB=cols; }
+  // Actualizar UI zona
+  const color = which==='A' ? '#4F8EF7' : '#FF5252';
+  const label = document.getElementById('label'+which);
+  const zone  = document.getElementById('zone'+which);
+  label.textContent = '✓ ' + fileRef.name + ' · ' + sheetName + ' (' + data.length + ' filas)';
+  label.style.color = color;
+  zone.style.borderStyle='solid'; zone.style.borderColor=color;
+  // Habilitar continuar si ambos cargados
+  if(cruceState.fileA && cruceState.fileB) {
+    const btn = document.getElementById('btnNext2');
+    btn.className = 'cruce-btn-next enabled';
+  }
+}
+
+function onSheetChange(which, sel) {
+  const wb = which==='A' ? cruceState.wbA : cruceState.wbB;
+  if(!wb) return;
+  aplicarHoja(which, wb, sel.value, null);
 }
 
 function buildStep3() {
