@@ -104,7 +104,21 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .aitor-av-gradient { position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to top,#010d1a,transparent); z-index:2; pointer-events:none; }
 .aitor-av-rim { position:absolute; left:0; top:8%; bottom:8%; width:2px; background:linear-gradient(to bottom,transparent,rgba(0,230,255,0.6),transparent); z-index:3; }
 .aitor-av-scanlines { position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px); z-index:3; pointer-events:none; }
-.aitor-av-hud { position:absolute; top:10px; right:8px; background:rgba(0,5,20,0.85); border:1px solid #00D4F0; border-radius:5px; padding:2px 7px; font-family:'Courier New',monospace; font-size:8px; letter-spacing:2px; color:#00D4F0; z-index:4; }
+.aitor-av-hud { 
+  position: absolute; 
+  top: 10px; 
+  right: 8px; 
+  background: rgba(0,5,20,0.85); 
+  border: 1px solid #00D4F0; 
+  border-radius: 5px; 
+  padding: 2px 7px; 
+  font-family: 'Courier New', monospace; 
+  font-size: 8px; 
+  letter-spacing: 2px; 
+  color: #00D4F0; /* <--- Azul Cian brillante */
+  z-index: 4; 
+  text-shadow: 0 0 5px rgba(0,212,240,0.5); /* Efecto neón */
+}
 .aitor-av-platform { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:80px; height:4px; background:linear-gradient(90deg,transparent,rgba(0,230,255,0.7),transparent); filter:blur(4px); z-index:4; }
 .aitor-chat-box { width:320px; background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:0 16px 16px 0; display:flex; flex-direction:column; overflow:hidden; position:relative; z-index:2; }
 .aitor-chat-header { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid rgba(0,230,255,0.1); background:rgba(0,20,40,0.5); flex-shrink:0; }
