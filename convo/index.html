@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Convo '27 — Admin Hub</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -76,23 +73,63 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .brand-card:hover { border-color:rgba(0,212,240,0.25); transform:translateY(-2px); }
 @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 .brand-card::before { content:''; display:block; height:2px; border-radius:2px; margin-bottom:12px; }
-.brand-card.obs::before     { background:linear-gradient(90deg,#1dcc84,transparent); }
+.brand-card.obs::before    { background:linear-gradient(90deg,#1dcc84,transparent); }
 .brand-card.inesdi::before { background:linear-gradient(90deg,#a878f0,transparent); }
 .brand-card.esdesign::before { background:linear-gradient(90deg,#f0a830,transparent); }
-.brand-card.ucma::before    { background:linear-gradient(90deg,#3aabf0,transparent); }
+.brand-card.ucma::before   { background:linear-gradient(90deg,#3aabf0,transparent); }
 .brand-name-badge { font-size:18px; font-weight:700; letter-spacing:-0.02em; margin-bottom:12px; display:block; }
-.brand-card.obs .brand-name-badge     { color:#1dcc84; }
+.brand-card.obs .brand-name-badge    { color:#1dcc84; }
 .brand-card.inesdi .brand-name-badge { color:#a878f0; }
 .brand-card.esdesign .brand-name-badge { color:#f0a830; }
-.brand-card.ucma .brand-name-badge    { color:#3aabf0; }
+.brand-card.ucma .brand-name-badge   { color:#3aabf0; }
 .date-row { display:flex; flex-direction:column; gap:7px; }
 .date-item { display:flex; flex-direction:column; gap:2px; padding:7px 9px; background:rgba(0,30,55,0.6); border-radius:7px; border:1px solid rgba(0,212,240,0.07); }
-.date-lbl { font-size:11px; letter-spacing:0.04em; text-transform:uppercase; color:rgba(0,200,240,0.65); font-weight:500; }
+.date-lbl { font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,180,210,0.35); }
 .date-val { font-size:12px; font-weight:500; color:rgba(220,245,255,0.75); font-family:'Courier New',monospace; }
 .days-left { display:inline-block; margin-top:3px; font-size:9px; padding:2px 6px; border-radius:4px; font-weight:600; }
 .days-left.soon { background:rgba(240,168,48,0.15); color:#f0a830; border:1px solid rgba(240,168,48,0.25); }
-.days-left.ok    { background:rgba(29,204,132,0.12); color:#1dcc84; border:1px solid rgba(29,204,132,0.2); }
+.days-left.ok   { background:rgba(29,204,132,0.12); color:#1dcc84; border:1px solid rgba(29,204,132,0.2); }
 .days-left.past { background:rgba(90,90,110,0.2); color:rgba(180,200,220,0.4); border:1px solid rgba(90,90,110,0.3); }
+.date-item.expired { background:rgba(200,30,30,0.12); border:1px solid rgba(240,80,80,0.4); }
+.date-item.expired .date-lbl { color:rgba(255,140,140,0.75); }
+.date-item.expired .date-val { color:#ff8080; }
+.date-item.expired .days-left.past { background:rgba(200,30,30,0.2); color:#ff8888; border-color:rgba(255,80,80,0.35); }
+
+/* ── Pop-up AITOR alerta ── */
+.aitor-alert-overlay { position:fixed; inset:0; z-index:400; background:rgba(0,5,15,0.82); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; }
+.aitor-alert-overlay.open { display:flex; }
+.aitor-alert-popup { display:flex; align-items:flex-end; animation:fadeUp 0.35s cubic-bezier(0.34,1.2,0.64,1); }
+.aitor-av-panel { width:140px; height:320px; position:relative; flex-shrink:0; border:1px solid rgba(0,230,255,0.3); border-right:none; border-radius:16px 0 0 16px; overflow:hidden; background:#010d1a; }
+.aitor-av-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; mix-blend-mode:screen; filter:drop-shadow(0 0 14px rgba(0,200,255,0.5)) brightness(1.1) contrast(1.05); }
+.aitor-av-gradient { position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to top,#010d1a,transparent); z-index:2; pointer-events:none; }
+.aitor-av-rim { position:absolute; left:0; top:8%; bottom:8%; width:2px; background:linear-gradient(to bottom,transparent,rgba(0,230,255,0.6),transparent); z-index:3; }
+.aitor-av-scanlines { position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px); z-index:3; pointer-events:none; }
+.aitor-av-hud { position:absolute; top:10px; right:8px; background:rgba(0,5,20,0.85); border:1px solid rgba(0,230,255,0.4); border-radius:5px; padding:2px 7px; font-family:'Courier New',monospace; font-size:8px; letter-spacing:2px; color:rgba(0,230,255,0.9); z-index:4; }
+.aitor-av-platform { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:80px; height:4px; background:linear-gradient(90deg,transparent,rgba(0,230,255,0.7),transparent); filter:blur(4px); z-index:4; }
+.aitor-chat-box { width:300px; background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:0 16px 16px 0; display:flex; flex-direction:column; overflow:hidden; }
+.aitor-chat-header { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid rgba(0,230,255,0.1); background:rgba(0,20,40,0.5); flex-shrink:0; }
+.aitor-chat-orb { width:32px; height:32px; border-radius:50%; background:#001828; border:1.5px solid rgba(0,230,255,0.5); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
+.aitor-chat-orb-ring { position:absolute; width:38px; height:38px; border-radius:50%; border:1px solid rgba(0,230,255,0.2); animation:ai-pulse 2.5s ease-in-out infinite; }
+.aitor-chat-title { font-size:13px; font-weight:600; color:#E0F7FF; }
+.aitor-chat-subtitle { font-size:10px; color:rgba(0,200,230,0.4); margin-top:1px; }
+.aitor-close-btn { margin-left:auto; width:26px; height:26px; border-radius:7px; background:transparent; border:1px solid rgba(0,230,255,0.2); color:rgba(0,230,255,0.5); font-size:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all 0.15s; font-family:inherit; }
+.aitor-close-btn:hover { background:rgba(0,230,255,0.1); color:#00E6FF; }
+.aitor-chat-body { padding:16px; display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; }
+.aitor-alert-badge { display:flex; align-items:center; gap:7px; background:rgba(200,40,40,0.12); border:1px solid rgba(240,80,80,0.35); border-radius:8px; padding:7px 10px; }
+.aitor-alert-dot { width:7px; height:7px; border-radius:50%; background:#ff5a5a; flex-shrink:0; animation:blink 1.4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
+.aitor-alert-badge-text { font-size:10px; font-weight:600; color:#ff8080; letter-spacing:0.06em; text-transform:uppercase; }
+.aitor-msg-bubble { background:rgba(0,25,50,0.9); border:1px solid rgba(0,230,255,0.12); border-radius:12px; border-top-left-radius:3px; padding:12px 14px; }
+.aitor-msg-text { font-size:12.5px; color:rgba(220,245,255,0.88); line-height:1.6; }
+.aitor-msg-text strong { color:#ff8888; }
+.aitor-exp-list { margin-top:9px; display:flex; flex-direction:column; gap:5px; }
+.aitor-exp-item { display:flex; align-items:center; gap:7px; padding:5px 8px; background:rgba(200,30,30,0.1); border:1px solid rgba(240,80,80,0.25); border-radius:6px; }
+.aitor-exp-dot { width:5px; height:5px; border-radius:50%; background:#ff6060; flex-shrink:0; }
+.aitor-exp-text { font-size:11px; color:rgba(255,140,140,0.85); }
+.aitor-msg-hint { margin-top:10px; font-size:11.5px; color:rgba(0,200,230,0.5); line-height:1.5; }
+.aitor-chat-footer { padding:12px 14px; border-top:1px solid rgba(0,230,255,0.08); flex-shrink:0; }
+.aitor-dismiss-btn { width:100%; background:rgba(0,80,130,0.3); border:1.5px solid rgba(0,230,255,0.35); border-radius:9px; padding:9px; color:#00E6FF; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.aitor-dismiss-btn:hover { background:rgba(0,230,255,0.1); border-color:#00E6FF; }
 
 /* Loading */
 .loading-state { text-align:center; padding:3rem 1rem; color:rgba(0,200,230,0.28); grid-column:1/-1; }
@@ -101,7 +138,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .loading-dots span:nth-child(2){animation-delay:.2s;} .loading-dots span:nth-child(3){animation-delay:.4s;}
 @keyframes ldot { 0%,60%,100%{transform:translateY(0);opacity:.4;} 30%{transform:translateY(-6px);opacity:1;} }
 
-/* Modal base (fechas) */
+/* Modal */
 .overlay { position:fixed; inset:0; z-index:200; background:rgba(0,5,15,0.85); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:1rem; }
 .overlay.open { display:flex; }
 .modal { width:min(560px,96vw); max-height:90vh; overflow-y:auto; background:#030E1E; border:1px solid rgba(0,212,240,0.3); border-radius:18px; padding:24px; box-shadow:0 0 60px rgba(0,180,255,0.12); animation:fadeUp 0.28s ease; }
@@ -111,10 +148,10 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .modal-close:hover { background:rgba(0,212,240,0.1); color:#00D4F0; border-color:rgba(0,212,240,0.5); }
 .modal-brand-section { margin-bottom:20px; }
 .modal-brand-title { font-size:13px; font-weight:600; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid rgba(0,212,240,0.08); }
-.brand-card.obs .modal-brand-title     { color:#1dcc84; }
+.brand-card.obs .modal-brand-title    { color:#1dcc84; }
 .brand-card.inesdi .modal-brand-title { color:#a878f0; }
 .brand-card.esdesign .modal-brand-title { color:#f0a830; }
-.brand-card.ucma .modal-brand-title    { color:#3aabf0; }
+.brand-card.ucma .modal-brand-title   { color:#3aabf0; }
 .field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
 .field { display:flex; flex-direction:column; gap:5px; }
 .field label { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,200,230,0.4); }
@@ -126,98 +163,16 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .btn-save { background:rgba(0,80,130,0.4); border:1.5px solid rgba(0,212,240,0.45); border-radius:9px; padding:9px 20px; color:#00D4F0; font-size:13px; font-weight:500; cursor:pointer; font-family:inherit; transition:all 0.15s; }
 .btn-save:hover { background:rgba(0,212,240,0.12); border-color:#00D4F0; }
 
-/* ===================== MODAL CRUCE DE DATOS ===================== */
-#cruceOverlay { position:fixed; inset:0; z-index:300; background:rgba(0,5,15,0.88); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:1rem; }
-#cruceOverlay.open { display:flex; }
-.cruce-modal { width:min(680px,96vw); max-height:92vh; overflow-y:auto; background:#041C2E; border:1px solid rgba(0,212,240,0.3); border-radius:18px; box-shadow:0 0 60px rgba(0,180,255,0.15); animation:fadeUp 0.28s ease; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
-
-/* Cabecera cruce */
-.cruce-header { background:#041C2E; border-bottom:1px solid rgba(0,212,240,0.15); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; border-radius:18px 18px 0 0; }
-.cruce-header-left { display:flex; align-items:center; gap:11px; }
-.cruce-header-icon { width:30px; height:30px; border-radius:50%; border:1.5px solid #9B59FF; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.cruce-title-main { color:#00D4F0; font-size:13px; letter-spacing:1px; text-transform:uppercase; margin:0; }
-.cruce-title-sub { color:rgba(255,255,255,0.4); font-size:10px; margin:2px 0 0; }
-.cruce-header-right { display:flex; align-items:center; gap:12px; }
-.cruce-help-btn { background:rgba(0,212,240,0.1); border:1px solid rgba(0,212,240,0.3); border-radius:20px; padding:4px 12px; color:#00D4F0; font-size:11px; cursor:pointer; display:flex; align-items:center; gap:5px; font-family:inherit; }
-.cruce-help-btn:hover { background:rgba(0,212,240,0.18); }
-.cruce-steps { display:flex; align-items:center; gap:5px; }
-.cruce-dot { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; transition:all 0.25s; }
-.cruce-dot.active { background:#00D4F0; color:#020B18; }
-.cruce-dot.done   { background:rgba(0,212,240,0.2); border:1px solid rgba(0,212,240,0.5); color:#00D4F0; }
-.cruce-dot.pending { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.25); }
-.cruce-dot-line { width:16px; height:1px; background:rgba(0,212,240,0.2); }
-.cruce-close { width:22px; height:22px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); background:transparent; color:rgba(255,255,255,0.4); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:inherit; }
-.cruce-close:hover { border-color:rgba(0,212,240,0.5); color:#00D4F0; }
-
-/* Panel ayuda cruce */
-.cruce-help-panel { display:none; background:#020B18; border-bottom:1px solid rgba(0,212,240,0.12); padding:16px 22px; }
-.cruce-help-panel.open { display:block; }
-.cruce-help-title { color:#00D4F0; font-size:10px; letter-spacing:1px; text-transform:uppercase; margin:0 0 12px; }
-.cruce-help-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.cruce-help-card { border-radius:7px; padding:9px 12px; border-left-width:2px; border-left-style:solid; }
-.cruce-help-card .chc-title { font-size:10px; font-weight:500; margin:0 0 3px; }
-.cruce-help-card .chc-body  { font-size:10px; color:rgba(255,255,255,0.4); margin:0; line-height:1.5; }
-
-/* Cuerpo de pasos */
-.cruce-body { padding:22px; }
-.cruce-step-label { color:rgba(255,255,255,0.35); font-size:10px; letter-spacing:0.5px; text-transform:uppercase; margin:0 0 4px; }
-.cruce-step-title { color:#E0F7FF; font-size:15px; font-weight:500; margin:0 0 18px; }
-
-/* Cards de modo */
-.cruce-modes-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
-.cruce-mode-card { background:#020B18; border-radius:12px; padding:15px; cursor:pointer; transition:opacity 0.15s, border-width 0.1s; }
-.cruce-mode-card:hover { opacity:1 !important; }
-.cruce-mode-card.selected { border-width:2px !important; opacity:1 !important; }
-.cruce-mode-card .cmc-head { display:flex; align-items:center; gap:9px; margin-bottom:9px; }
-.cruce-mode-card .cmc-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.cruce-mode-card .cmc-name { font-size:12px; font-weight:500; }
-.cruce-mode-card .cmc-desc { font-size:11px; color:rgba(255,255,255,0.45); margin:0 0 9px; line-height:1.5; }
-.cruce-mode-card .cmc-tags { display:flex; gap:5px; flex-wrap:wrap; }
-.cruce-mode-card .cmc-tag  { font-size:10px; padding:2px 7px; border-radius:20px; }
-
-/* Hint inferior */
-.cruce-hint { background:#020B18; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 13px; display:flex; align-items:center; gap:9px; margin-top:14px; }
-.cruce-hint p { color:rgba(255,255,255,0.3); font-size:10px; margin:0; line-height:1.5; }
-.cruce-hint span { color:rgba(0,212,240,0.55); }
-
-/* Pie de modal cruce */
-.cruce-footer { display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:4px; border-top:1px solid rgba(255,255,255,0.06); }
-.cruce-footer-note { color:rgba(255,255,255,0.18); font-size:10px; }
-.cruce-btn-back { background:transparent; color:rgba(255,255,255,0.35); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 16px; font-size:12px; cursor:pointer; font-family:inherit; }
-.cruce-btn-back:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.3); }
-.cruce-btn-next { border:none; border-radius:8px; padding:9px 22px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s; }
-.cruce-btn-next.disabled { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.2); cursor:not-allowed; }
-.cruce-btn-next.enabled  { background:#00D4F0; color:#020B18; }
-.cruce-btn-exec { background:#00C853; color:#020B18; border:none; border-radius:8px; padding:9px 22px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:8px; }
-.cruce-btn-exec:hover { background:#00e85e; }
-
-/* Zonas de carga de fichero */
-.cruce-files-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
-.cruce-file-zone { border-radius:12px; padding:26px 16px; text-align:center; cursor:pointer; background:#020B18; border-style:dashed; border-width:1.5px; transition:border-color 0.2s; }
-.cruce-file-zone.loaded { border-style:solid; }
-.cruce-file-label-top { font-size:10px; letter-spacing:0.5px; text-transform:uppercase; margin:0 0 8px; }
-.cruce-file-name { font-size:11px; margin:0; }
-
-/* Configuración paso 3 */
-.cruce-config-label { font-size:11px; margin:0 0 8px; }
-.cruce-select { width:100%; background:#020B18; border:1px solid rgba(0,212,240,0.3); border-radius:8px; padding:9px 12px; color:#E0F7FF; font-size:12px; outline:none; margin-bottom:16px; font-family:inherit; }
-.cruce-cols-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:16px; }
-.cruce-col-check { display:flex; align-items:center; gap:7px; background:#020B18; border:1px solid rgba(155,89,255,0.2); border-radius:8px; padding:8px 10px; cursor:pointer; }
-.cruce-col-check span { color:rgba(255,255,255,0.75); font-size:11px; }
-.cruce-col-check input { accent-color:#9B59FF; cursor:pointer; }
-.cruce-ready-box { background:rgba(0,200,83,0.07); border:1px solid rgba(0,200,83,0.2); border-radius:10px; padding:11px 14px; display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-.cruce-ready-box p { color:rgba(0,200,83,0.6); font-size:10px; margin:0; }
-.cruce-ready-box strong { color:#00C853; font-weight:500; }
-
 @media(max-width:700px){
   .topbar,.page-head,.section-header,.brands-grid { padding-left:16px; padding-right:16px; }
   .nodes-row { gap:28px; }
   .bubble { width:82px; height:82px; }
   .brands-grid { grid-template-columns:repeat(2,1fr); }
   .field-row { grid-template-columns:1fr; }
-  .cruce-modes-grid,.cruce-files-grid,.cruce-cols-grid,.cruce-help-grid { grid-template-columns:1fr; }
 }
-@media(max-width:400px){ .brands-grid { grid-template-columns:1fr; } }
+@media(max-width:400px){
+  .brands-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
@@ -228,6 +183,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 <div class="corner bl"></div><div class="corner br"></div>
 <div class="sys-tag">SYS.CONVO27 v1.0 · NET.ACTIVE</div>
 
+<!-- Topbar -->
 <div class="topbar">
   <div class="brand">
     <div class="brand-sq">
@@ -249,6 +205,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </a>
 </div>
 
+<!-- Page header -->
 <div class="page-head">
   <div class="page-eyebrow">módulo · convocatoria</div>
   <div class="page-title">
@@ -263,6 +220,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   <div class="page-sub">Gestión de convocatorias · Campaña 2027</div>
 </div>
 
+<!-- Nodes -->
 <div class="nodes-area">
   <svg class="connector-svg" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
     <line x1="450" y1="130" x2="200" y2="130" stroke="rgba(0,200,240,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
@@ -277,15 +235,14 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
   <div class="nodes-row">
 
-    <!-- NODO CRUCE DE DATOS -->
-    <div class="node active" data-node="check" onclick="openCruceModal()">
-      <div class="bubble" id="bubble-check">
+    <div class="node active" data-node="check" onclick="setActive(this)">
+      <div class="bubble">
         <div class="status-badge badge-pend">⊙</div>
         <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
           <path d="M19 6l2.5 7.5H29l-6.5 4.5 2.5 7.5L19 21l-6 4.5 2.5-7.5L9 13.5h7.5z" stroke="#a878f0" stroke-width="1.6" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="node-label">Cruce de datos</span>
+      <span class="node-label">Herramienta Check</span>
     </div>
 
     <div class="node" data-node="nuevo" onclick="setActive(this)">
@@ -316,6 +273,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 
 <div class="divider"></div>
 
+<!-- Section header con lápiz -->
 <div class="section-header">
   <div class="section-title">Fechas clave</div>
   <button class="edit-corner-btn" onclick="openModal()">
@@ -324,6 +282,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </button>
 </div>
 
+<!-- Brands grid -->
 <div class="brands-grid" id="brandsGrid">
   <div class="loading-state" style="grid-column:1/-1">
     <div class="loading-dots"><span></span><span></span><span></span></div>
@@ -331,7 +290,48 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </div>
 </div>
 
-<!-- MODAL FECHAS (existente, sin cambios) -->
+<!-- Pop-up alerta AITOR -->
+<div class="aitor-alert-overlay" id="aitorAlertOverlay">
+  <div class="aitor-alert-popup">
+    <div class="aitor-av-panel">
+      <div class="aitor-av-hud">AITOR</div>
+      <img class="aitor-av-img" src="../Aitor.png" alt="AITOR">
+      <div class="aitor-av-gradient"></div>
+      <div class="aitor-av-rim"></div>
+      <div class="aitor-av-scanlines"></div>
+      <div class="aitor-av-platform"></div>
+    </div>
+    <div class="aitor-chat-box">
+      <div class="aitor-chat-header">
+        <div class="aitor-chat-orb">
+          <div class="aitor-chat-orb-ring"></div>
+          <svg width="16" height="16" viewBox="0 0 100 120" fill="none"><g transform="scale(0.85 0.85) translate(8 10)"><path d="M10 20C10 20 25 5 45 15C55 20 60 35 60 50C60 65 55 80 45 85C35 90 20 85 15 75C10 65 10 50 10 50" fill="none" stroke="#22D3EE" stroke-width="2"/><circle cx="40" cy="50" r="5" fill="#22D3EE"/></g></svg>
+        </div>
+        <div>
+          <div class="aitor-chat-title">AITOR — Alerta urgente</div>
+          <div class="aitor-chat-subtitle">Convo '27 · Fechas vencidas</div>
+        </div>
+        <button class="aitor-close-btn" onclick="closeAitorAlert()">✕</button>
+      </div>
+      <div class="aitor-chat-body">
+        <div class="aitor-alert-badge">
+          <div class="aitor-alert-dot"></div>
+          <span class="aitor-alert-badge-text">Acción requerida</span>
+        </div>
+        <div class="aitor-msg-bubble">
+          <div class="aitor-msg-text">Las siguientes fechas de <strong>Convo '27</strong> han vencido y necesitan actualizarse:</div>
+          <div class="aitor-exp-list" id="aitorExpList"></div>
+          <div class="aitor-msg-hint">Usa el botón <strong style="color:rgba(0,210,240,0.8)">Editar fechas</strong> en la parte superior para actualizarlas.</div>
+        </div>
+      </div>
+      <div class="aitor-chat-footer">
+        <button class="aitor-dismiss-btn" onclick="closeAitorAlert()">Entendido, cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal edición -->
 <div class="overlay" id="editOverlay">
   <div class="modal">
     <div class="modal-head">
@@ -349,285 +349,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </div>
 </div>
 
-<!-- ===================== MODAL CRUCE DE DATOS ===================== -->
-<div id="cruceOverlay" onclick="cruceOverlayClick(event)">
-  <div class="cruce-modal">
-
-    <!-- Cabecera -->
-    <div class="cruce-header">
-      <div class="cruce-header-left">
-        <div class="cruce-header-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9B59FF" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div>
-          <p class="cruce-title-main">Cruce de Datos</p>
-          <p class="cruce-title-sub" id="cruceStepSub">Paso 1 de 3 · Tipo de análisis</p>
-        </div>
-      </div>
-      <div class="cruce-header-right">
-        <button class="cruce-help-btn" onclick="toggleCruceHelp()">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00D4F0" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          ¿Cómo funciona?
-        </button>
-        <div class="cruce-steps">
-          <div class="cruce-dot active" id="cdot1">1</div>
-          <div class="cruce-dot-line"></div>
-          <div class="cruce-dot pending" id="cdot2">2</div>
-          <div class="cruce-dot-line"></div>
-          <div class="cruce-dot pending" id="cdot3">3</div>
-        </div>
-        <button class="cruce-close" onclick="closeCruceModal()">✕</button>
-      </div>
-    </div>
-
-    <!-- Panel ayuda -->
-    <div class="cruce-help-panel" id="cruceHelpPanel">
-      <p class="cruce-help-title">Guía rápida · Cómo usar esta herramienta</p>
-      <div class="cruce-help-grid" style="margin-bottom:18px;">
-        <div class="cruce-help-card" style="background:rgba(0,212,240,0.05);border-left-color:rgba(0,212,240,0.4);">
-          <p class="chc-title" style="color:#00D4F0;">① Tipo de análisis</p>
-          <p class="chc-body">Elige qué quieres analizar. Con "Análisis completo" lo haces todo a la vez.</p>
-        </div>
-        <div class="cruce-help-card" style="background:rgba(155,89,255,0.05);border-left-color:rgba(155,89,255,0.4);">
-          <p class="chc-title" style="color:#9B59FF;">② Cargar ficheros</p>
-          <p class="chc-body">Sube tu listado (A) y el listado general (B). Solo .xlsx. Nada sale de tu equipo.</p>
-        </div>
-        <div class="cruce-help-card" style="background:rgba(255,215,0,0.05);border-left-color:rgba(255,215,0,0.4);">
-          <p class="chc-title" style="color:#FFD700;">③ Configurar cruce</p>
-          <p class="chc-body">Elige la columna clave (NIF, email…) y qué campos comparar.</p>
-        </div>
-        <div class="cruce-help-card" style="background:rgba(0,200,83,0.05);border-left-color:rgba(0,200,83,0.4);">
-          <p class="chc-title" style="color:#00C853;">④ Ejecutar y descargar</p>
-          <p class="chc-body">Se genera automáticamente <strong style="color:#00C853;font-weight:500;">CHECK_Resultado_fecha.xlsx</strong> con todas las pestañas de resultado.</p>
-        </div>
-      </div>
-
-      <!-- Mockup Excel resultado -->
-      <p class="cruce-help-title" style="margin-bottom:10px;">Así se ve el fichero descargado</p>
-      <div style="background:#1E1E1E;border-radius:9px;overflow:hidden;border:1px solid #333;font-family:'Courier New',monospace;">
-        <!-- Barra título -->
-        <div style="background:#2D2D2D;padding:7px 11px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #444;">
-          <div style="width:10px;height:10px;border-radius:50%;background:#FF5F57;"></div>
-          <div style="width:10px;height:10px;border-radius:50%;background:#FFBD2E;"></div>
-          <div style="width:10px;height:10px;border-radius:50%;background:#28C840;"></div>
-          <span style="color:#aaa;font-size:10px;margin-left:6px;">CHECK_Resultado_20250415.xlsx</span>
-        </div>
-        <!-- Pestañas -->
-        <div style="display:flex;gap:0;border-bottom:1px solid #444;padding:0 7px;background:#252526;overflow-x:auto;">
-          <div style="background:#1a3a1a;border-top:2px solid #00C853;padding:5px 11px;font-size:10px;color:#00C853;white-space:nowrap;">RESUMEN</div>
-          <div style="background:#1a1a2a;border-top:2px solid #2979FF;padding:5px 11px;font-size:10px;color:#2979FF;white-space:nowrap;">Solo en A</div>
-          <div style="background:#2a1a1a;border-top:2px solid #FF5252;padding:5px 11px;font-size:10px;color:#FF5252;white-space:nowrap;">Solo en B</div>
-          <div style="background:#2a2218;border-top:2px solid #FFD600;padding:5px 11px;font-size:10px;color:#FFD600;white-space:nowrap;">Discrepancias</div>
-          <div style="background:#2a2a2a;border-top:2px solid #888;padding:5px 11px;font-size:10px;color:#888;white-space:nowrap;">Coincidencias ✓</div>
-        </div>
-        <!-- Tabla resumen -->
-        <div style="overflow-x:auto;">
-          <table style="width:100%;border-collapse:collapse;font-size:10px;">
-            <thead>
-              <tr style="background:#2a2a2a;">
-                <th style="padding:6px 10px;text-align:left;color:#666;font-weight:400;border-bottom:1px solid #444;width:28px;">#</th>
-                <th style="padding:6px 10px;text-align:left;color:#999;font-weight:400;border-bottom:1px solid #444;">Concepto</th>
-                <th style="padding:6px 10px;text-align:right;color:#999;font-weight:400;border-bottom:1px solid #444;">Registros</th>
-                <th style="padding:6px 10px;text-align:right;color:#999;font-weight:400;border-bottom:1px solid #444;">% sobre A</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="background:#252526;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">1</td><td style="padding:5px 10px;color:#ddd;border-bottom:1px solid #2a2a2a;">Total fichero A (tu listado)</td><td style="padding:5px 10px;text-align:right;color:#ddd;border-bottom:1px solid #2a2a2a;">247</td><td style="padding:5px 10px;text-align:right;color:#666;border-bottom:1px solid #2a2a2a;">—</td></tr>
-              <tr style="background:#222;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">2</td><td style="padding:5px 10px;color:#ddd;border-bottom:1px solid #2a2a2a;">Total fichero B (listado general)</td><td style="padding:5px 10px;text-align:right;color:#ddd;border-bottom:1px solid #2a2a2a;">4.830</td><td style="padding:5px 10px;text-align:right;color:#666;border-bottom:1px solid #2a2a2a;">—</td></tr>
-              <tr style="background:#1a2a1a;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">3</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#00C853;">●</span> <span style="color:#ddd;">Coincidencias exactas</span></td><td style="padding:5px 10px;text-align:right;color:#00C853;font-weight:600;border-bottom:1px solid #2a2a2a;">198</td><td style="padding:5px 10px;text-align:right;color:#00C853;border-bottom:1px solid #2a2a2a;">80,2%</td></tr>
-              <tr style="background:#1a1a2a;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">4</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#2979FF;">●</span> <span style="color:#ddd;">Solo en A (no están en B)</span></td><td style="padding:5px 10px;text-align:right;color:#2979FF;font-weight:600;border-bottom:1px solid #2a2a2a;">23</td><td style="padding:5px 10px;text-align:right;color:#2979FF;border-bottom:1px solid #2a2a2a;">9,3%</td></tr>
-              <tr style="background:#2a1a1a;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">5</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#FF5252;">●</span> <span style="color:#ddd;">Solo en B (no están en A)</span></td><td style="padding:5px 10px;text-align:right;color:#FF5252;font-weight:600;border-bottom:1px solid #2a2a2a;">4.632</td><td style="padding:5px 10px;text-align:right;color:#666;border-bottom:1px solid #2a2a2a;">—</td></tr>
-              <tr style="background:#2a2218;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">6</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#FFD600;">●</span> <span style="color:#ddd;">Coinciden en clave pero con discrepancias</span></td><td style="padding:5px 10px;text-align:right;color:#FFD600;font-weight:600;border-bottom:1px solid #2a2a2a;">26</td><td style="padding:5px 10px;text-align:right;color:#FFD600;border-bottom:1px solid #2a2a2a;">10,5%</td></tr>
-              <tr style="background:#2a1a2a;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">7</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#E040FB;">●</span> <span style="color:#ddd;">Duplicados detectados</span></td><td style="padding:5px 10px;text-align:right;color:#E040FB;font-weight:600;border-bottom:1px solid #2a2a2a;">8</td><td style="padding:5px 10px;text-align:right;color:#E040FB;border-bottom:1px solid #2a2a2a;">3,2%</td></tr>
-              <tr style="background:#1e1e1e;"><td style="padding:5px 10px;"></td><td style="padding:5px 10px;color:#555;font-size:9px;font-style:italic;">Generado: 15/04/2025 · 09:41 · Clave usada: NIF</td><td></td><td></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- Mini preview pestaña discrepancias -->
-        <div style="border-top:1px solid #333;padding:8px 10px;background:#2a2218;">
-          <p style="color:#FFD600;font-size:9px;margin:0 0 5px;letter-spacing:0.5px;">PESTAÑA "DISCREPANCIAS" — una fila por cada campo distinto</p>
-          <table style="border-collapse:collapse;font-size:9px;width:100%;">
-            <tr style="background:#1a1800;">
-              <th style="padding:4px 8px;text-align:left;color:#FFD600;font-weight:400;border-bottom:1px solid #FFD60022;">NIF</th>
-              <th style="padding:4px 8px;text-align:left;color:#FFD600;font-weight:400;border-bottom:1px solid #FFD60022;">Nombre</th>
-              <th style="padding:4px 8px;text-align:left;color:#FFD600;font-weight:400;border-bottom:1px solid #FFD60022;">Campo</th>
-              <th style="padding:4px 8px;text-align:left;color:#FFD600;font-weight:400;border-bottom:1px solid #FFD60022;">Valor en A</th>
-              <th style="padding:4px 8px;text-align:left;color:#FFD600;font-weight:400;border-bottom:1px solid #FFD60022;">Valor en B</th>
-            </tr>
-            <tr style="background:#1e1a10;"><td style="padding:4px 8px;color:#ddd;border-bottom:1px solid #FFD60011;">11223344C</td><td style="padding:4px 8px;color:#ddd;border-bottom:1px solid #FFD60011;">Sánchez Torre, Luis</td><td style="padding:4px 8px;color:#FFD600;border-bottom:1px solid #FFD60011;">Email</td><td style="padding:4px 8px;color:#aaa;border-bottom:1px solid #FFD60011;">l.sanchez@old.com</td><td style="padding:4px 8px;color:#aaa;border-bottom:1px solid #FFD60011;">luis.sanchez@new.es</td></tr>
-            <tr style="background:#181500;"><td style="padding:4px 8px;color:#ddd;border-bottom:1px solid #FFD60011;">11223344C</td><td style="padding:4px 8px;color:#ddd;border-bottom:1px solid #FFD60011;">Sánchez Torre, Luis</td><td style="padding:4px 8px;color:#FFD600;border-bottom:1px solid #FFD60011;">Programa</td><td style="padding:4px 8px;color:#aaa;border-bottom:1px solid #FFD60011;">MBA Part-time</td><td style="padding:4px 8px;color:#aaa;border-bottom:1px solid #FFD60011;">MBA Executive</td></tr>
-            <tr style="background:#1e1a10;"><td style="padding:4px 8px;color:#ddd;">99887766D</td><td style="padding:4px 8px;color:#ddd;">Fernández Alba, Marta</td><td style="padding:4px 8px;color:#FFD600;">Importe</td><td style="padding:4px 8px;color:#aaa;">9.500 €</td><td style="padding:4px 8px;color:#aaa;">8.750 €</td></tr>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASO 1 -->
-    <div id="cruceStep1" class="cruce-body">
-      <p class="cruce-step-label">Paso 1 de 3</p>
-      <p class="cruce-step-title">Selecciona el tipo de análisis</p>
-
-      <div class="cruce-modes-grid">
-
-        <div class="cruce-mode-card" id="mode-registros" data-mode="registros"
-             style="border:1.5px solid rgba(0,212,240,0.3);"
-             onclick="selectCruceMode('registros')">
-          <div class="cmc-head">
-            <div class="cmc-icon" style="background:rgba(0,212,240,0.1);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00D4F0" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </div>
-            <span class="cmc-name" style="color:#00D4F0;">Comparar registros (Ctrl+H)</span>
-          </div>
-          <p class="cmc-desc">¿Está mi alumno en el listado general? Identifica quién falta en cada fichero.</p>
-          <div class="cmc-tags">
-            <span class="cmc-tag" style="background:rgba(0,212,240,0.1);color:#00D4F0;">Solo en A</span>
-            <span class="cmc-tag" style="background:rgba(0,212,240,0.1);color:#00D4F0;">Solo en B</span>
-            <span class="cmc-tag" style="background:rgba(0,212,240,0.1);color:#00D4F0;">En ambos</span>
-          </div>
-        </div>
-
-        <div class="cruce-mode-card" id="mode-datos" data-mode="datos"
-             style="border:1.5px solid rgba(155,89,255,0.3);"
-             onclick="selectCruceMode('datos')">
-          <div class="cmc-head">
-            <div class="cmc-icon" style="background:rgba(155,89,255,0.1);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9B59FF" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="m18.5 2.5 2 2L11 14l-3 1 1-3 9.5-9.5z"/></svg>
-            </div>
-            <span class="cmc-name" style="color:#9B59FF;">Comparar datos (Ctrl+V)</span>
-          </div>
-          <p class="cmc-desc">El alumno está en ambos ficheros pero ¿coinciden los datos? Detecta discrepancias campo a campo.</p>
-          <div class="cmc-tags">
-            <span class="cmc-tag" style="background:rgba(155,89,255,0.1);color:#9B59FF;">Coincide</span>
-            <span class="cmc-tag" style="background:rgba(255,107,53,0.15);color:#FF9B75;">Discrepancia</span>
-          </div>
-        </div>
-
-        <div class="cruce-mode-card" id="mode-duplic" data-mode="duplic"
-             style="border:1.5px solid rgba(255,215,0,0.3);"
-             onclick="selectCruceMode('duplic')">
-          <div class="cmc-head">
-            <div class="cmc-icon" style="background:rgba(255,215,0,0.1);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <span class="cmc-name" style="color:#FFD700;">Duplicados</span>
-          </div>
-          <p class="cmc-desc">¿Hay alumnos repetidos dentro de un mismo listado o entre los dos ficheros?</p>
-          <div class="cmc-tags">
-            <span class="cmc-tag" style="background:rgba(255,215,0,0.1);color:#FFD700;">Internos</span>
-            <span class="cmc-tag" style="background:rgba(255,215,0,0.1);color:#FFD700;">Entre ficheros</span>
-          </div>
-        </div>
-
-        <div class="cruce-mode-card" id="mode-completo" data-mode="completo"
-             style="border:1.5px solid rgba(0,200,83,0.3);"
-             onclick="selectCruceMode('completo')">
-          <div class="cmc-head">
-            <div class="cmc-icon" style="background:rgba(0,200,83,0.1);">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </div>
-            <span class="cmc-name" style="color:#00C853;">Análisis completo</span>
-          </div>
-          <p class="cmc-desc">Todo a la vez: presencia, discrepancias y duplicados. Informe con todas las pestañas.</p>
-          <div class="cmc-tags">
-            <span class="cmc-tag" style="background:rgba(0,200,83,0.1);color:#00C853;">Informe completo</span>
-            <span class="cmc-tag" style="background:rgba(0,200,83,0.1);color:#00C853;">Exportar Excel</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="cruce-hint">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,240,0.35)" stroke-width="1.5" style="flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <p>Tras elegir el tipo, subirás los dos .xlsx · elegirás la <span>columna clave</span> · y seleccionarás qué columnas comparar</p>
-      </div>
-
-      <div class="cruce-footer">
-        <span class="cruce-footer-note">Todo se procesa en el navegador · sin subir datos a ningún servidor</span>
-        <button class="cruce-btn-next disabled" id="btnNext1" onclick="if(cruceState.mode) goCruceStep(2)">CONTINUAR →</button>
-      </div>
-    </div>
-
-    <!-- PASO 2 -->
-    <div id="cruceStep2" class="cruce-body" style="display:none;">
-      <p class="cruce-step-label">Paso 2 de 3</p>
-      <p class="cruce-step-title">Sube los dos ficheros Excel</p>
-
-      <div class="cruce-files-grid">
-        <div>
-          <p class="cruce-file-label-top" style="color:#4F8EF7;">FICHERO A · Tu listado</p>
-          <div class="cruce-file-zone" id="zoneA" style="border-color:rgba(79,142,247,0.4);"
-               onclick="document.getElementById('cruceFileA').click()"
-               onmouseover="this.style.borderColor='rgba(79,142,247,0.8)'"
-               onmouseout="this.style.borderColor=cruceState.fileA?'#4F8EF7':'rgba(79,142,247,0.4)'">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(79,142,247,0.5)" stroke-width="1.5" style="display:block;margin:0 auto 10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <p class="cruce-file-name" id="labelA" style="color:rgba(79,142,247,0.6);">Clic para subir .xlsx</p>
-            <input type="file" id="cruceFileA" accept=".xlsx" style="display:none" onchange="loadCruceFile('A',this)">
-          </div>
-          <div id="sheetSelectorA" style="display:none;margin-top:8px;">
-            <p style="color:rgba(79,142,247,0.7);font-size:10px;margin:0 0 5px;letter-spacing:0.4px;">PESTAÑA A USAR</p>
-            <select class="cruce-select" style="margin-bottom:0;" onchange="onSheetChange('A',this)"></select>
-          </div>
-        </div>
-        <div>
-          <p class="cruce-file-label-top" style="color:#FF5252;">FICHERO B · Listado general</p>
-          <div class="cruce-file-zone" id="zoneB" style="border-color:rgba(255,82,82,0.4);"
-               onclick="document.getElementById('cruceFileB').click()"
-               onmouseover="this.style.borderColor='rgba(255,82,82,0.8)'"
-               onmouseout="this.style.borderColor=cruceState.fileB?'#FF5252':'rgba(255,82,82,0.4)'">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,82,82,0.5)" stroke-width="1.5" style="display:block;margin:0 auto 10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <p class="cruce-file-name" id="labelB" style="color:rgba(255,82,82,0.6);">Clic para subir .xlsx</p>
-            <input type="file" id="cruceFileB" accept=".xlsx" style="display:none" onchange="loadCruceFile('B',this)">
-          </div>
-          <div id="sheetSelectorB" style="display:none;margin-top:8px;">
-            <p style="color:rgba(255,82,82,0.7);font-size:10px;margin:0 0 5px;letter-spacing:0.4px;">PESTAÑA A USAR</p>
-            <select class="cruce-select" style="margin-bottom:0;" onchange="onSheetChange('B',this)"></select>
-          </div>
-        </div>
-      </div>
-
-      <div class="cruce-hint">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,240,0.35)" stroke-width="1.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-        <p>Los ficheros se leen directamente en tu navegador. No se envían a ningún servidor.</p>
-      </div>
-
-      <div class="cruce-footer">
-        <button class="cruce-btn-back" onclick="goCruceStep(1)">← Volver</button>
-        <button class="cruce-btn-next disabled" id="btnNext2" onclick="if(cruceState.fileA&&cruceState.fileB) goCruceStep(3)">CONTINUAR →</button>
-      </div>
-    </div>
-
-    <!-- PASO 3 -->
-    <div id="cruceStep3" class="cruce-body" style="display:none;">
-      <p class="cruce-step-label">Paso 3 de 3</p>
-      <p class="cruce-step-title">Configura el cruce</p>
-
-      <p class="cruce-config-label" style="color:#00D4F0;">COLUMNA CLAVE <span style="color:rgba(255,255,255,0.3);font-weight:400;">· identifica cada registro en ambos ficheros</span></p>
-      <select class="cruce-select" id="cruceKeyCol">
-        <option value="">— Selecciona columna clave —</option>
-      </select>
-
-      <p class="cruce-config-label" style="color:#9B59FF;">COLUMNAS A COMPARAR <span style="color:rgba(255,255,255,0.3);font-weight:400;">· marca las que quieres cruzar</span></p>
-      <div class="cruce-cols-grid" id="cruceCols"></div>
-
-      <div class="cruce-ready-box">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="2" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
-        <p>Se generará <strong id="cruceFileName">CHECK_Resultado_hoy.xlsx</strong> con pestañas: Resumen · Solo en A · Solo en B · Discrepancias · Coincidencias</p>
-      </div>
-
-      <div class="cruce-footer">
-        <button class="cruce-btn-back" onclick="goCruceStep(2)">← Volver</button>
-        <button class="cruce-btn-exec" onclick="ejecutarCruce()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#020B18" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          EJECUTAR Y DESCARGAR
-        </button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
 <script>
-// ===== FONDO ANIMADO =====
 const cv = document.getElementById('bgc'), ctx = cv.getContext('2d');
 function drawBg() {
   cv.width = window.innerWidth; cv.height = window.innerHeight;
@@ -639,6 +361,11 @@ function drawBg() {
     ctx.beginPath();ctx.arc(x,y,.9,0,Math.PI*2);
     ctx.fillStyle=Math.random()>.72?'rgba(0,212,240,0.22)':'rgba(255,255,255,0.04)';ctx.fill();
   }
+  for(let i=0;i<80;i++){
+    const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.1+.15;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=Math.random()>.5?`rgba(0,212,240,${Math.random()*.25+.04})`:`rgba(255,255,255,${Math.random()*.1+.02})`;ctx.fill();
+  }
 }
 drawBg(); window.addEventListener('resize', drawBg);
 
@@ -647,302 +374,9 @@ function setActive(el) {
   el.classList.add('active');
 }
 
-// ===== MODAL CRUCE DE DATOS =====
-const cruceState = { mode: null, fileA: null, fileB: null, dataA: null, dataB: null, colsA: [], colsB: [], wbA: null, wbB: null };
-
-const stepLabels = ['Paso 1 de 3 · Tipo de análisis','Paso 2 de 3 · Cargar ficheros','Paso 3 de 3 · Configurar cruce'];
-
-function openCruceModal() {
-  document.getElementById('cruceOverlay').classList.add('open');
-  // Actualizar nombre de fichero de resultado
-  const hoy = new Date();
-  const fecha = hoy.getFullYear().toString() +
-    String(hoy.getMonth()+1).padStart(2,'0') +
-    String(hoy.getDate()).padStart(2,'0');
-  document.getElementById('cruceFileName').textContent = 'CHECK_Resultado_' + fecha + '.xlsx';
-}
-
-function closeCruceModal() {
-  document.getElementById('cruceOverlay').classList.remove('open');
-}
-
-function cruceOverlayClick(e) {
-  if(e.target === document.getElementById('cruceOverlay')) closeCruceModal();
-}
-
-function toggleCruceHelp() {
-  document.getElementById('cruceHelpPanel').classList.toggle('open');
-}
-
-function goCruceStep(n) {
-  [1,2,3].forEach(i => {
-    document.getElementById('cruceStep'+i).style.display = i===n ? 'block' : 'none';
-    const dot = document.getElementById('cdot'+i);
-    if(i < n)      { dot.className='cruce-dot done';    dot.textContent='✓'; }
-    else if(i===n) { dot.className='cruce-dot active';  dot.textContent=i; }
-    else           { dot.className='cruce-dot pending'; dot.textContent=i; }
-  });
-  document.getElementById('cruceStepSub').textContent = stepLabels[n-1];
-  if(n===3) buildStep3();
-}
-
-function selectCruceMode(mode) {
-  cruceState.mode = mode;
-  const colors = { registros:'rgba(0,212,240,0.3)', datos:'rgba(155,89,255,0.3)', duplic:'rgba(255,215,0,0.3)', completo:'rgba(0,200,83,0.3)' };
-  const colorsSelected = { registros:'#00D4F0', datos:'#9B59FF', duplic:'#FFD700', completo:'#00C853' };
-  ['registros','datos','duplic','completo'].forEach(m => {
-    const card = document.getElementById('mode-'+m);
-    if(m===mode) {
-      card.style.borderColor = colorsSelected[m];
-      card.style.borderWidth = '2px';
-      card.style.opacity = '1';
-    } else {
-      card.style.borderColor = colors[m];
-      card.style.borderWidth = '1.5px';
-      card.style.opacity = '0.45';
-    }
-  });
-  const btn = document.getElementById('btnNext1');
-  btn.className = 'cruce-btn-next enabled';
-}
-
-function loadCruceFile(which, input) {
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(e.target.result, {type:'array'});
-      // Guardar workbook para poder cambiar de pestaña después
-      if(which==='A') cruceState.wbA = wb;
-      else            cruceState.wbB = wb;
-
-      const sheets = wb.SheetNames;
-      const sheetName = sheets[0];
-
-      // Cargar datos de la primera pestaña
-      aplicarHoja(which, wb, sheetName, file);
-
-      // Mostrar selector solo si tiene más de una pestaña
-      const selector = document.getElementById('sheetSelector'+which);
-      const sel = selector.querySelector('select');
-      if(sheets.length > 1) {
-        sel.innerHTML = sheets.map((s,i) =>
-          '<option value="'+s+'"'+(i===0?' selected':'')+'>'+s+'</option>'
-        ).join('');
-        selector.style.display = 'block';
-      } else {
-        selector.style.display = 'none';
-      }
-    } catch(err) {
-      alert('Error al leer el fichero. Asegúrate de que es un .xlsx válido.');
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function aplicarHoja(which, wb, sheetName, file) {
-  const ws = wb.Sheets[sheetName];
-  const data = XLSX.utils.sheet_to_json(ws, {defval:''});
-  const cols = data.length > 0 ? Object.keys(data[0]) : [];
-  const fileRef = file || (which==='A' ? cruceState.fileA : cruceState.fileB);
-  if(which==='A') { cruceState.fileA=fileRef; cruceState.dataA=data; cruceState.colsA=cols; }
-  else            { cruceState.fileB=fileRef; cruceState.dataB=data; cruceState.colsB=cols; }
-  // Actualizar UI zona
-  const color = which==='A' ? '#4F8EF7' : '#FF5252';
-  const label = document.getElementById('label'+which);
-  const zone  = document.getElementById('zone'+which);
-  label.textContent = '✓ ' + fileRef.name + ' · ' + sheetName + ' (' + data.length + ' filas)';
-  label.style.color = color;
-  zone.style.borderStyle='solid'; zone.style.borderColor=color;
-  // Habilitar continuar si ambos cargados
-  if(cruceState.fileA && cruceState.fileB) {
-    const btn = document.getElementById('btnNext2');
-    btn.className = 'cruce-btn-next enabled';
-  }
-}
-
-function onSheetChange(which, sel) {
-  const wb = which==='A' ? cruceState.wbA : cruceState.wbB;
-  if(!wb) return;
-  aplicarHoja(which, wb, sel.value, null);
-}
-
-function buildStep3() {
-  const colsA = cruceState.colsA || [];
-  const colsB = cruceState.colsB || [];
-  const normalizar = s => String(s).trim().toLowerCase();
-  const mapB = {};
-  colsB.forEach(c => { mapB[normalizar(c)] = c; });
-  const comunes = colsA.filter(c => mapB[normalizar(c)] !== undefined);
-  const usarCols = comunes.length > 0 ? comunes : colsA;
-
-  const sel = document.getElementById('cruceKeyCol');
-  sel.innerHTML = '<option value="">— Selecciona columna clave —</option>';
-  usarCols.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    sel.appendChild(opt);
-  });
-
-  const grid = document.getElementById('cruceCols');
-  if(comunes.length === 0 && colsA.length > 0) {
-    grid.innerHTML = '<p style="color:rgba(255,215,0,0.7);font-size:11px;margin:0 0 10px;grid-column:1/-1;">⚠ No se detectaron columnas con el mismo nombre en ambos ficheros. Verifica que las cabeceras coincidan.</p>' +
-      colsA.map(c => `
-        <label class="cruce-col-check">
-          <input type="checkbox" value="${c}">
-          <span>${c}</span>
-        </label>
-      `).join('');
-  } else {
-    grid.innerHTML = usarCols.map(c => `
-      <label class="cruce-col-check">
-        <input type="checkbox" value="${c}">
-        <span>${c}</span>
-      </label>
-    `).join('');
-  }
-}
-
-function ejecutarCruce() {
-  const keyCol = document.getElementById('cruceKeyCol').value;
-  if(!keyCol) { alert('Selecciona la columna clave antes de continuar.'); return; }
-
-  const checks = document.querySelectorAll('#cruceCols input:checked');
-  const colsCompare = Array.from(checks).map(c => c.value).filter(c => c !== keyCol);
-  if(colsCompare.length === 0) {
-    alert('Selecciona al menos una columna a comparar para detectar discrepancias.\nSi solo quieres ver presencia (quién está en A y quién en B), marca las columnas identificativas.');
-    return;
-  }
-
-  const dataA = cruceState.dataA;
-  const dataB = cruceState.dataB;
-
-  // Indexar B por clave
-  const mapB = {};
-  dataB.forEach(row => { const k = String(row[keyCol]||'').trim().toUpperCase(); if(k) mapB[k] = row; });
-  const mapA = {};
-  dataA.forEach(row => { const k = String(row[keyCol]||'').trim().toUpperCase(); if(k) mapA[k] = row; });
-
-  const soloA = [], soloB = [], discrepancias = [], coincidencias = [], duplicadosA = [], duplicadosB = [];
-
-  // Solo en A / Solo en B / Discrepancias / Coincidencias
-  dataA.forEach(row => {
-    const k = String(row[keyCol]||'').trim().toUpperCase();
-    if(!k) return;
-    if(!mapB[k]) { soloA.push(row); return; }
-    // Comparar columnas seleccionadas
-    const diffs = [];
-    colsCompare.forEach(col => {
-      const vA = String(row[col]||'').trim();
-      const rowB = mapB[k];
-      // Buscar la columna en B con comparación insensible a mayúsculas
-      const colBKey = Object.keys(rowB).find(k2 => k2.trim().toLowerCase() === col.trim().toLowerCase()) || col;
-      const vB = String(rowB[colBKey]||'').trim();
-      if(vA.toUpperCase() !== vB.toUpperCase()) {
-        diffs.push({ _CLAVE_: String(row[keyCol]||''), _CAMPO_: col, _VALOR_A_: vA, _VALOR_B_: vB });
-      }
-    });
-    if(diffs.length > 0) discrepancias.push(...diffs);
-    else coincidencias.push(row);
-  });
-  dataB.forEach(row => {
-    const k = String(row[keyCol]||'').trim().toUpperCase();
-    if(!k) return;
-    if(!mapA[k]) soloB.push(row);
-  });
-
-  // Duplicados
-  const countA = {};
-  dataA.forEach(row => { const k = String(row[keyCol]||'').trim().toUpperCase(); countA[k]=(countA[k]||0)+1; });
-  dataA.forEach(row => { const k = String(row[keyCol]||'').trim().toUpperCase(); if(countA[k]>1) duplicadosA.push(row); });
-  const countB = {};
-  dataB.forEach(row => { const k = String(row[keyCol]||'').trim().toUpperCase(); countB[k]=(countB[k]||0)+1; });
-  dataB.forEach(row => { const k = String(row[keyCol]||'').trim().toUpperCase(); if(countB[k]>1) duplicadosB.push(row); });
-
-  const nDiscReg = [...new Set(discrepancias.map(r=>String(r._CLAVE_||'').trim().toUpperCase()))].length;
-  const nDupA = duplicadosA.length, nDupB = duplicadosB.length;
-  const hasDup = nDupA > 0 || nDupB > 0;
-
-  // Construir Excel con SheetJS
-  const wb = XLSX.utils.book_new();
-  const hoy = new Date();
-  const fechaStr = String(hoy.getDate()).padStart(2,'0')+'/'+String(hoy.getMonth()+1).padStart(2,'0')+'/'+hoy.getFullYear();
-  const horaStr  = String(hoy.getHours()).padStart(2,'0')+':'+String(hoy.getMinutes()).padStart(2,'0');
-  const total = dataA.length;
-
-  // Helper: celda hipervínculo a pestaña
-  function linkCell(text, sheetName) {
-    return { t:'s', f:'HYPERLINK("#\''+sheetName+'\'!A1","'+String(text)+'")', v:String(text) };
-  }
-  function pct(n) { return total>0 ? (n/total*100).toFixed(1)+'%' : '—'; }
-
-  // PESTAÑA RESUMEN — números como hipervínculos a su pestaña de detalle
-  const resumenRows = [
-    ['#', 'Concepto', 'Registros', '% sobre A'],
-    [1, 'Total fichero A (tu listado)',        dataA.length,        '—'],
-    [2, 'Total fichero B (listado general)',    dataB.length,        '—'],
-    [3, 'Coincidencias exactas',               linkCell(coincidencias.length, 'Coincidencias'),  pct(coincidencias.length)],
-    [4, 'Solo en A (no están en B)',            linkCell(soloA.length, 'Solo en A'),             pct(soloA.length)],
-    [5, 'Solo en B (no están en A)',            linkCell(soloB.length, 'Solo en B'),             '—'],
-    [6, 'Coinciden en clave con discrepancias', linkCell(nDiscReg,    'Discrepancias'),          pct(nDiscReg)],
-    [7, 'Duplicados en fichero A',              hasDup ? linkCell(nDupA, 'Duplicados') : nDupA, '—'],
-    [8, 'Duplicados en fichero B',              hasDup ? linkCell(nDupB, 'Duplicados') : nDupB, '—'],
-    ['', '', '', ''],
-    ['', 'Generado: '+fechaStr+' · '+horaStr+' · Clave: '+keyCol+' · Columnas comparadas: '+colsCompare.join(', '), '', '']
-  ];
-
-  // Construir hoja RESUMEN manualmente para mezclar celdas normales y links
-  const wsResumen = XLSX.utils.aoa_to_sheet(resumenRows);
-  wsResumen['!cols'] = [{wch:4},{wch:56},{wch:14},{wch:14}];
-  XLSX.utils.book_append_sheet(wb, wsResumen, 'RESUMEN');
-
-  // Helper: añadir hoja de datos con columnas limpias (sin _internas_)
-  function addSheet(nombre, datos, extraCols) {
-    if(!datos || datos.length===0) {
-      const ws = XLSX.utils.aoa_to_sheet([['Sin registros en esta categoría']]);
-      XLSX.utils.book_append_sheet(wb, ws, nombre); return;
-    }
-    const ws = XLSX.utils.json_to_sheet(datos);
-    XLSX.utils.book_append_sheet(wb, ws, nombre);
-  }
-
-  addSheet('Coincidencias', coincidencias);
-  addSheet('Solo en A', soloA);
-  addSheet('Solo en B', soloB);
-
-  // PESTAÑA DISCREPANCIAS — columnas limpias: clave · campo · valor A · valor B
-  if(discrepancias.length > 0) {
-    const discLimpio = discrepancias.map(r => ({
-      [keyCol]:                   r._CLAVE_,
-      'Campo con discrepancia':   r._CAMPO_,
-      'Valor en A':               r._VALOR_A_,
-      'Valor en B':               r._VALOR_B_
-    }));
-    addSheet('Discrepancias', discLimpio);
-  } else {
-    const ws = XLSX.utils.aoa_to_sheet([['Sin discrepancias detectadas (columnas comparadas: '+colsCompare.join(', ')+')']]);
-    XLSX.utils.book_append_sheet(wb, ws, 'Discrepancias');
-  }
-
-  // PESTAÑA DUPLICADOS
-  if(hasDup) {
-    const dupAll = [
-      ...duplicadosA.map(r=>({...r, 'Origen':'Fichero A'})),
-      ...duplicadosB.map(r=>({...r, 'Origen':'Fichero B'}))
-    ];
-    addSheet('Duplicados', dupAll);
-  }
-
-  // Descargar
-  const fecha = hoy.getFullYear().toString()+String(hoy.getMonth()+1).padStart(2,'0')+String(hoy.getDate()).padStart(2,'0');
-  XLSX.writeFile(wb, 'CHECK_Resultado_'+fecha+'.xlsx');
-  closeCruceModal();
-}
-
-// ===== MODAL FECHAS (existente, sin cambios) =====
 const WORKER_URL = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
 const STORE_KEY  = 'adminhub_convo27_fechas';
+
 const BRANDS = [
   { id:'obs',      name:'OBS',      color:'#1dcc84' },
   { id:'inesdi',   name:'INESDI',   color:'#a878f0' },
@@ -960,6 +394,7 @@ const DEFAULTS = {
   esdesign: { inicio:'20/09/2027', cierre:'20/06/2027', matricula:'05/09/2027' },
   ucma:     { inicio:'08/10/2027', cierre:'30/07/2027', matricula:'25/09/2027' }
 };
+
 let data = {};
 
 async function load() {
@@ -967,48 +402,91 @@ async function load() {
     const res = await fetch(`${WORKER_URL}/kv?key=${STORE_KEY}`);
     const result = await res.json();
     data = result.value ? JSON.parse(result.value) : JSON.parse(JSON.stringify(DEFAULTS));
-  } catch(e) { data = JSON.parse(JSON.stringify(DEFAULTS)); }
+  } catch(e) {
+    data = JSON.parse(JSON.stringify(DEFAULTS));
+  }
   renderGrid();
+  checkAndShowAlert();
 }
 
 async function persist() {
   try {
-    await fetch(`${WORKER_URL}/kv`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key:STORE_KEY,value:data}) });
-  } catch(e) { console.error(e); }
+    await fetch(`${WORKER_URL}/kv`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: STORE_KEY, value: data })
+    });
+  } catch(e) {
+    console.error('Error guardando en KV:', e);
+  }
 }
 
 function daysLeft(dateStr) {
   const parts = dateStr.split('/');
-  if(parts.length!==3) return null;
+  if (parts.length !== 3) return null;
   const d = new Date(parts[2], parts[1]-1, parts[0]);
-  return Math.round((d - new Date()) / 86400000);
+  const diff = Math.round((d - new Date()) / 86400000);
+  return diff;
 }
 
 function daysTag(dateStr) {
   const d = daysLeft(dateStr);
-  if(d===null) return '';
-  if(d<0) return `<span class="days-left past">hace ${Math.abs(d)} días</span>`;
-  if(d<=90) return `<span class="days-left soon">en ${d} días</span>`;
+  if (d === null) return '';
+  if (d < 0) return `<span class="days-left past">hace ${Math.abs(d)} días</span>`;
+  if (d <= 90) return `<span class="days-left soon">en ${d} días</span>`;
   return `<span class="days-left ok">en ${d} días</span>`;
 }
 
 function renderGrid() {
   const grid = document.getElementById('brandsGrid');
-  grid.innerHTML = BRANDS.map((b,i) => `
+  grid.innerHTML = BRANDS.map((b, i) => `
     <div class="brand-card ${b.id}" style="animation-delay:${i*0.06}s">
       <span class="brand-name-badge">${b.name}</span>
       <div class="date-row">
-        ${DATE_FIELDS.map(f => `
-          <div class="date-item">
+        ${DATE_FIELDS.map(f => {
+          const val = data[b.id]?.[f.key] || '';
+          const d = daysLeft(val);
+          const expired = d !== null && d < 0;
+          return `<div class="date-item${expired ? ' expired' : ''}">
             <span class="date-lbl">${f.label}</span>
-            <span class="date-val">${data[b.id]?.[f.key]||'—'}</span>
-            ${daysTag(data[b.id]?.[f.key]||'')}
-          </div>
-        `).join('')}
+            <span class="date-val">${val || '—'}</span>
+            ${daysTag(val)}
+          </div>`;
+        }).join('')}
       </div>
     </div>
   `).join('');
 }
+
+function checkAndShowAlert() {
+  const expired = [];
+  BRANDS.forEach(b => {
+    DATE_FIELDS.forEach(f => {
+      const val = data[b.id]?.[f.key] || '';
+      const d = daysLeft(val);
+      if (d !== null && d < 0) {
+        const brandName = BRANDS.find(br => br.id === b.id)?.name || b.id;
+        expired.push(`${brandName} — ${f.label}`);
+      }
+    });
+  });
+  if (!expired.length) return;
+  const list = document.getElementById('aitorExpList');
+  list.innerHTML = expired.map(e => `
+    <div class="aitor-exp-item">
+      <div class="aitor-exp-dot"></div>
+      <span class="aitor-exp-text">${e}</span>
+    </div>`).join('');
+  document.getElementById('aitorAlertOverlay').classList.add('open');
+}
+
+function closeAitorAlert() {
+  document.getElementById('aitorAlertOverlay').classList.remove('open');
+}
+
+document.getElementById('aitorAlertOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAitorAlert();
+});
 
 function openModal() {
   const fields = document.getElementById('modalFields');
@@ -1021,7 +499,7 @@ function openModal() {
         ${DATE_FIELDS.map(f => `
           <div class="field">
             <label>${f.label}</label>
-            <input type="text" id="f_${b.id}_${f.key}" placeholder="dd/mm/aaaa" value="${data[b.id]?.[f.key]||''}">
+            <input type="text" id="f_${b.id}_${f.key}" placeholder="dd/mm/aaaa" value="${data[b.id]?.[f.key] || ''}">
           </div>
         `).join('')}
       </div>
@@ -1030,14 +508,16 @@ function openModal() {
   document.getElementById('editOverlay').classList.add('open');
 }
 
-function closeModal() { document.getElementById('editOverlay').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('editOverlay').classList.remove('open');
+}
 
 async function saveDates() {
   BRANDS.forEach(b => {
-    if(!data[b.id]) data[b.id]={};
+    if (!data[b.id]) data[b.id] = {};
     DATE_FIELDS.forEach(f => {
       const val = document.getElementById(`f_${b.id}_${f.key}`)?.value.trim();
-      if(val) data[b.id][f.key]=val;
+      if (val) data[b.id][f.key] = val;
     });
   });
   await persist();
@@ -1046,7 +526,7 @@ async function saveDates() {
 }
 
 document.getElementById('editOverlay').addEventListener('click', e => {
-  if(e.target===document.getElementById('editOverlay')) closeModal();
+  if (e.target === document.getElementById('editOverlay')) closeModal();
 });
 
 load();
