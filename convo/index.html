@@ -730,27 +730,39 @@ function loadCruceFile(which, input) {
 }
 
 function buildStep3() {
-  // Columnas clave: intersección de colsA y colsB
-  const colsA = cruceState.colsA;
-  const colsB = cruceState.colsB;
-  const comunes = colsA.filter(c => colsB.includes(c));
-  const todas = [...new Set([...colsA, ...colsB])];
+  const colsA = cruceState.colsA || [];
+  const colsB = cruceState.colsB || [];
+  const normalizar = s => String(s).trim().toLowerCase();
+  const mapB = {};
+  colsB.forEach(c => { mapB[normalizar(c)] = c; });
+  const comunes = colsA.filter(c => mapB[normalizar(c)] !== undefined);
+  const usarCols = comunes.length > 0 ? comunes : colsA;
 
   const sel = document.getElementById('cruceKeyCol');
   sel.innerHTML = '<option value="">— Selecciona columna clave —</option>';
-  comunes.forEach(c => {
+  usarCols.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c; opt.textContent = c;
     sel.appendChild(opt);
   });
 
   const grid = document.getElementById('cruceCols');
-  grid.innerHTML = comunes.map(c => `
-    <label class="cruce-col-check">
-      <input type="checkbox" value="${c}" checked>
-      <span>${c}</span>
-    </label>
-  `).join('');
+  if(comunes.length === 0 && colsA.length > 0) {
+    grid.innerHTML = '<p style="color:rgba(255,215,0,0.7);font-size:11px;margin:0 0 10px;grid-column:1/-1;">⚠ No se detectaron columnas con el mismo nombre en ambos ficheros. Verifica que las cabeceras coincidan.</p>' +
+      colsA.map(c => `
+        <label class="cruce-col-check">
+          <input type="checkbox" value="${c}">
+          <span>${c}</span>
+        </label>
+      `).join('');
+  } else {
+    grid.innerHTML = usarCols.map(c => `
+      <label class="cruce-col-check">
+        <input type="checkbox" value="${c}" checked>
+        <span>${c}</span>
+      </label>
+    `).join('');
+  }
 }
 
 function ejecutarCruce() {
