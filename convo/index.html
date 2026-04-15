@@ -98,15 +98,15 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 /* ── Pop-up AITOR alerta ── */
 .aitor-alert-overlay { position:fixed; inset:0; z-index:400; background:rgba(0,5,15,0.82); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; }
 .aitor-alert-overlay.open { display:flex; }
-.aitor-alert-popup { display:flex; align-items:flex-end; animation:fadeUp 0.35s cubic-bezier(0.34,1.2,0.64,1); }
-.aitor-av-panel { width:250px; height:480px; position:relative; flex-shrink:0; border:1px solid rgba(0,230,255,0.3); border-right:none; border-radius:16px 0 0 16px; overflow:hidden; background:#010d1a; }
+.aitor-alert-popup { display:flex; align-items:flex-end; position:relative; animation:fadeUp 0.35s cubic-bezier(0.34,1.2,0.64,1); }
+.aitor-av-panel { width:250px; height:480px; position:relative; z-index:1; flex-shrink:0; border:1px solid rgba(0,230,255,0.3); border-right:none; border-radius:16px 0 0 16px; overflow:hidden; background:#010d1a; }
 .aitor-av-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; mix-blend-mode:screen; filter:drop-shadow(0 0 14px rgba(0,200,255,0.5)) brightness(1.1) contrast(1.05);
 .aitor-av-gradient { position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to top,#010d1a,transparent); z-index:2; pointer-events:none; }
 .aitor-av-rim { position:absolute; left:0; top:8%; bottom:8%; width:2px; background:linear-gradient(to bottom,transparent,rgba(0,230,255,0.6),transparent); z-index:3; }
 .aitor-av-scanlines { position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px); z-index:3; pointer-events:none; }
 .aitor-av-hud { position:absolute; top:10px; right:8px; background:rgba(0,5,20,0.85); border:1px solid rgba(0,230,255,0.4); border-radius:5px; padding:2px 7px; font-family:'Courier New',monospace; font-size:8px; letter-spacing:2px; color:rgba(0,230,255,0.9); z-index:4; }
 .aitor-av-platform { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:80px; height:4px; background:linear-gradient(90deg,transparent,rgba(0,230,255,0.7),transparent); filter:blur(4px); z-index:4; }
-.aitor-chat-box { width:320px; background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:0 16px 16px 0; display:flex; flex-direction:column; overflow:hidden; }
+.aitor-chat-box { width:320px; background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:0 16px 16px 0; display:flex; flex-direction:column; overflow:hidden; position:relative; z-index:2; }
 .aitor-chat-header { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid rgba(0,230,255,0.1); background:rgba(0,20,40,0.5); flex-shrink:0; }
 .aitor-chat-orb { width:32px; height:32px; border-radius:50%; background:#001828; border:1.5px solid rgba(0,230,255,0.5); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
 .aitor-chat-orb-ring { position:absolute; width:38px; height:38px; border-radius:50%; border:1px solid rgba(0,230,255,0.2); animation:ai-pulse 2.5s ease-in-out infinite; }
