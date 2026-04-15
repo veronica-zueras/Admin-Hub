@@ -1,17 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Convo '27 — Admin Hub</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #041C2E;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #E0F7FF;
-  min-height: 100vh;
-}
+body { background: #041C2E; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #E0F7FF; min-height: 100vh; }
 .bg-overlay { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(circle at center, rgba(0,60,110,0.45) 0%, rgba(4,28,46,0.85) 60%, #041C2E 100%); }
 canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .corner { position: fixed; width: 28px; height: 28px; z-index: 5; pointer-events: none; }
@@ -20,8 +18,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .corner.bl { bottom:14px; left:14px; border-bottom:1.5px solid rgba(0,212,240,0.35); border-left:1.5px solid rgba(0,212,240,0.35); }
 .corner.br { bottom:14px; right:14px; border-bottom:1.5px solid rgba(0,212,240,0.35); border-right:1.5px solid rgba(0,212,240,0.35); }
 .sys-tag { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); font-family:'Courier New',monospace; font-size:9px; letter-spacing:0.14em; color:rgba(0,200,255,0.15); z-index:5; pointer-events:none; white-space:nowrap; }
-
-/* Topbar */
 .topbar { position:relative; z-index:20; padding:20px 28px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(0,212,240,0.08); }
 .brand { display:flex; align-items:center; gap:12px; }
 .brand-sq { width:40px; height:40px; border-radius:11px; background:#003A5C; border:1px solid rgba(0,212,240,0.4); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
@@ -29,16 +25,12 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .brand-dept { color:rgba(0,212,240,0.38); font-size:11px; margin-top:2px; letter-spacing:0.03em; }
 .back-btn { display:flex; align-items:center; gap:7px; background:rgba(0,90,130,0.15); border:1px solid rgba(0,212,240,0.25); border-radius:10px; padding:7px 14px; color:rgba(0,212,240,0.8); font-size:12px; cursor:pointer; text-decoration:none; transition:all 0.2s; }
 .back-btn:hover { background:rgba(0,212,240,0.1); border-color:rgba(0,212,240,0.6); color:#00D4F0; }
-
-/* Page head */
 .page-head { position:relative; z-index:10; padding:26px 32px 16px; text-align:center; display:flex; flex-direction:column; align-items:center; }
 .page-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(0,212,240,0.35); margin-bottom:6px; display:flex; align-items:center; gap:6px; justify-content:center; }
 .page-eyebrow::before { content:''; display:inline-block; width:18px; height:1px; background:rgba(0,212,240,0.3); }
 .page-title { font-size:26px; font-weight:600; letter-spacing:-0.03em; color:#E0F7FF; display:flex; align-items:center; gap:12px; }
 .page-title svg { filter:drop-shadow(0 0 8px rgba(0,212,240,0.5)); }
 .page-sub { color:rgba(0,200,230,0.35); font-size:12px; margin-top:5px; }
-
-/* Nodes */
 .nodes-area { position:relative; z-index:10; padding:32px 32px 0; display:flex; justify-content:center; align-items:center; min-height:240px; }
 .connector-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0; }
 .nodes-row { position:relative; z-index:2; display:flex; justify-content:center; gap:64px; flex-wrap:wrap; }
@@ -56,35 +48,29 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .badge-pend { background:#534AB7; color:#fff; }
 .node-label { font-size:12px; font-weight:500; color:rgba(0,190,220,0.45); text-align:center; line-height:1.3; max-width:100px; transition:color 0.2s; }
 .node:hover .node-label, .node.active .node-label { color:#00D4F0; }
-
-/* Divider */
 .divider { position:relative; z-index:10; margin:28px 32px 0; height:1px; background:rgba(0,212,240,0.07); }
-
-/* Section header */
 .section-header { position:relative; z-index:10; padding:20px 32px 0; display:flex; align-items:center; justify-content:space-between; }
 .section-title { font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(0,212,240,0.4); display:flex; align-items:center; gap:8px; }
 .section-title::before { content:''; display:inline-block; width:18px; height:1px; background:rgba(0,212,240,0.3); }
 .edit-corner-btn { display:flex; align-items:center; gap:6px; background:rgba(0,80,130,0.2); border:1px solid rgba(0,212,240,0.3); border-radius:9px; padding:7px 14px; color:rgba(0,212,240,0.7); font-size:12px; cursor:pointer; transition:all 0.2s; font-family:inherit; }
 .edit-corner-btn:hover { background:rgba(0,212,240,0.1); border-color:#00D4F0; color:#00D4F0; }
-
-/* Brands grid */
 .brands-grid { position:relative; z-index:10; padding:16px 32px 60px; display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
 .brand-card { background:rgba(0,16,32,0.85); border:1px solid rgba(0,212,240,0.1); border-radius:13px; padding:16px 18px; display:flex; flex-direction:column; gap:0; transition:border-color 0.2s, transform 0.2s; animation:fadeUp 0.4s ease both; }
 .brand-card:hover { border-color:rgba(0,212,240,0.25); transform:translateY(-2px); }
 @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 .brand-card::before { content:''; display:block; height:2px; border-radius:2px; margin-bottom:12px; }
-.brand-card.obs::before    { background:linear-gradient(90deg,#1dcc84,transparent); }
-.brand-card.inesdi::before { background:linear-gradient(90deg,#a878f0,transparent); }
+.brand-card.obs::before     { background:linear-gradient(90deg,#1dcc84,transparent); }
+.brand-card.inesdi::before  { background:linear-gradient(90deg,#a878f0,transparent); }
 .brand-card.esdesign::before { background:linear-gradient(90deg,#f0a830,transparent); }
-.brand-card.ucma::before   { background:linear-gradient(90deg,#3aabf0,transparent); }
+.brand-card.ucma::before    { background:linear-gradient(90deg,#3aabf0,transparent); }
 .brand-name-badge { font-size:18px; font-weight:700; letter-spacing:-0.02em; margin-bottom:12px; display:block; }
-.brand-card.obs .brand-name-badge    { color:#1dcc84; }
-.brand-card.inesdi .brand-name-badge { color:#a878f0; }
+.brand-card.obs .brand-name-badge     { color:#1dcc84; }
+.brand-card.inesdi .brand-name-badge  { color:#a878f0; }
 .brand-card.esdesign .brand-name-badge { color:#f0a830; }
-.brand-card.ucma .brand-name-badge   { color:#3aabf0; }
+.brand-card.ucma .brand-name-badge    { color:#3aabf0; }
 .date-row { display:flex; flex-direction:column; gap:7px; }
 .date-item { display:flex; flex-direction:column; gap:2px; padding:7px 9px; background:rgba(0,30,55,0.6); border-radius:7px; border:1px solid rgba(0,212,240,0.07); }
-.date-lbl { font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,180,210,0.35); }
+.date-lbl { font-size:11px; letter-spacing:0.04em; text-transform:uppercase; color:rgba(0,200,240,0.65); font-weight:500; }
 .date-val { font-size:12px; font-weight:500; color:rgba(220,245,255,0.75); font-family:'Courier New',monospace; }
 .days-left { display:inline-block; margin-top:3px; font-size:9px; padding:2px 6px; border-radius:4px; font-weight:600; }
 .days-left.soon { background:rgba(240,168,48,0.15); color:#f0a830; border:1px solid rgba(240,168,48,0.25); }
@@ -94,36 +80,53 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .date-item.expired .date-lbl { color:rgba(255,140,140,0.75); }
 .date-item.expired .date-val { color:#ff8080; }
 .date-item.expired .days-left.past { background:rgba(200,30,30,0.2); color:#ff8888; border-color:rgba(255,80,80,0.35); }
+.loading-state { text-align:center; padding:3rem 1rem; color:rgba(0,200,230,0.28); grid-column:1/-1; }
+.loading-dots { display:inline-flex; gap:6px; margin-bottom:12px; }
+.loading-dots span { width:6px; height:6px; border-radius:50%; background:rgba(0,212,240,0.4); animation:ldot 1.2s ease-in-out infinite; }
+.loading-dots span:nth-child(2){animation-delay:.2s;} .loading-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes ldot { 0%,60%,100%{transform:translateY(0);opacity:.4;} 30%{transform:translateY(-6px);opacity:1;} }
+
+/* Modal base (fechas) */
+.overlay { position:fixed; inset:0; z-index:200; background:rgba(0,5,15,0.85); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:1rem; }
+.overlay.open { display:flex; }
+.modal { width:min(560px,96vw); max-height:90vh; overflow-y:auto; background:#030E1E; border:1px solid rgba(0,212,240,0.3); border-radius:18px; padding:24px; box-shadow:0 0 60px rgba(0,180,255,0.12); animation:fadeUp 0.28s ease; }
+.modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid rgba(0,212,240,0.1); }
+.modal-head h2 { font-size:15px; font-weight:600; color:#E0F7FF; display:flex; align-items:center; gap:8px; }
+.modal-close { width:30px; height:30px; border-radius:8px; background:transparent; border:1px solid rgba(0,212,240,0.2); color:rgba(0,212,240,0.5); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-family:inherit; }
+.modal-close:hover { background:rgba(0,212,240,0.1); color:#00D4F0; border-color:rgba(0,212,240,0.5); }
+.modal-brand-section { margin-bottom:20px; }
+.modal-brand-title { font-size:13px; font-weight:600; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid rgba(0,212,240,0.08); }
+.brand-card.obs .modal-brand-title     { color:#1dcc84; }
+.brand-card.inesdi .modal-brand-title  { color:#a878f0; }
+.brand-card.esdesign .modal-brand-title { color:#f0a830; }
+.brand-card.ucma .modal-brand-title    { color:#3aabf0; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.field { display:flex; flex-direction:column; gap:5px; }
+.field label { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,200,230,0.4); }
+.field input { background:rgba(0,20,40,0.8); border:1px solid rgba(0,212,240,0.18); border-radius:8px; padding:8px 11px; color:#E0F7FF; font-size:12px; font-family:‘Courier New’,monospace; outline:none; transition:border-color 0.2s; }
+.field input:focus { border-color:rgba(0,212,240,0.5); box-shadow:0 0 0 3px rgba(0,212,240,0.07); }
+.modal-foot { display:flex; justify-content:flex-end; gap:8px; padding-top:16px; border-top:1px solid rgba(0,212,240,0.08); margin-top:8px; }
+.btn-cancel { background:transparent; border:1px solid rgba(0,212,240,0.2); border-radius:9px; padding:9px 16px; color:rgba(0,200,230,0.5); font-size:13px; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.btn-cancel:hover { background:rgba(0,212,240,0.06); color:#00D4F0; }
+.btn-save { background:rgba(0,80,130,0.4); border:1.5px solid rgba(0,212,240,0.45); border-radius:9px; padding:9px 20px; color:#00D4F0; font-size:13px; font-weight:500; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.btn-save:hover { background:rgba(0,212,240,0.12); border-color:#00D4F0; }
 
 /* ── Pop-up AITOR alerta ── */
 .aitor-alert-overlay { position:fixed; inset:0; z-index:400; background:rgba(0,5,15,0.82); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; }
 .aitor-alert-overlay.open { display:flex; }
 .aitor-alert-popup { display:flex; align-items:flex-end; position:relative; animation:fadeUp 0.35s cubic-bezier(0.34,1.2,0.64,1); }
 .aitor-av-panel { width:250px; height:480px; position:relative; z-index:1; flex-shrink:0; border:1px solid rgba(0,230,255,0.3); border-right:none; border-radius:16px 0 0 16px; overflow:hidden; background:#010d1a; }
-.aitor-av-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; mix-blend-mode:screen; filter:drop-shadow(0 0 14px rgba(0,200,255,0.5)) brightness(1.1) contrast(1.05);}
+.aitor-av-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; mix-blend-mode:normal; filter:drop-shadow(0 0 10px rgba(0,200,255,0.3)) brightness(1.0) contrast(1.0); }
 .aitor-av-gradient { position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(to top,#010d1a,transparent); z-index:2; pointer-events:none; }
 .aitor-av-rim { position:absolute; left:0; top:8%; bottom:8%; width:2px; background:linear-gradient(to bottom,transparent,rgba(0,230,255,0.6),transparent); z-index:3; }
 .aitor-av-scanlines { position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px); z-index:3; pointer-events:none; }
-.aitor-av-hud { 
-  position: absolute; 
-  top: 10px; 
-  right: 8px; 
-  background: rgba(0,5,20,0.85); 
-  border: 1px solid #00D4F0; 
-  border-radius: 5px; 
-  padding: 2px 7px; 
-  font-family: 'Courier New', monospace; 
-  font-size: 8px; 
-  letter-spacing: 2px; 
-  color: #00D4F0; /* <--- Azul Cian brillante */
-  z-index: 4; 
-  text-shadow: 0 0 5px rgba(0,212,240,0.5); /* Efecto neón */
-}
+.aitor-av-hud { position:absolute; top:10px; right:8px; background:rgba(0,5,20,0.85); border:1px solid #00D4F0; border-radius:5px; padding:2px 7px; font-family:‘Courier New’,monospace; font-size:8px; letter-spacing:2px; color:#00D4F0; z-index:4; }
 .aitor-av-platform { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:80px; height:4px; background:linear-gradient(90deg,transparent,rgba(0,230,255,0.7),transparent); filter:blur(4px); z-index:4; }
 .aitor-chat-box { width:320px; background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:0 16px 16px 0; display:flex; flex-direction:column; overflow:hidden; position:relative; z-index:2; }
 .aitor-chat-header { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid rgba(0,230,255,0.1); background:rgba(0,20,40,0.5); flex-shrink:0; }
 .aitor-chat-orb { width:32px; height:32px; border-radius:50%; background:#001828; border:1.5px solid rgba(0,230,255,0.5); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
 .aitor-chat-orb-ring { position:absolute; width:38px; height:38px; border-radius:50%; border:1px solid rgba(0,230,255,0.2); animation:ai-pulse 2.5s ease-in-out infinite; }
+@keyframes ai-pulse { 0%,100%{opacity:.2;transform:scale(1);} 50%{opacity:.7;transform:scale(1.06);} }
 .aitor-chat-title { font-size:13px; font-weight:600; color:#E0F7FF; }
 .aitor-chat-subtitle { font-size:10px; color:rgba(0,200,230,0.4); margin-top:1px; }
 .aitor-close-btn { margin-left:auto; width:26px; height:26px; border-radius:7px; background:transparent; border:1px solid rgba(0,230,255,0.2); color:rgba(0,230,255,0.5); font-size:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all 0.15s; font-family:inherit; }
@@ -145,49 +148,84 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 .aitor-dismiss-btn { width:100%; background:rgba(0,80,130,0.3); border:1.5px solid rgba(0,230,255,0.35); border-radius:9px; padding:9px; color:#00E6FF; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; transition:all 0.15s; }
 .aitor-dismiss-btn:hover { background:rgba(0,230,255,0.1); border-color:#00E6FF; }
 
-/* Loading */
-.loading-state { text-align:center; padding:3rem 1rem; color:rgba(0,200,230,0.28); grid-column:1/-1; }
-.loading-dots { display:inline-flex; gap:6px; margin-bottom:12px; }
-.loading-dots span { width:6px; height:6px; border-radius:50%; background:rgba(0,212,240,0.4); animation:ldot 1.2s ease-in-out infinite; }
-.loading-dots span:nth-child(2){animation-delay:.2s;} .loading-dots span:nth-child(3){animation-delay:.4s;}
-@keyframes ldot { 0%,60%,100%{transform:translateY(0);opacity:.4;} 30%{transform:translateY(-6px);opacity:1;} }
-
-/* Modal */
-.overlay { position:fixed; inset:0; z-index:200; background:rgba(0,5,15,0.85); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:1rem; }
-.overlay.open { display:flex; }
-.modal { width:min(560px,96vw); max-height:90vh; overflow-y:auto; background:#030E1E; border:1px solid rgba(0,212,240,0.3); border-radius:18px; padding:24px; box-shadow:0 0 60px rgba(0,180,255,0.12); animation:fadeUp 0.28s ease; }
-.modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid rgba(0,212,240,0.1); }
-.modal-head h2 { font-size:15px; font-weight:600; color:#E0F7FF; display:flex; align-items:center; gap:8px; }
-.modal-close { width:30px; height:30px; border-radius:8px; background:transparent; border:1px solid rgba(0,212,240,0.2); color:rgba(0,212,240,0.5); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-family:inherit; }
-.modal-close:hover { background:rgba(0,212,240,0.1); color:#00D4F0; border-color:rgba(0,212,240,0.5); }
-.modal-brand-section { margin-bottom:20px; }
-.modal-brand-title { font-size:13px; font-weight:600; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid rgba(0,212,240,0.08); }
-.brand-card.obs .modal-brand-title    { color:#1dcc84; }
-.brand-card.inesdi .modal-brand-title { color:#a878f0; }
-.brand-card.esdesign .modal-brand-title { color:#f0a830; }
-.brand-card.ucma .modal-brand-title   { color:#3aabf0; }
-.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
-.field { display:flex; flex-direction:column; gap:5px; }
-.field label { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,200,230,0.4); }
-.field input { background:rgba(0,20,40,0.8); border:1px solid rgba(0,212,240,0.18); border-radius:8px; padding:8px 11px; color:#E0F7FF; font-size:12px; font-family:'Courier New',monospace; outline:none; transition:border-color 0.2s; }
-.field input:focus { border-color:rgba(0,212,240,0.5); box-shadow:0 0 0 3px rgba(0,212,240,0.07); }
-.modal-foot { display:flex; justify-content:flex-end; gap:8px; padding-top:16px; border-top:1px solid rgba(0,212,240,0.08); margin-top:8px; }
-.btn-cancel { background:transparent; border:1px solid rgba(0,212,240,0.2); border-radius:9px; padding:9px 16px; color:rgba(0,200,230,0.5); font-size:13px; cursor:pointer; font-family:inherit; transition:all 0.15s; }
-.btn-cancel:hover { background:rgba(0,212,240,0.06); color:#00D4F0; }
-.btn-save { background:rgba(0,80,130,0.4); border:1.5px solid rgba(0,212,240,0.45); border-radius:9px; padding:9px 20px; color:#00D4F0; font-size:13px; font-weight:500; cursor:pointer; font-family:inherit; transition:all 0.15s; }
-.btn-save:hover { background:rgba(0,212,240,0.12); border-color:#00D4F0; }
+/* ===================== MODAL CRUCE DE DATOS ===================== */
+#cruceOverlay { position:fixed; inset:0; z-index:300; background:rgba(0,5,15,0.88); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:1rem; }
+#cruceOverlay.open { display:flex; }
+.cruce-modal { width:min(680px,96vw); max-height:92vh; overflow-y:auto; background:#041C2E; border:1px solid rgba(0,212,240,0.3); border-radius:18px; box-shadow:0 0 60px rgba(0,180,255,0.15); animation:fadeUp 0.28s ease; font-family:-apple-system,BlinkMacSystemFont,‘Segoe UI’,sans-serif; }
+.cruce-header { background:#041C2E; border-bottom:1px solid rgba(0,212,240,0.15); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; border-radius:18px 18px 0 0; }
+.cruce-header-left { display:flex; align-items:center; gap:11px; }
+.cruce-header-icon { width:30px; height:30px; border-radius:50%; border:1.5px solid #9B59FF; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cruce-title-main { color:#00D4F0; font-size:13px; letter-spacing:1px; text-transform:uppercase; margin:0; }
+.cruce-title-sub { color:rgba(255,255,255,0.4); font-size:10px; margin:2px 0 0; }
+.cruce-header-right { display:flex; align-items:center; gap:12px; }
+.cruce-help-btn { background:rgba(0,212,240,0.1); border:1px solid rgba(0,212,240,0.3); border-radius:20px; padding:4px 12px; color:#00D4F0; font-size:11px; cursor:pointer; display:flex; align-items:center; gap:5px; font-family:inherit; }
+.cruce-help-btn:hover { background:rgba(0,212,240,0.18); }
+.cruce-steps { display:flex; align-items:center; gap:5px; }
+.cruce-dot { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; transition:all 0.25s; }
+.cruce-dot.active  { background:#00D4F0; color:#020B18; }
+.cruce-dot.done    { background:rgba(0,212,240,0.2); border:1px solid rgba(0,212,240,0.5); color:#00D4F0; }
+.cruce-dot.pending { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.25); }
+.cruce-dot-line { width:16px; height:1px; background:rgba(0,212,240,0.2); }
+.cruce-close { width:22px; height:22px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); background:transparent; color:rgba(255,255,255,0.4); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:inherit; }
+.cruce-close:hover { border-color:rgba(0,212,240,0.5); color:#00D4F0; }
+.cruce-help-panel { display:none; background:#020B18; border-bottom:1px solid rgba(0,212,240,0.12); padding:16px 22px; }
+.cruce-help-panel.open { display:block; }
+.cruce-help-title { color:#00D4F0; font-size:10px; letter-spacing:1px; text-transform:uppercase; margin:0 0 12px; }
+.cruce-help-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.cruce-help-card { border-radius:7px; padding:9px 12px; border-left-width:2px; border-left-style:solid; }
+.cruce-help-card .chc-title { font-size:10px; font-weight:500; margin:0 0 3px; }
+.cruce-help-card .chc-body  { font-size:10px; color:rgba(255,255,255,0.4); margin:0; line-height:1.5; }
+.cruce-body { padding:22px; }
+.cruce-step-label { color:rgba(255,255,255,0.35); font-size:10px; letter-spacing:0.5px; text-transform:uppercase; margin:0 0 4px; }
+.cruce-step-title { color:#E0F7FF; font-size:15px; font-weight:500; margin:0 0 18px; }
+.cruce-modes-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+.cruce-mode-card { background:#020B18; border-radius:12px; padding:15px; cursor:pointer; transition:opacity 0.15s, border-width 0.1s; }
+.cruce-mode-card:hover { opacity:1 !important; }
+.cruce-mode-card.selected { border-width:2px !important; opacity:1 !important; }
+.cruce-mode-card .cmc-head { display:flex; align-items:center; gap:9px; margin-bottom:9px; }
+.cruce-mode-card .cmc-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cruce-mode-card .cmc-name { font-size:12px; font-weight:500; }
+.cruce-mode-card .cmc-desc { font-size:11px; color:rgba(255,255,255,0.45); margin:0 0 9px; line-height:1.5; }
+.cruce-mode-card .cmc-tags { display:flex; gap:5px; flex-wrap:wrap; }
+.cruce-mode-card .cmc-tag  { font-size:10px; padding:2px 7px; border-radius:20px; }
+.cruce-hint { background:#020B18; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 13px; display:flex; align-items:center; gap:9px; margin-top:14px; }
+.cruce-hint p { color:rgba(255,255,255,0.3); font-size:10px; margin:0; line-height:1.5; }
+.cruce-hint span { color:rgba(0,212,240,0.55); }
+.cruce-footer { display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:4px; border-top:1px solid rgba(255,255,255,0.06); }
+.cruce-footer-note { color:rgba(255,255,255,0.18); font-size:10px; }
+.cruce-btn-back { background:transparent; color:rgba(255,255,255,0.35); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 16px; font-size:12px; cursor:pointer; font-family:inherit; }
+.cruce-btn-back:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.3); }
+.cruce-btn-next { border:none; border-radius:8px; padding:9px 22px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s; }
+.cruce-btn-next.disabled { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.2); cursor:not-allowed; }
+.cruce-btn-next.enabled  { background:#00D4F0; color:#020B18; }
+.cruce-btn-exec { background:#00C853; color:#020B18; border:none; border-radius:8px; padding:9px 22px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:8px; }
+.cruce-btn-exec:hover { background:#00e85e; }
+.cruce-files-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.cruce-file-zone { border-radius:12px; padding:26px 16px; text-align:center; cursor:pointer; background:#020B18; border-style:dashed; border-width:1.5px; transition:border-color 0.2s; }
+.cruce-file-zone.loaded { border-style:solid; }
+.cruce-file-label-top { font-size:10px; letter-spacing:0.5px; text-transform:uppercase; margin:0 0 8px; }
+.cruce-file-name { font-size:11px; margin:0; }
+.cruce-config-label { font-size:11px; margin:0 0 8px; }
+.cruce-select { width:100%; background:#020B18; border:1px solid rgba(0,212,240,0.3); border-radius:8px; padding:9px 12px; color:#E0F7FF; font-size:12px; outline:none; margin-bottom:16px; font-family:inherit; }
+.cruce-cols-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:16px; }
+.cruce-col-check { display:flex; align-items:center; gap:7px; background:#020B18; border:1px solid rgba(155,89,255,0.2); border-radius:8px; padding:8px 10px; cursor:pointer; }
+.cruce-col-check span { color:rgba(255,255,255,0.75); font-size:11px; }
+.cruce-col-check input { accent-color:#9B59FF; cursor:pointer; }
+.cruce-ready-box { background:rgba(0,200,83,0.07); border:1px solid rgba(0,200,83,0.2); border-radius:10px; padding:11px 14px; display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.cruce-ready-box p { color:rgba(0,200,83,0.6); font-size:10px; margin:0; }
+.cruce-ready-box strong { color:#00C853; font-weight:500; }
 
 @media(max-width:700px){
-  .topbar,.page-head,.section-header,.brands-grid { padding-left:16px; padding-right:16px; }
-  .nodes-row { gap:28px; }
-  .bubble { width:82px; height:82px; }
-  .brands-grid { grid-template-columns:repeat(2,1fr); }
-  .field-row { grid-template-columns:1fr; }
+.topbar,.page-head,.section-header,.brands-grid { padding-left:16px; padding-right:16px; }
+.nodes-row { gap:28px; }
+.bubble { width:82px; height:82px; }
+.brands-grid { grid-template-columns:repeat(2,1fr); }
+.field-row { grid-template-columns:1fr; }
+.cruce-modes-grid,.cruce-files-grid,.cruce-cols-grid,.cruce-help-grid { grid-template-columns:1fr; }
 }
-@media(max-width:400px){
-  .brands-grid { grid-template-columns:1fr; }
-}
+@media(max-width:400px){ .brands-grid { grid-template-columns:1fr; } }
 </style>
+
 </head>
 <body>
 
@@ -197,7 +235,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 <div class="corner bl"></div><div class="corner br"></div>
 <div class="sys-tag">SYS.CONVO27 v1.0 · NET.ACTIVE</div>
 
-<!-- Topbar -->
 <div class="topbar">
   <div class="brand">
     <div class="brand-sq">
@@ -219,7 +256,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </a>
 </div>
 
-<!-- Page header -->
 <div class="page-head">
   <div class="page-eyebrow">módulo · convocatoria</div>
   <div class="page-title">
@@ -234,7 +270,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   <div class="page-sub">Gestión de convocatorias · Campaña 2027</div>
 </div>
 
-<!-- Nodes -->
 <div class="nodes-area">
   <svg class="connector-svg" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid meet">
     <line x1="450" y1="130" x2="200" y2="130" stroke="rgba(0,200,240,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
@@ -246,19 +281,16 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
     <circle cx="450" cy="130" r="55"  fill="none" stroke="rgba(0,180,220,0.06)" stroke-width="1"/>
     <circle cx="450" cy="130" r="110" fill="none" stroke="rgba(0,180,220,0.04)" stroke-width="1"/>
   </svg>
-
   <div class="nodes-row">
-
-    <div class="node active" data-node="check" onclick="setActive(this)">
-      <div class="bubble">
+    <div class="node active" data-node="check" onclick="openCruceModal()">
+      <div class="bubble" id="bubble-check">
         <div class="status-badge badge-pend">⊙</div>
         <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
           <path d="M19 6l2.5 7.5H29l-6.5 4.5 2.5 7.5L19 21l-6 4.5 2.5-7.5L9 13.5h7.5z" stroke="#a878f0" stroke-width="1.6" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="node-label">Herramienta Check</span>
+      <span class="node-label">Cruce de datos</span>
     </div>
-
     <div class="node" data-node="nuevo" onclick="setActive(this)">
       <div class="bubble">
         <div class="status-badge badge-ok">✓</div>
@@ -269,7 +301,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
       </div>
       <span class="node-label">Nuevo Convo</span>
     </div>
-
     <div class="node" data-node="seguimientos" onclick="setActive(this)">
       <div class="bubble">
         <div class="status-badge badge-warn">!</div>
@@ -281,13 +312,11 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
       </div>
       <span class="node-label">Seguimientos Campaña</span>
     </div>
-
   </div>
 </div>
 
 <div class="divider"></div>
 
-<!-- Section header con lápiz -->
 <div class="section-header">
   <div class="section-title">Fechas clave</div>
   <button class="edit-corner-btn" onclick="openModal()">
@@ -296,7 +325,6 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </button>
 </div>
 
-<!-- Brands grid -->
 <div class="brands-grid" id="brandsGrid">
   <div class="loading-state" style="grid-column:1/-1">
     <div class="loading-dots"><span></span><span></span><span></span></div>
@@ -305,6 +333,7 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
 </div>
 
 <!-- Pop-up alerta AITOR -->
+
 <div class="aitor-alert-overlay" id="aitorAlertOverlay">
   <div class="aitor-alert-popup">
     <div class="aitor-av-panel">
@@ -345,7 +374,8 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </div>
 </div>
 
-<!-- Modal edición -->
+<!-- Modal fechas -->
+
 <div class="overlay" id="editOverlay">
   <div class="modal">
     <div class="modal-head">
@@ -363,6 +393,171 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </div>
 </div>
 
+<!-- Modal cruce de datos -->
+
+<div id="cruceOverlay" onclick="cruceOverlayClick(event)">
+  <div class="cruce-modal">
+    <div class="cruce-header">
+      <div class="cruce-header-left">
+        <div class="cruce-header-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9B59FF" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div>
+          <p class="cruce-title-main">Cruce de Datos</p>
+          <p class="cruce-title-sub" id="cruceStepSub">Paso 1 de 3 · Tipo de análisis</p>
+        </div>
+      </div>
+      <div class="cruce-header-right">
+        <button class="cruce-help-btn" onclick="toggleCruceHelp()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00D4F0" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          ¿Cómo funciona?
+        </button>
+        <div class="cruce-steps">
+          <div class="cruce-dot active" id="cdot1">1</div>
+          <div class="cruce-dot-line"></div>
+          <div class="cruce-dot pending" id="cdot2">2</div>
+          <div class="cruce-dot-line"></div>
+          <div class="cruce-dot pending" id="cdot3">3</div>
+        </div>
+        <button class="cruce-close" onclick="closeCruceModal()">✕</button>
+      </div>
+    </div>
+
+```
+<div class="cruce-help-panel" id="cruceHelpPanel">
+  <p class="cruce-help-title">Guía rápida · Cómo usar esta herramienta</p>
+  <div class="cruce-help-grid" style="margin-bottom:18px;">
+    <div class="cruce-help-card" style="background:rgba(0,212,240,0.05);border-left-color:rgba(0,212,240,0.4);"><p class="chc-title" style="color:#00D4F0;">① Tipo de análisis</p><p class="chc-body">Elige qué quieres analizar. Con "Análisis completo" lo haces todo a la vez.</p></div>
+    <div class="cruce-help-card" style="background:rgba(155,89,255,0.05);border-left-color:rgba(155,89,255,0.4);"><p class="chc-title" style="color:#9B59FF;">② Cargar ficheros</p><p class="chc-body">Sube tu listado (A) y el listado general (B). Solo .xlsx. Nada sale de tu equipo.</p></div>
+    <div class="cruce-help-card" style="background:rgba(255,215,0,0.05);border-left-color:rgba(255,215,0,0.4);"><p class="chc-title" style="color:#FFD700;">③ Configurar cruce</p><p class="chc-body">Elige la columna clave (NIF, email…) y qué campos comparar.</p></div>
+    <div class="cruce-help-card" style="background:rgba(0,200,83,0.05);border-left-color:rgba(0,200,83,0.4);"><p class="chc-title" style="color:#00C853;">④ Ejecutar y descargar</p><p class="chc-body">Se genera automáticamente <strong style="color:#00C853;font-weight:500;">CHECK_Resultado_fecha.xlsx</strong> con todas las pestañas de resultado.</p></div>
+  </div>
+  <p class="cruce-help-title" style="margin-bottom:10px;">Así se ve el fichero descargado</p>
+  <div style="background:#1E1E1E;border-radius:9px;overflow:hidden;border:1px solid #333;font-family:'Courier New',monospace;">
+    <div style="background:#2D2D2D;padding:7px 11px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #444;">
+      <div style="width:10px;height:10px;border-radius:50%;background:#FF5F57;"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:#FFBD2E;"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:#28C840;"></div>
+      <span style="color:#aaa;font-size:10px;margin-left:6px;">CHECK_Resultado_20250415.xlsx</span>
+    </div>
+    <div style="display:flex;gap:0;border-bottom:1px solid #444;padding:0 7px;background:#252526;overflow-x:auto;">
+      <div style="background:#1a3a1a;border-top:2px solid #00C853;padding:5px 11px;font-size:10px;color:#00C853;white-space:nowrap;">RESUMEN</div>
+      <div style="background:#1a1a2a;border-top:2px solid #2979FF;padding:5px 11px;font-size:10px;color:#2979FF;white-space:nowrap;">Solo en A</div>
+      <div style="background:#2a1a1a;border-top:2px solid #FF5252;padding:5px 11px;font-size:10px;color:#FF5252;white-space:nowrap;">Solo en B</div>
+      <div style="background:#2a2218;border-top:2px solid #FFD600;padding:5px 11px;font-size:10px;color:#FFD600;white-space:nowrap;">Discrepancias</div>
+      <div style="background:#2a2a2a;border-top:2px solid #888;padding:5px 11px;font-size:10px;color:#888;white-space:nowrap;">Coincidencias ✓</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:10px;">
+        <thead><tr style="background:#2a2a2a;"><th style="padding:6px 10px;text-align:left;color:#666;font-weight:400;border-bottom:1px solid #444;width:28px;">#</th><th style="padding:6px 10px;text-align:left;color:#999;font-weight:400;border-bottom:1px solid #444;">Concepto</th><th style="padding:6px 10px;text-align:right;color:#999;font-weight:400;border-bottom:1px solid #444;">Registros</th><th style="padding:6px 10px;text-align:right;color:#999;font-weight:400;border-bottom:1px solid #444;">% sobre A</th></tr></thead>
+        <tbody>
+          <tr style="background:#252526;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">1</td><td style="padding:5px 10px;color:#ddd;border-bottom:1px solid #2a2a2a;">Total fichero A</td><td style="padding:5px 10px;text-align:right;color:#ddd;border-bottom:1px solid #2a2a2a;">247</td><td style="padding:5px 10px;text-align:right;color:#666;border-bottom:1px solid #2a2a2a;">—</td></tr>
+          <tr style="background:#1a2a1a;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">3</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#00C853;">●</span> <span style="color:#ddd;">Coincidencias exactas</span></td><td style="padding:5px 10px;text-align:right;color:#00C853;font-weight:600;border-bottom:1px solid #2a2a2a;">198</td><td style="padding:5px 10px;text-align:right;color:#00C853;border-bottom:1px solid #2a2a2a;">80,2%</td></tr>
+          <tr style="background:#2a2218;"><td style="padding:5px 10px;color:#555;border-bottom:1px solid #2a2a2a;">6</td><td style="padding:5px 10px;border-bottom:1px solid #2a2a2a;"><span style="color:#FFD600;">●</span> <span style="color:#ddd;">Con discrepancias</span></td><td style="padding:5px 10px;text-align:right;color:#FFD600;font-weight:600;border-bottom:1px solid #2a2a2a;">26</td><td style="padding:5px 10px;text-align:right;color:#FFD600;border-bottom:1px solid #2a2a2a;">10,5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="cruceStep1" class="cruce-body">
+  <p class="cruce-step-label">Paso 1 de 3</p>
+  <p class="cruce-step-title">Selecciona el tipo de análisis</p>
+  <div class="cruce-modes-grid">
+    <div class="cruce-mode-card" id="mode-registros" data-mode="registros" style="border:1.5px solid rgba(0,212,240,0.3);" onclick="selectCruceMode('registros')">
+      <div class="cmc-head"><div class="cmc-icon" style="background:rgba(0,212,240,0.1);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00D4F0" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><span class="cmc-name" style="color:#00D4F0;">Comparar registros</span></div>
+      <p class="cmc-desc">¿Está mi alumno en el listado general? Identifica quién falta en cada fichero.</p>
+      <div class="cmc-tags"><span class="cmc-tag" style="background:rgba(0,212,240,0.1);color:#00D4F0;">Solo en A</span><span class="cmc-tag" style="background:rgba(0,212,240,0.1);color:#00D4F0;">Solo en B</span><span class="cmc-tag" style="background:rgba(0,212,240,0.1);color:#00D4F0;">En ambos</span></div>
+    </div>
+    <div class="cruce-mode-card" id="mode-datos" data-mode="datos" style="border:1.5px solid rgba(155,89,255,0.3);" onclick="selectCruceMode('datos')">
+      <div class="cmc-head"><div class="cmc-icon" style="background:rgba(155,89,255,0.1);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9B59FF" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="m18.5 2.5 2 2L11 14l-3 1 1-3 9.5-9.5z"/></svg></div><span class="cmc-name" style="color:#9B59FF;">Comparar datos</span></div>
+      <p class="cmc-desc">El alumno está en ambos ficheros pero ¿coinciden los datos? Detecta discrepancias campo a campo.</p>
+      <div class="cmc-tags"><span class="cmc-tag" style="background:rgba(155,89,255,0.1);color:#9B59FF;">Coincide</span><span class="cmc-tag" style="background:rgba(255,107,53,0.15);color:#FF9B75;">Discrepancia</span></div>
+    </div>
+    <div class="cruce-mode-card" id="mode-duplic" data-mode="duplic" style="border:1.5px solid rgba(255,215,0,0.3);" onclick="selectCruceMode('duplic')">
+      <div class="cmc-head"><div class="cmc-icon" style="background:rgba(255,215,0,0.1);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="cmc-name" style="color:#FFD700;">Duplicados</span></div>
+      <p class="cmc-desc">¿Hay alumnos repetidos dentro de un mismo listado o entre los dos ficheros?</p>
+      <div class="cmc-tags"><span class="cmc-tag" style="background:rgba(255,215,0,0.1);color:#FFD700;">Internos</span><span class="cmc-tag" style="background:rgba(255,215,0,0.1);color:#FFD700;">Entre ficheros</span></div>
+    </div>
+    <div class="cruce-mode-card" id="mode-completo" data-mode="completo" style="border:1.5px solid rgba(0,200,83,0.3);" onclick="selectCruceMode('completo')">
+      <div class="cmc-head"><div class="cmc-icon" style="background:rgba(0,200,83,0.1);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="cmc-name" style="color:#00C853;">Análisis completo</span></div>
+      <p class="cmc-desc">Todo a la vez: presencia, discrepancias y duplicados. Informe con todas las pestañas.</p>
+      <div class="cmc-tags"><span class="cmc-tag" style="background:rgba(0,200,83,0.1);color:#00C853;">Informe completo</span><span class="cmc-tag" style="background:rgba(0,200,83,0.1);color:#00C853;">Exportar Excel</span></div>
+    </div>
+  </div>
+  <div class="cruce-hint">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,240,0.35)" stroke-width="1.5" style="flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <p>Tras elegir el tipo, subirás los dos .xlsx · elegirás la <span>columna clave</span> · y seleccionarás qué columnas comparar</p>
+  </div>
+  <div class="cruce-footer">
+    <span class="cruce-footer-note">Todo se procesa en el navegador · sin subir datos a ningún servidor</span>
+    <button class="cruce-btn-next disabled" id="btnNext1" onclick="if(cruceState.mode) goCruceStep(2)">CONTINUAR →</button>
+  </div>
+</div>
+
+<div id="cruceStep2" class="cruce-body" style="display:none;">
+  <p class="cruce-step-label">Paso 2 de 3</p>
+  <p class="cruce-step-title">Sube los dos ficheros Excel</p>
+  <div class="cruce-files-grid">
+    <div>
+      <p class="cruce-file-label-top" style="color:#4F8EF7;">FICHERO A · Tu listado</p>
+      <div class="cruce-file-zone" id="zoneA" style="border-color:rgba(79,142,247,0.4);" onclick="document.getElementById('cruceFileA').click()" onmouseover="this.style.borderColor='rgba(79,142,247,0.8)'" onmouseout="this.style.borderColor=cruceState.fileA?'#4F8EF7':'rgba(79,142,247,0.4)'">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(79,142,247,0.5)" stroke-width="1.5" style="display:block;margin:0 auto 10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p class="cruce-file-name" id="labelA" style="color:rgba(79,142,247,0.6);">Clic para subir .xlsx</p>
+        <input type="file" id="cruceFileA" accept=".xlsx" style="display:none" onchange="loadCruceFile('A',this)">
+      </div>
+      <div id="sheetSelectorA" style="display:none;margin-top:8px;">
+        <p style="color:rgba(79,142,247,0.7);font-size:10px;margin:0 0 5px;letter-spacing:0.4px;">PESTAÑA A USAR</p>
+        <select class="cruce-select" style="margin-bottom:0;" onchange="onSheetChange('A',this)"></select>
+      </div>
+    </div>
+    <div>
+      <p class="cruce-file-label-top" style="color:#FF5252;">FICHERO B · Listado general</p>
+      <div class="cruce-file-zone" id="zoneB" style="border-color:rgba(255,82,82,0.4);" onclick="document.getElementById('cruceFileB').click()" onmouseover="this.style.borderColor='rgba(255,82,82,0.8)'" onmouseout="this.style.borderColor=cruceState.fileB?'#FF5252':'rgba(255,82,82,0.4)'">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,82,82,0.5)" stroke-width="1.5" style="display:block;margin:0 auto 10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p class="cruce-file-name" id="labelB" style="color:rgba(255,82,82,0.6);">Clic para subir .xlsx</p>
+        <input type="file" id="cruceFileB" accept=".xlsx" style="display:none" onchange="loadCruceFile('B',this)">
+      </div>
+      <div id="sheetSelectorB" style="display:none;margin-top:8px;">
+        <p style="color:rgba(255,82,82,0.7);font-size:10px;margin:0 0 5px;letter-spacing:0.4px;">PESTAÑA A USAR</p>
+        <select class="cruce-select" style="margin-bottom:0;" onchange="onSheetChange('B',this)"></select>
+      </div>
+    </div>
+  </div>
+  <div class="cruce-hint">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,240,0.35)" stroke-width="1.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+    <p>Los ficheros se leen directamente en tu navegador. No se envían a ningún servidor.</p>
+  </div>
+  <div class="cruce-footer">
+    <button class="cruce-btn-back" onclick="goCruceStep(1)">← Volver</button>
+    <button class="cruce-btn-next disabled" id="btnNext2" onclick="if(cruceState.fileA&&cruceState.fileB) goCruceStep(3)">CONTINUAR →</button>
+  </div>
+</div>
+
+<div id="cruceStep3" class="cruce-body" style="display:none;">
+  <p class="cruce-step-label">Paso 3 de 3</p>
+  <p class="cruce-step-title">Configura el cruce</p>
+  <p class="cruce-config-label" style="color:#00D4F0;">COLUMNA CLAVE <span style="color:rgba(255,255,255,0.3);font-weight:400;">· identifica cada registro en ambos ficheros</span></p>
+  <select class="cruce-select" id="cruceKeyCol"><option value="">— Selecciona columna clave —</option></select>
+  <p class="cruce-config-label" style="color:#9B59FF;">COLUMNAS A COMPARAR <span style="color:rgba(255,255,255,0.3);font-weight:400;">· marca las que quieres cruzar</span></p>
+  <div class="cruce-cols-grid" id="cruceCols"></div>
+  <div class="cruce-ready-box">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="2" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+    <p>Se generará <strong id="cruceFileName">CHECK_Resultado_hoy.xlsx</strong> con pestañas: Resumen · Solo en A · Solo en B · Discrepancias · Coincidencias</p>
+  </div>
+  <div class="cruce-footer">
+    <button class="cruce-btn-back" onclick="goCruceStep(2)">← Volver</button>
+    <button class="cruce-btn-exec" onclick="ejecutarCruce()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#020B18" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      EJECUTAR Y DESCARGAR
+    </button>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
 <script>
 const cv = document.getElementById('bgc'), ctx = cv.getContext('2d');
 function drawBg() {
@@ -371,15 +566,7 @@ function drawBg() {
   ctx.clearRect(0,0,W,H);
   for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.strokeStyle='rgba(0,160,220,0.07)';ctx.lineWidth=.5;ctx.stroke();}
   for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.strokeStyle='rgba(0,160,220,0.07)';ctx.stroke();}
-  for(let x=0;x<W;x+=36) for(let y=0;y<H;y+=36){
-    ctx.beginPath();ctx.arc(x,y,.9,0,Math.PI*2);
-    ctx.fillStyle=Math.random()>.72?'rgba(0,212,240,0.22)':'rgba(255,255,255,0.04)';ctx.fill();
-  }
-  for(let i=0;i<80;i++){
-    const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.1+.15;
-    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fillStyle=Math.random()>.5?`rgba(0,212,240,${Math.random()*.25+.04})`:`rgba(255,255,255,${Math.random()*.1+.02})`;ctx.fill();
-  }
+  for(let x=0;x<W;x+=36) for(let y=0;y<H;y+=36){ctx.beginPath();ctx.arc(x,y,.9,0,Math.PI*2);ctx.fillStyle=Math.random()>.72?'rgba(0,212,240,0.22)':'rgba(255,255,255,0.04)';ctx.fill();}
 }
 drawBg(); window.addEventListener('resize', drawBg);
 
@@ -388,82 +575,215 @@ function setActive(el) {
   el.classList.add('active');
 }
 
-const WORKER_URL = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
-const STORE_KEY  = 'adminhub_convo27_fechas';
+// ===== MODAL CRUCE =====
+const cruceState = { mode:null, fileA:null, fileB:null, dataA:null, dataB:null, colsA:[], colsB:[], wbA:null, wbB:null };
+const stepLabels = ['Paso 1 de 3 · Tipo de análisis','Paso 2 de 3 · Cargar ficheros','Paso 3 de 3 · Configurar cruce'];
 
-const BRANDS = [
-  { id:'obs',      name:'OBS',      color:'#1dcc84' },
-  { id:'inesdi',   name:'INESDI',   color:'#a878f0' },
-  { id:'esdesign', name:'ESDesign', color:'#f0a830' },
-  { id:'ucma',     name:'UCMA',     color:'#3aabf0' }
-];
-const DATE_FIELDS = [
-  { key:'inicio',    label:'Inicio clases' },
-  { key:'cierre',    label:'Cierre contable' },
-  { key:'matricula', label:'Fin matrícula' }
-];
-const DEFAULTS = {
-  obs:      { inicio:'15/09/2027', cierre:'30/06/2027', matricula:'01/09/2027' },
-  inesdi:   { inicio:'01/10/2027', cierre:'15/07/2027', matricula:'15/09/2027' },
-  esdesign: { inicio:'20/09/2027', cierre:'20/06/2027', matricula:'05/09/2027' },
-  ucma:     { inicio:'08/10/2027', cierre:'30/07/2027', matricula:'25/09/2027' }
-};
+function openCruceModal() {
+  document.getElementById('cruceOverlay').classList.add('open');
+  const hoy = new Date();
+  const fecha = hoy.getFullYear().toString()+String(hoy.getMonth()+1).padStart(2,'0')+String(hoy.getDate()).padStart(2,'0');
+  document.getElementById('cruceFileName').textContent = 'CHECK_Resultado_'+fecha+'.xlsx';
+}
+function closeCruceModal() { document.getElementById('cruceOverlay').classList.remove('open'); }
+function cruceOverlayClick(e) { if(e.target===document.getElementById('cruceOverlay')) closeCruceModal(); }
+function toggleCruceHelp() { document.getElementById('cruceHelpPanel').classList.toggle('open'); }
 
-let data = {};
+function goCruceStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById('cruceStep'+i).style.display = i===n?'block':'none';
+    const dot = document.getElementById('cdot'+i);
+    if(i<n)      { dot.className='cruce-dot done';    dot.textContent='✓'; }
+    else if(i===n){ dot.className='cruce-dot active'; dot.textContent=i; }
+    else          { dot.className='cruce-dot pending';dot.textContent=i; }
+  });
+  document.getElementById('cruceStepSub').textContent = stepLabels[n-1];
+  if(n===3) buildStep3();
+}
+
+function selectCruceMode(mode) {
+  cruceState.mode = mode;
+  const colors = { registros:'rgba(0,212,240,0.3)', datos:'rgba(155,89,255,0.3)', duplic:'rgba(255,215,0,0.3)', completo:'rgba(0,200,83,0.3)' };
+  const colorsSelected = { registros:'#00D4F0', datos:'#9B59FF', duplic:'#FFD700', completo:'#00C853' };
+  ['registros','datos','duplic','completo'].forEach(m => {
+    const card = document.getElementById('mode-'+m);
+    if(m===mode) { card.style.borderColor=colorsSelected[m]; card.style.borderWidth='2px'; card.style.opacity='1'; }
+    else { card.style.borderColor=colors[m]; card.style.borderWidth='1.5px'; card.style.opacity='0.45'; }
+  });
+  document.getElementById('btnNext1').className='cruce-btn-next enabled';
+}
+
+function loadCruceFile(which, input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      if(which==='A') cruceState.wbA=wb; else cruceState.wbB=wb;
+      const sheets = wb.SheetNames;
+      aplicarHoja(which, wb, sheets[0], file);
+      const selector = document.getElementById('sheetSelector'+which);
+      const sel = selector.querySelector('select');
+      if(sheets.length>1) {
+        sel.innerHTML = sheets.map((s,i)=>'<option value="'+s+'"'+(i===0?' selected':'')+'>'+s+'</option>').join('');
+        selector.style.display='block';
+      } else { selector.style.display='none'; }
+    } catch(err) { alert('Error al leer el fichero.'); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function aplicarHoja(which, wb, sheetName, file) {
+  const ws = wb.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(ws, {defval:''});
+  const cols = data.length>0?Object.keys(data[0]):[];
+  const fileRef = file||(which==='A'?cruceState.fileA:cruceState.fileB);
+  if(which==='A') { cruceState.fileA=fileRef; cruceState.dataA=data; cruceState.colsA=cols; }
+  else            { cruceState.fileB=fileRef; cruceState.dataB=data; cruceState.colsB=cols; }
+  const color = which==='A'?'#4F8EF7':'#FF5252';
+  document.getElementById('label'+which).textContent='✓ '+fileRef.name+' · '+sheetName+' ('+data.length+' filas)';
+  document.getElementById('label'+which).style.color=color;
+  const zone=document.getElementById('zone'+which);
+  zone.style.borderStyle='solid'; zone.style.borderColor=color;
+  if(cruceState.fileA&&cruceState.fileB) document.getElementById('btnNext2').className='cruce-btn-next enabled';
+}
+
+function onSheetChange(which, sel) {
+  const wb=which==='A'?cruceState.wbA:cruceState.wbB; if(!wb) return;
+  aplicarHoja(which, wb, sel.value, null);
+}
+
+function buildStep3() {
+  const colsA=cruceState.colsA||[], colsB=cruceState.colsB||[];
+  const norm=s=>String(s).trim().toLowerCase();
+  const mapB={}; colsB.forEach(c=>{mapB[norm(c)]=c;});
+  const comunes=colsA.filter(c=>mapB[norm(c)]!==undefined);
+  const usarCols=comunes.length>0?comunes:colsA;
+  const sel=document.getElementById('cruceKeyCol');
+  sel.innerHTML='<option value="">— Selecciona columna clave —</option>';
+  usarCols.forEach(c=>{const opt=document.createElement('option');opt.value=c;opt.textContent=c;sel.appendChild(opt);});
+  const grid=document.getElementById('cruceCols');
+  grid.innerHTML=usarCols.map(c=>`<label class="cruce-col-check"><input type="checkbox" value="${c}"><span>${c}</span></label>`).join('');
+}
+
+function ejecutarCruce() {
+  const keyCol=document.getElementById('cruceKeyCol').value;
+  if(!keyCol){alert('Selecciona la columna clave.');return;}
+  const checks=document.querySelectorAll('#cruceCols input:checked');
+  const colsCompare=Array.from(checks).map(c=>c.value).filter(c=>c!==keyCol);
+  if(!colsCompare.length){alert('Selecciona al menos una columna a comparar.');return;}
+  const dataA=cruceState.dataA, dataB=cruceState.dataB;
+  const mapB={},mapA={};
+  dataB.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();if(k)mapB[k]=row;});
+  dataA.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();if(k)mapA[k]=row;});
+  const soloA=[],soloB=[],discrepancias=[],coincidencias=[],duplicadosA=[],duplicadosB=[];
+  dataA.forEach(row=>{
+    const k=String(row[keyCol]||'').trim().toUpperCase(); if(!k) return;
+    if(!mapB[k]){soloA.push(row);return;}
+    const diffs=[];
+    colsCompare.forEach(col=>{
+      const vA=String(row[col]||'').trim();
+      const rowB=mapB[k];
+      const colBKey=Object.keys(rowB).find(k2=>k2.trim().toLowerCase()===col.trim().toLowerCase())||col;
+      const vB=String(rowB[colBKey]||'').trim();
+      if(vA.toUpperCase()!==vB.toUpperCase()) diffs.push({_CLAVE_:String(row[keyCol]||''),_CAMPO_:col,_VALOR_A_:vA,_VALOR_B_:vB});
+    });
+    if(diffs.length>0) discrepancias.push(...diffs); else coincidencias.push(row);
+  });
+  dataB.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();if(k&&!mapA[k])soloB.push(row);});
+  const countA={};dataA.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();countA[k]=(countA[k]||0)+1;});
+  dataA.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();if(countA[k]>1)duplicadosA.push(row);});
+  const countB={};dataB.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();countB[k]=(countB[k]||0)+1;});
+  dataB.forEach(row=>{const k=String(row[keyCol]||'').trim().toUpperCase();if(countB[k]>1)duplicadosB.push(row);});
+  const nDiscReg=[...new Set(discrepancias.map(r=>String(r._CLAVE_||'').trim().toUpperCase()))].length;
+  const hasDup=duplicadosA.length>0||duplicadosB.length>0;
+  const wb=XLSX.utils.book_new();
+  const hoy=new Date();
+  const fechaStr=String(hoy.getDate()).padStart(2,'0')+'/'+String(hoy.getMonth()+1).padStart(2,'0')+'/'+hoy.getFullYear();
+  const horaStr=String(hoy.getHours()).padStart(2,'0')+':'+String(hoy.getMinutes()).padStart(2,'0');
+  function pct(n){return dataA.length>0?(n/dataA.length*100).toFixed(1)+'%':'—';}
+  const resumenRows=[
+    ['#','Concepto','Registros','% sobre A'],
+    [1,'Total fichero A',dataA.length,'—'],
+    [2,'Total fichero B',dataB.length,'—'],
+    [3,'Coincidencias exactas',coincidencias.length,pct(coincidencias.length)],
+    [4,'Solo en A',soloA.length,pct(soloA.length)],
+    [5,'Solo en B',soloB.length,'—'],
+    [6,'Con discrepancias',nDiscReg,pct(nDiscReg)],
+    [7,'Duplicados en A',duplicadosA.length,'—'],
+    [8,'Duplicados en B',duplicadosB.length,'—'],
+    ['','','',''],
+    ['','Generado: '+fechaStr+' · '+horaStr+' · Clave: '+keyCol,'','']
+  ];
+  const wsRes=XLSX.utils.aoa_to_sheet(resumenRows);
+  wsRes['!cols']=[{wch:4},{wch:56},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsRes,'RESUMEN');
+  function addSheet(nombre,datos){
+    if(!datos||!datos.length){const ws=XLSX.utils.aoa_to_sheet([['Sin registros']]);XLSX.utils.book_append_sheet(wb,ws,nombre);return;}
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(datos),nombre);
+  }
+  addSheet('Coincidencias',coincidencias);
+  addSheet('Solo en A',soloA);
+  addSheet('Solo en B',soloB);
+  if(discrepancias.length>0){addSheet('Discrepancias',discrepancias.map(r=>({[keyCol]:r._CLAVE_,'Campo':r._CAMPO_,'Valor en A':r._VALOR_A_,'Valor en B':r._VALOR_B_})));}
+  else{XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Sin discrepancias']]),'Discrepancias');}
+  if(hasDup)addSheet('Duplicados',[...duplicadosA.map(r=>({...r,Origen:'A'})),...duplicadosB.map(r=>({...r,Origen:'B'}))]);
+  const fecha=hoy.getFullYear().toString()+String(hoy.getMonth()+1).padStart(2,'0')+String(hoy.getDate()).padStart(2,'0');
+  XLSX.writeFile(wb,'CHECK_Resultado_'+fecha+'.xlsx');
+  closeCruceModal();
+}
+
+// ===== FECHAS + ALERTA AITOR =====
+const WORKER_URL='https://lucky-shadow-44ed.veronica-zueras.workers.dev';
+const STORE_KEY='adminhub_convo27_fechas';
+const BRANDS=[{id:'obs',name:'OBS',color:'#1dcc84'},{id:'inesdi',name:'INESDI',color:'#a878f0'},{id:'esdesign',name:'ESDesign',color:'#f0a830'},{id:'ucma',name:'UCMA',color:'#3aabf0'}];
+const DATE_FIELDS=[{key:'inicio',label:'Inicio clases'},{key:'cierre',label:'Cierre contable'},{key:'matricula',label:'Fin matrícula'}];
+const DEFAULTS={obs:{inicio:'15/09/2027',cierre:'30/06/2027',matricula:'01/09/2027'},inesdi:{inicio:'01/10/2027',cierre:'15/07/2027',matricula:'15/09/2027'},esdesign:{inicio:'20/09/2027',cierre:'20/06/2027',matricula:'05/09/2027'},ucma:{inicio:'08/10/2027',cierre:'30/07/2027',matricula:'25/09/2027'}};
+let data={};
 
 async function load() {
   try {
-    const res = await fetch(`${WORKER_URL}/kv?key=${STORE_KEY}`);
-    const result = await res.json();
-    data = result.value ? JSON.parse(result.value) : JSON.parse(JSON.stringify(DEFAULTS));
-  } catch(e) {
-    data = JSON.parse(JSON.stringify(DEFAULTS));
-  }
+    const res=await fetch(`${WORKER_URL}/kv?key=${STORE_KEY}`);
+    const result=await res.json();
+    data=result.value?JSON.parse(result.value):JSON.parse(JSON.stringify(DEFAULTS));
+  } catch(e){data=JSON.parse(JSON.stringify(DEFAULTS));}
   renderGrid();
   checkAndShowAlert();
 }
 
 async function persist() {
-  try {
-    await fetch(`${WORKER_URL}/kv`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: STORE_KEY, value: data })
-    });
-  } catch(e) {
-    console.error('Error guardando en KV:', e);
-  }
+  try { await fetch(`${WORKER_URL}/kv`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:STORE_KEY,value:data})}); }
+  catch(e){console.error(e);}
 }
 
 function daysLeft(dateStr) {
-  const parts = dateStr.split('/');
-  if (parts.length !== 3) return null;
-  const d = new Date(parts[2], parts[1]-1, parts[0]);
-  const diff = Math.round((d - new Date()) / 86400000);
-  return diff;
+  const parts=dateStr.split('/');
+  if(parts.length!==3) return null;
+  const d=new Date(parts[2],parts[1]-1,parts[0]);
+  return Math.round((d-new Date())/86400000);
 }
 
 function daysTag(dateStr) {
-  const d = daysLeft(dateStr);
-  if (d === null) return '';
-  if (d < 0) return `<span class="days-left past">hace ${Math.abs(d)} días</span>`;
-  if (d <= 90) return `<span class="days-left soon">en ${d} días</span>`;
+  const d=daysLeft(dateStr);
+  if(d===null) return '';
+  if(d<0) return `<span class="days-left past">hace ${Math.abs(d)} días</span>`;
+  if(d<=90) return `<span class="days-left soon">en ${d} días</span>`;
   return `<span class="days-left ok">en ${d} días</span>`;
 }
 
 function renderGrid() {
-  const grid = document.getElementById('brandsGrid');
-  grid.innerHTML = BRANDS.map((b, i) => `
+  const grid=document.getElementById('brandsGrid');
+  grid.innerHTML=BRANDS.map((b,i)=>`
     <div class="brand-card ${b.id}" style="animation-delay:${i*0.06}s">
       <span class="brand-name-badge">${b.name}</span>
       <div class="date-row">
-        ${DATE_FIELDS.map(f => {
-          const val = data[b.id]?.[f.key] || '';
-          const d = daysLeft(val);
-          const expired = d !== null && d < 0;
-          return `<div class="date-item${expired ? ' expired' : ''}">
+        ${DATE_FIELDS.map(f=>{
+          const val=data[b.id]?.[f.key]||'';
+          const d=daysLeft(val);
+          const expired=d!==null&&d<0;
+          return `<div class="date-item${expired?' expired':''}">
             <span class="date-lbl">${f.label}</span>
-            <span class="date-val">${val || '—'}</span>
+            <span class="date-val">${val||'—'}</span>
             ${daysTag(val)}
           </div>`;
         }).join('')}
@@ -473,77 +793,54 @@ function renderGrid() {
 }
 
 function checkAndShowAlert() {
-  const expired = [];
-  BRANDS.forEach(b => {
-    DATE_FIELDS.forEach(f => {
-      const val = data[b.id]?.[f.key] || '';
-      const d = daysLeft(val);
-      if (d !== null && d < 0) {
-        const brandName = BRANDS.find(br => br.id === b.id)?.name || b.id;
-        expired.push(`${brandName} — ${f.label}`);
-      }
+  const expired=[];
+  BRANDS.forEach(b=>{
+    DATE_FIELDS.forEach(f=>{
+      const val=data[b.id]?.[f.key]||'';
+      const d=daysLeft(val);
+      if(d!==null&&d<0) expired.push(`${b.name} — ${f.label}`);
     });
   });
-  if (!expired.length) return;
-  const list = document.getElementById('aitorExpList');
-  list.innerHTML = expired.map(e => `
-    <div class="aitor-exp-item">
-      <div class="aitor-exp-dot"></div>
-      <span class="aitor-exp-text">${e}</span>
-    </div>`).join('');
+  if(!expired.length) return;
+  document.getElementById('aitorExpList').innerHTML=expired.map(e=>`
+    <div class="aitor-exp-item"><div class="aitor-exp-dot"></div><span class="aitor-exp-text">${e}</span></div>`).join('');
   document.getElementById('aitorAlertOverlay').classList.add('open');
 }
 
-function closeAitorAlert() {
-  document.getElementById('aitorAlertOverlay').classList.remove('open');
-}
-
-document.getElementById('aitorAlertOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeAitorAlert();
-});
+function closeAitorAlert() { document.getElementById('aitorAlertOverlay').classList.remove('open'); }
+document.getElementById('aitorAlertOverlay').addEventListener('click',function(e){if(e.target===this)closeAitorAlert();});
 
 function openModal() {
-  const fields = document.getElementById('modalFields');
-  fields.innerHTML = BRANDS.map(b => `
+  document.getElementById('modalFields').innerHTML=BRANDS.map(b=>`
     <div class="modal-brand-section">
       <div class="brand-card ${b.id}" style="background:transparent;border:none;padding:0;animation:none;">
         <div class="modal-brand-title">${b.name}</div>
       </div>
       <div class="field-row">
-        ${DATE_FIELDS.map(f => `
+        ${DATE_FIELDS.map(f=>`
           <div class="field">
             <label>${f.label}</label>
-            <input type="text" id="f_${b.id}_${f.key}" placeholder="dd/mm/aaaa" value="${data[b.id]?.[f.key] || ''}">
-          </div>
-        `).join('')}
+            <input type="text" id="f_${b.id}_${f.key}" placeholder="dd/mm/aaaa" value="${data[b.id]?.[f.key]||''}">
+          </div>`).join('')}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
   document.getElementById('editOverlay').classList.add('open');
 }
 
-function closeModal() {
-  document.getElementById('editOverlay').classList.remove('open');
-}
+function closeModal(){document.getElementById('editOverlay').classList.remove('open');}
 
-async function saveDates() {
-  BRANDS.forEach(b => {
-    if (!data[b.id]) data[b.id] = {};
-    DATE_FIELDS.forEach(f => {
-      const val = document.getElementById(`f_${b.id}_${f.key}`)?.value.trim();
-      if (val) data[b.id][f.key] = val;
-    });
+async function saveDates(){
+  BRANDS.forEach(b=>{
+    if(!data[b.id])data[b.id]={};
+    DATE_FIELDS.forEach(f=>{const val=document.getElementById(`f_${b.id}_${f.key}`)?.value.trim();if(val)data[b.id][f.key]=val;});
   });
-  await persist();
-  renderGrid();
-  closeModal();
+  await persist(); renderGrid(); closeModal();
 }
 
-document.getElementById('editOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('editOverlay')) closeModal();
-});
+document.getElementById('editOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('editOverlay'))closeModal();});
 
 load();
 </script>
+
 </body>
 </html>
