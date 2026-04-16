@@ -314,13 +314,13 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
   </div>
 </div>
 
-<!-- Sub-modal añadir cierre -->
+<!-- Sub-modal añadir / editar cierre -->
 <div id="addCierreOverlay" onclick="addCierreOverlayClick(event)">
   <div class="modal">
     <div class="modal-head">
       <h2>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Añadir convocatoria
+        <span id="addCierreTitle">Añadir convocatoria</span>
       </h2>
       <button class="modal-close" onclick="closeAddCierre()">✕</button>
     </div>
@@ -331,6 +331,10 @@ canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
       <div class="color-swatches" id="cierreSwatches"></div>
     </div>
     <div class="modal-foot">
+      <button class="btn-delete" id="deleteCierreBtn" style="display:none;" onclick="deleteCierre()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Eliminar
+      </button>
       <button class="btn-cancel" onclick="closeAddCierre()">Cancelar</button>
       <button class="btn-save" onclick="saveNewCierre()">Guardar</button>
     </div>
@@ -470,12 +474,15 @@ function renderCierresNodes() {
   const container = document.getElementById('cierresNodes');
   const nodes = cierres.map((c, i) => {
     const color = c.color || '#00E6FF';
-    const clickAttr = c.url ? `onclick="window.open('${esc(c.url)}','_blank')"` : '';
-    return `<div class="cnode" ${clickAttr} title="${esc(c.nombre)}${c.url ? '' : ' (sin URL)'}">
-      <div class="cbubble" style="border:1.5px solid ${color}55;">
+    const clickAction = c.url ? `window.open('${esc(c.url)}','_blank')` : '';
+    return `<div class="cnode" style="position:relative;">
+      <div class="cbubble" style="border:1.5px solid ${color}55;" onclick="${clickAction}" title="${esc(c.nombre)}${c.url ? '' : ' (sin URL)'}">
         <svg width="36" height="36" viewBox="0 0 30 30" fill="none">
           <path d="M3 26l7-10 6 5 6-11 6 7" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
+        <div class="rbubble-edit" onclick="event.stopPropagation();openEditCierre(${i})" title="Editar">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(0,210,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+        </div>
       </div>
       <span class="cnode-label" style="color:${color}cc;">${esc(c.nombre)}</span>
     </div>`;
@@ -491,11 +498,28 @@ function renderCierresNodes() {
   container.innerHTML = nodes + addNode;
 }
 
-// ─── Sub-modal añadir cierre ─────────────────────────────────
+// ─── Sub-modal añadir / editar cierre ────────────────────────
+let editCierreIdx = null;
+
 function openAddCierre() {
+  editCierreIdx = null;
+  document.getElementById('addCierreTitle').textContent = 'Añadir convocatoria';
   document.getElementById('cNombre').value = '';
   document.getElementById('cUrl').value = '';
+  document.getElementById('deleteCierreBtn').style.display = 'none';
   selectedSwatchColor = SWATCH_COLORS[0];
+  renderSwatches();
+  document.getElementById('addCierreOverlay').classList.add('open');
+}
+
+function openEditCierre(idx) {
+  const c = cierres[idx]; if (!c) return;
+  editCierreIdx = idx;
+  document.getElementById('addCierreTitle').textContent = 'Editar convocatoria';
+  document.getElementById('cNombre').value = c.nombre;
+  document.getElementById('cUrl').value = c.url || '';
+  document.getElementById('deleteCierreBtn').style.display = 'flex';
+  selectedSwatchColor = c.color || SWATCH_COLORS[0];
   renderSwatches();
   document.getElementById('addCierreOverlay').classList.add('open');
 }
@@ -525,7 +549,21 @@ async function saveNewCierre() {
   const nombre = document.getElementById('cNombre').value.trim();
   if (!nombre) { alert('El nombre es obligatorio.'); return; }
   const url = document.getElementById('cUrl').value.trim();
-  cierres.push({ nombre, url, color: selectedSwatchColor });
+  const obj = { nombre, url, color: selectedSwatchColor };
+  if (editCierreIdx !== null) {
+    cierres[editCierreIdx] = obj;
+  } else {
+    cierres.push(obj);
+  }
+  await persistCierres();
+  closeAddCierre();
+  renderCierresNodes();
+}
+
+async function deleteCierre() {
+  const c = cierres[editCierreIdx];
+  if (!c || !confirm(`¿Eliminar "${c.nombre}"?`)) return;
+  cierres.splice(editCierreIdx, 1);
   await persistCierres();
   closeAddCierre();
   renderCierresNodes();
