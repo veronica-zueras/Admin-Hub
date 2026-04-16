@@ -1,6 +1,670 @@
 <!DOCTYPE html>
 <html lang="es">
+<h<!DOCTYPE html>
+<html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes — Admin Hub</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #041C2E; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #E0F7FF; min-height: 100vh; }
+.bg-overlay { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(circle at center, rgba(0,60,110,0.45) 0%, rgba(4,28,46,0.85) 60%, #041C2E 100%); }
+canvas#bgc { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.corner { position: fixed; width: 28px; height: 28px; z-index: 5; pointer-events: none; }
+.corner.tl { top:14px; left:14px; border-top:1.5px solid rgba(0,230,255,0.35); border-left:1.5px solid rgba(0,230,255,0.35); }
+.corner.tr { top:14px; right:14px; border-top:1.5px solid rgba(0,230,255,0.35); border-right:1.5px solid rgba(0,230,255,0.35); }
+.corner.bl { bottom:14px; left:14px; border-bottom:1.5px solid rgba(0,230,255,0.35); border-left:1.5px solid rgba(0,230,255,0.35); }
+.corner.br { bottom:14px; right:14px; border-bottom:1.5px solid rgba(0,230,255,0.35); border-right:1.5px solid rgba(0,230,255,0.35); }
+.sys-tag { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); font-family:'Courier New',monospace; font-size:9px; letter-spacing:0.14em; color:rgba(0,200,255,0.15); z-index:5; pointer-events:none; white-space:nowrap; }
+.topbar { position:relative; z-index:20; padding:20px 28px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(0,230,255,0.08); }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand-sq { width:40px; height:40px; border-radius:11px; background:#003A5C; border:1px solid rgba(0,230,255,0.4); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.brand-name { color:#fff; font-size:17px; font-weight:500; letter-spacing:-0.02em; }
+.brand-dept { color:rgba(0,230,255,0.38); font-size:11px; margin-top:2px; letter-spacing:0.03em; }
+.back-btn { display:flex; align-items:center; gap:7px; background:rgba(0,90,130,0.15); border:1px solid rgba(0,230,255,0.25); border-radius:10px; padding:7px 14px; color:rgba(0,230,255,0.8); font-size:12px; cursor:pointer; text-decoration:none; transition:all 0.2s; }
+.back-btn:hover { background:rgba(0,230,255,0.1); border-color:rgba(0,230,255,0.6); color:#00E6FF; }
+.page-head { position:relative; z-index:10; padding:26px 32px 0; display:flex; align-items:center; justify-content:center; }
+.page-head-inner { text-align:center; }
+.page-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(0,230,255,0.35); margin-bottom:6px; display:flex; align-items:center; gap:6px; justify-content:center; }
+.page-eyebrow::before { content:''; display:inline-block; width:18px; height:1px; background:rgba(0,230,255,0.3); }
+.page-title { font-size:26px; font-weight:600; letter-spacing:-0.03em; color:#E0F7FF; display:flex; align-items:center; gap:12px; justify-content:center; }
+.page-title svg { filter:drop-shadow(0 0 8px rgba(0,230,255,0.5)); }
+.page-sub { color:rgba(0,200,230,0.35); font-size:12px; margin-top:5px; }
+.add-btn { display:flex; align-items:center; gap:8px; background:rgba(0,80,130,0.3); border:1.5px solid rgba(0,230,255,0.4); border-radius:10px; padding:10px 18px; color:#00E6FF; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; font-family:inherit; position:absolute; top:20px; right:28px; z-index:20; }
+.add-btn:hover { background:rgba(0,230,255,0.12); border-color:#00E6FF; transform:translateY(-1px); }
+.toolbar { position:relative; z-index:10; padding:18px 32px 0; display:flex; align-items:center; justify-content:center; gap:12px; }
+.search-wrap { width:38%; min-width:200px; position:relative; }
+.search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
+.search-input { width:100%; background:rgba(0,20,40,0.8); border:1px solid rgba(0,230,255,0.6); border-radius:10px; padding:10px 14px 10px 38px; color:#E0F7FF; font-size:13px; font-family:inherit; outline:none; transition:border-color 0.2s; }
+.search-input:focus { border-color:#00E6FF; box-shadow:0 0 0 3px rgba(0,230,255,0.12); }
+.search-input::placeholder { color:rgba(0,200,230,0.22); }
+.total-pill { background:rgba(0,30,55,0.8); border:1px solid rgba(0,230,255,0.15); border-radius:8px; padding:6px 12px; font-size:11px; color:rgba(0,200,230,0.5); white-space:nowrap; }
+.section-lbl { position:relative; z-index:10; padding:22px 32px 0; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(0,230,255,0.3); display:flex; align-items:center; gap:6px; }
+.section-lbl::before { content:''; display:inline-block; width:18px; height:1px; background:rgba(0,230,255,0.2); }
+.marca-grid { position:relative; z-index:10; padding:10px 32px 0; display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.mc { background:rgba(0,14,30,0.9); border:1px solid rgba(0,212,240,0.12); border-radius:13px; padding:14px 16px; animation:fadeUp 0.35s ease both; }
+.mc::before { content:''; display:block; height:2px; border-radius:2px; margin-bottom:11px; }
+.mc.obs::before    { background:linear-gradient(90deg,#1dcc84,transparent); }
+.mc.inesdi::before { background:linear-gradient(90deg,#a878f0,transparent); }
+.mc.esdesign::before { background:linear-gradient(90deg,#f0a830,transparent); }
+.mc.ucma::before   { background:linear-gradient(90deg,#3aabf0,transparent); }
+.mc-name { font-size:15px; font-weight:700; letter-spacing:-0.02em; margin-bottom:3px; }
+.mc.obs .mc-name    { color:#1dcc84; }
+.mc.inesdi .mc-name { color:#a878f0; }
+.mc.esdesign .mc-name { color:#f0a830; }
+.mc.ucma .mc-name   { color:#3aabf0; }
+.mc-subtitle { font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:rgba(0,180,210,0.32); margin-bottom:9px; }
+.mc-divider { height:1px; background:rgba(0,212,240,0.07); margin-bottom:9px; }
+.mc-stats { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.mc-stat { background:rgba(0,25,50,0.6); border-radius:7px; padding:7px 9px; border:1px solid rgba(0,212,240,0.07); }
+.mc-stat-lbl { font-size:10px; letter-spacing:0.05em; text-transform:uppercase; color:rgba(0,200,230,0.65); margin-bottom:3px; }
+.mc-stat-val { font-size:22px; font-weight:600; line-height:1; }
+.mc.obs .mc-stat-val    { color:#1dcc84; }
+.mc.inesdi .mc-stat-val { color:#a878f0; }
+.mc.esdesign .mc-stat-val { color:#f0a830; }
+.mc.ucma .mc-stat-val   { color:#3aabf0; }
+.mc-stat-val.muted { color:rgba(220,245,255,0.45) !important; font-size:18px; }
+.mc-updated { font-size:9px; color:rgba(0,180,210,0.2); margin-top:9px; text-align:right; font-family:'Courier New',monospace; }
+.bubbles-wrap { position:relative; z-index:10; padding:14px 32px 60px; display:flex; flex-wrap:wrap; gap:28px; justify-content:center; }
+.rnode { display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:transform 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+.rnode:hover { transform:scale(1.1); }
+.rbubble { width:108px; height:108px; border-radius:50%; background:rgba(3,10,20,0.92); border:1.5px solid rgba(0,230,255,0.15); display:flex; align-items:center; justify-content:center; position:relative; transition:border-color 0.2s, box-shadow 0.2s; box-shadow:inset 0 0 22px rgba(0,80,140,0.1); }
+.rnode:hover .rbubble { border-color:rgba(0,230,255,0.6); box-shadow:0 0 22px rgba(0,230,255,0.14),inset 0 0 22px rgba(0,100,160,0.1); }
+.rnode-label { font-size:12px; font-weight:500; color:rgba(0,190,220,0.5); text-align:center; line-height:1.3; max-width:100px; transition:color 0.2s; }
+.rnode:hover .rnode-label { color:#00E6FF; }
+.rbubble-edit { position:absolute; bottom:4px; right:4px; width:24px; height:24px; border-radius:50%; background:rgba(0,20,40,0.92); border:1px solid rgba(0,230,255,0.2); display:flex; align-items:center; justify-content:center; transition:border-color 0.15s; }
+.rnode:hover .rbubble-edit { border-color:rgba(0,230,255,0.6); }
+
+/* ── Modal base ── */
+.overlay { position:fixed; inset:0; z-index:200; background:rgba(0,5,15,0.85); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; padding:1rem; }
+.overlay.open { display:flex; }
+.modal { width:min(500px,96vw); max-height:90vh; overflow-y:auto; background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:18px; padding:24px; box-shadow:0 0 60px rgba(0,180,255,0.12); animation:fadeUp 0.28s ease; }
+.modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid rgba(0,230,255,0.1); }
+.modal-head h2 { font-size:15px; font-weight:600; color:#E0F7FF; display:flex; align-items:center; gap:8px; }
+.modal-close { width:30px; height:30px; border-radius:8px; background:transparent; border:1px solid rgba(0,230,255,0.2); color:rgba(0,230,255,0.5); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-family:inherit; }
+.modal-close:hover { background:rgba(0,230,255,0.1); color:#00E6FF; border-color:rgba(0,230,255,0.5); }
+.field { margin-bottom:14px; }
+.field label { display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,200,230,0.4); margin-bottom:6px; }
+.field input, .field textarea, .field select { width:100%; background:rgba(0,20,40,0.8); border:1px solid rgba(0,230,255,0.18); border-radius:9px; padding:10px 13px; color:#E0F7FF; font-size:13px; font-family:inherit; outline:none; transition:border-color 0.2s; appearance:none; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color:rgba(0,230,255,0.5); box-shadow:0 0 0 3px rgba(0,230,255,0.07); }
+.field input::placeholder, .field textarea::placeholder { color:rgba(0,200,230,0.22); }
+.field textarea { resize:vertical; min-height:72px; }
+.field select option { background:#030E1E; color:#E0F7FF; }
+.modal-foot { display:flex; justify-content:flex-end; gap:8px; padding-top:14px; border-top:1px solid rgba(0,230,255,0.08); margin-top:4px; }
+.btn-cancel { background:transparent; border:1px solid rgba(0,230,255,0.2); border-radius:9px; padding:9px 16px; color:rgba(0,200,230,0.5); font-size:13px; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.btn-cancel:hover { background:rgba(0,230,255,0.06); color:#00E6FF; }
+.btn-save { background:rgba(0,80,130,0.4); border:1.5px solid rgba(0,230,255,0.45); border-radius:9px; padding:9px 20px; color:#00E6FF; font-size:13px; font-weight:500; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.btn-save:hover { background:rgba(0,230,255,0.12); border-color:#00E6FF; }
+.btn-delete { display:none; align-items:center; gap:6px; background:rgba(163,45,45,0.15); border:1px solid rgba(240,149,149,0.3); border-radius:9px; padding:9px 16px; color:#F09595; font-size:13px; cursor:pointer; font-family:inherit; margin-right:auto; transition:all 0.15s; }
+.btn-delete:hover { background:rgba(163,45,45,0.3); }
+
+/* ── Modal genérico burbujas (Cierres + Becas) ── */
+.bmodal { width:min(620px,96vw); background:#030E1E; border:1px solid rgba(0,230,255,0.3); border-radius:18px; overflow:hidden; box-shadow:0 0 60px rgba(0,180,255,0.12); animation:fadeUp 0.28s ease; }
+.bmodal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 22px; border-bottom:1px solid rgba(0,230,255,0.1); }
+.bmodal-header-left { display:flex; align-items:center; gap:11px; }
+.bmodal-icon { width:30px; height:30px; border-radius:50%; border:1.5px solid rgba(0,230,255,0.5); display:flex; align-items:center; justify-content:center; }
+.bmodal-title { color:#00D4F0; font-size:13px; letter-spacing:1px; text-transform:uppercase; margin:0; }
+.bmodal-sub { color:rgba(255,255,255,0.35); font-size:10px; margin:3px 0 0; }
+.bmodal-close { width:22px; height:22px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); background:transparent; color:rgba(255,255,255,0.4); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:inherit; transition:all 0.15s; }
+.bmodal-close:hover { border-color:rgba(0,230,255,0.5); color:#00E6FF; }
+.bmodal-body { padding:28px 32px; }
+.bmodal-nodes { display:flex; justify-content:center; flex-wrap:wrap; gap:28px; margin-bottom:22px; }
+.cnode { display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:transform 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+.cnode:hover { transform:scale(1.1); }
+.cbubble { width:108px; height:108px; border-radius:50%; background:rgba(3,10,20,0.92); display:flex; align-items:center; justify-content:center; transition:border-color 0.2s, box-shadow 0.2s; box-shadow:inset 0 0 22px rgba(0,80,140,0.1); position:relative; }
+.cnode:hover .cbubble { box-shadow:0 0 22px rgba(0,230,255,0.14),inset 0 0 22px rgba(0,100,160,0.1); }
+.cnode-label { font-size:13px; font-weight:500; text-align:center; line-height:1.3; }
+.cnode-add .cbubble { border:1.5px dashed rgba(0,230,255,0.3) !important; }
+.cnode-add .cnode-label { color:rgba(0,230,255,0.45); font-size:12px; }
+.bmodal-hint { background:#020B18; border:1px dashed rgba(0,230,255,0.15); border-radius:10px; padding:10px 16px; display:flex; align-items:center; gap:10px; }
+.bmodal-hint p { color:rgba(255,255,255,0.25); font-size:10px; margin:0; line-height:1.5; }
+.bmodal-hint span { color:rgba(0,212,240,0.5); }
+
+/* ── Sub-modal añadir/editar ── */
+.color-swatches { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+.swatch { width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform 0.15s, border-color 0.15s; }
+.swatch:hover { transform:scale(1.15); }
+.swatch.selected { border-color:#fff; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.empty-state { width:100%; text-align:center; padding:3rem 1rem; color:rgba(0,200,230,0.28); }
+.empty-state svg { margin:0 auto 14px; display:block; opacity:.35; }
+.empty-state p { font-size:14px; }
+
+@media(max-width:700px){
+  .topbar,.page-head,.toolbar,.section-lbl,.marca-grid,.bubbles-wrap { padding-left:16px; padding-right:16px; }
+  .marca-grid { grid-template-columns:repeat(2,1fr); }
+  .page-title { font-size:20px; }
+  .add-btn { position:static; margin:12px 16px 0; }
+  .bmodal-nodes { gap:18px; }
+  .cbubble { width:86px; height:86px; }
+}
+@media(max-width:420px){ .marca-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<div class="bg-overlay"></div>
+<canvas id="bgc"></canvas>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="sys-tag">SYS.REPORTES v2.0 · NET.ACTIVE</div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-sq">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#00E6FF"/>
+        <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#00E6FF"/>
+        <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#00E6FF"/>
+        <rect x="11" y="11" width="7" height="7" rx="1.5" fill="rgba(0,230,255,0.28)"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">Admin Hub</div>
+      <div class="brand-dept">Gestión Cobros</div>
+    </div>
+  </div>
+  <a href="../index.html" class="back-btn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Volver al Hub
+  </a>
+</div>
+
+<div class="page-head">
+  <div class="page-head-inner">
+    <div class="page-eyebrow">módulo · reportes</div>
+    <div class="page-title">
+      <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+        <path d="M3 26l7-10 6 5 6-11 6 7" stroke="#00E6FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Reportes
+    </div>
+    <div class="page-sub">Informes operativos · Gestión de Cobros</div>
+  </div>
+  <button class="add-btn" onclick="openAdd()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Añadir reporte
+  </button>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,230,255,0.35)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" id="searchInput" type="text" placeholder="Buscar reportes…" oninput="renderGrid()">
+  </div>
+  <div class="total-pill" id="totalPill">0 reportes</div>
+</div>
+
+<div class="section-lbl">DATOS CLAVE</div>
+<div class="marca-grid">
+  <div class="mc obs" style="animation-delay:0s">
+    <div class="mc-name">OBS</div><div class="mc-subtitle">Convocatoria actual</div><div class="mc-divider"></div>
+    <div class="mc-stats">
+      <div class="mc-stat"><div class="mc-stat-lbl">Total brutas</div><div class="mc-stat-val" id="obs-brutas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Bajas</div><div class="mc-stat-val muted" id="obs-bajas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">CC / CE</div><div class="mc-stat-val muted" id="obs-ccce">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Pendings</div><div class="mc-stat-val muted" id="obs-pendings">—</div></div>
+    </div>
+    <div class="mc-updated" id="obs-updated">Pendiente de URL</div>
+  </div>
+  <div class="mc inesdi" style="animation-delay:0.05s">
+    <div class="mc-name">INESDI</div><div class="mc-subtitle">Convocatoria actual</div><div class="mc-divider"></div>
+    <div class="mc-stats">
+      <div class="mc-stat"><div class="mc-stat-lbl">Total brutas</div><div class="mc-stat-val" id="inesdi-brutas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Bajas</div><div class="mc-stat-val muted" id="inesdi-bajas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">CC / CE</div><div class="mc-stat-val muted" id="inesdi-ccce">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Pendings</div><div class="mc-stat-val muted" id="inesdi-pendings">—</div></div>
+    </div>
+    <div class="mc-updated" id="inesdi-updated">Pendiente de URL</div>
+  </div>
+  <div class="mc esdesign" style="animation-delay:0.10s">
+    <div class="mc-name">ESDesign</div><div class="mc-subtitle">Convocatoria actual</div><div class="mc-divider"></div>
+    <div class="mc-stats">
+      <div class="mc-stat"><div class="mc-stat-lbl">Total brutas</div><div class="mc-stat-val" id="esdesign-brutas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Bajas</div><div class="mc-stat-val muted" id="esdesign-bajas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">CC / CE</div><div class="mc-stat-val muted" id="esdesign-ccce">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Pendings</div><div class="mc-stat-val muted" id="esdesign-pendings">—</div></div>
+    </div>
+    <div class="mc-updated" id="esdesign-updated">Pendiente de URL</div>
+  </div>
+  <div class="mc ucma" style="animation-delay:0.15s">
+    <div class="mc-name">UCMA</div><div class="mc-subtitle">Convocatoria actual</div><div class="mc-divider"></div>
+    <div class="mc-stats">
+      <div class="mc-stat"><div class="mc-stat-lbl">Total brutas</div><div class="mc-stat-val" id="ucma-brutas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Bajas</div><div class="mc-stat-val muted" id="ucma-bajas">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">CC / CE</div><div class="mc-stat-val muted" id="ucma-ccce">—</div></div>
+      <div class="mc-stat"><div class="mc-stat-lbl">Pendings</div><div class="mc-stat-val muted" id="ucma-pendings">—</div></div>
+    </div>
+    <div class="mc-updated" id="ucma-updated">Pendiente de URL</div>
+  </div>
+</div>
+
+<div class="section-lbl" style="padding-top:24px;">Reportes</div>
+<div class="bubbles-wrap" id="grid"></div>
+
+<!-- Modal reporte genérico -->
+<div class="overlay" id="formOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        <span id="formTitle">Nuevo reporte</span>
+      </h2>
+      <button class="modal-close" onclick="closeOverlay()">✕</button>
+    </div>
+    <div class="field"><label>Nombre *</label><input type="text" id="fTitle" placeholder="Nombre del reporte"></div>
+    <div class="field"><label>Descripción</label><textarea id="fDesc" placeholder="Breve descripción…"></textarea></div>
+    <div class="field"><label>Enlace</label><input type="url" id="fUrl" placeholder="https://…"></div>
+    <div class="field">
+      <label>Color</label>
+      <select id="fColor">
+        <option value="#00E6FF">Cyan</option>
+        <option value="#1dcc84">Verde</option>
+        <option value="#f0a830">Naranja</option>
+        <option value="#3aabf0">Azul</option>
+        <option value="#a878f0">Morado</option>
+        <option value="#f07878">Rojo</option>
+      </select>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-delete" id="deleteBtn" onclick="deleteReport()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Eliminar
+      </button>
+      <button class="btn-cancel" onclick="closeOverlay()">Cancelar</button>
+      <button class="btn-save" onclick="saveReport()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cierres -->
+<div id="cierresOverlay" class="overlay" onclick="if(event.target===this)closeBModal('cierres')">
+  <div class="bmodal">
+    <div class="bmodal-header">
+      <div class="bmodal-header-left">
+        <div class="bmodal-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00E6FF" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div>
+          <p class="bmodal-title">Cierres Antiguos</p>
+          <p class="bmodal-sub">Selecciona la convocatoria para abrirla</p>
+        </div>
+      </div>
+      <button class="bmodal-close" onclick="closeBModal('cierres')">✕</button>
+    </div>
+    <div class="bmodal-body">
+      <div class="bmodal-nodes" id="cierresNodes"></div>
+      <div class="bmodal-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,240,0.35)" stroke-width="1.5" style="flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>Clic en la convocatoria para abrirla · Usa <span>Añadir</span> para crear una nueva · Los cambios se sincronizan para todos</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Becas -->
+<div id="becasOverlay" class="overlay" onclick="if(event.target===this)closeBModal('becas')">
+  <div class="bmodal">
+    <div class="bmodal-header">
+      <div class="bmodal-header-left">
+        <div class="bmodal-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1dcc84" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div>
+          <p class="bmodal-title">Becas</p>
+          <p class="bmodal-sub">Selecciona el tipo de beca para abrirlo</p>
+        </div>
+      </div>
+      <button class="bmodal-close" onclick="closeBModal('becas')">✕</button>
+    </div>
+    <div class="bmodal-body">
+      <div class="bmodal-nodes" id="becasNodes"></div>
+      <div class="bmodal-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,240,0.35)" stroke-width="1.5" style="flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>Clic en el tipo de beca para abrirlo · Usa <span>Añadir</span> para crear uno nuevo · Los cambios se sincronizan para todos</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sub-modal añadir/editar entrada genérica -->
+<div id="addEntryOverlay" class="overlay" onclick="if(event.target===this)closeAddEntry()">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span id="addEntryTitle">Añadir entrada</span>
+      </h2>
+      <button class="modal-close" onclick="closeAddEntry()">✕</button>
+    </div>
+    <div class="field"><label>Nombre *</label><input type="text" id="eNombre" placeholder="Nombre…"></div>
+    <div class="field"><label>URL</label><input type="url" id="eUrl" placeholder="https://…"></div>
+    <div class="field">
+      <label>Color</label>
+      <div class="color-swatches" id="entrySwatches"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-delete" id="deleteEntryBtn" style="display:none;" onclick="deleteEntry()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Eliminar
+      </button>
+      <button class="btn-cancel" onclick="closeAddEntry()">Cancelar</button>
+      <button class="btn-save" onclick="saveEntry()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('bgc'), ctx = cv.getContext('2d');
+function drawBg() {
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.strokeStyle='rgba(0,160,220,0.07)';ctx.lineWidth=.5;ctx.stroke();}
+  for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.strokeStyle='rgba(0,160,220,0.07)';ctx.stroke();}
+  for(let x=0;x<W;x+=36) for(let y=0;y<H;y+=36){
+    ctx.beginPath();ctx.arc(x,y,.9,0,Math.PI*2);
+    ctx.fillStyle=Math.random()>.72?'rgba(0,230,255,0.25)':'rgba(255,255,255,0.05)';ctx.fill();
+  }
+  for(let i=0;i<80;i++){
+    const x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.1+.15;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=Math.random()>.5?`rgba(0,220,255,${Math.random()*.28+.04})`:`rgba(255,255,255,${Math.random()*.12+.02})`;ctx.fill();
+  }
+}
+drawBg(); window.addEventListener('resize', drawBg);
+
+const WORKER_URL  = 'https://lucky-shadow-44ed.veronica-zueras.workers.dev';
+const STORE_KEY   = 'adminhub_reportes_v1';
+const CIERRES_KEY = 'adminhub_cierres_v1';
+const BECAS_KEY   = 'adminhub_becas_v1';
+const DATA_URL    = '';
+
+const SWATCH_COLORS = ['#1dcc84','#a878f0','#f0a830','#3aabf0','#00E6FF','#f07878','#FFD700','#ff7eb3'];
+
+const DEFAULTS = [
+  { title:'Becas',           desc:'Informe de alumnos con beca activa',   url:'__BECAS__',   color:'#1dcc84', date:'' },
+  { title:'Cierres Pasados', desc:'Histórico de cierres contables',       url:'__CIERRES__', color:'#f0a830', date:'' },
+  { title:'BI Curva',        desc:'Dashboard Power BI · curva de cobros', url:'',            color:'#3aabf0', date:'' },
+  { title:'SXDataHub',       desc:'Plataforma de datos SalesXcelerate',   url:'',            color:'#a878f0', date:'' }
+];
+
+const CIERRES_DEFAULTS = [
+  { nombre:'2024', url:'', color:'#1dcc84' },
+  { nombre:'2025', url:'', color:'#a878f0' }
+];
+
+const BECAS_DEFAULTS = [
+  { nombre:"L'H",        url:'', color:'#3aabf0' },
+  { nombre:'Colaborador',url:'', color:'#f0a830' }
+];
+
+let items = [], editIdx = null;
+// datos de modales de burbujas: clave → array
+const bdata = { cierres: [], becas: [] };
+// estado sub-modal genérico
+let activeCollection = null; // 'cierres' | 'becas'
+let editEntryIdx = null;
+let selectedSwatchColor = SWATCH_COLORS[0];
+
+// ─── Carga inicial ────────────────────────────────────────────
+async function load() {
+  try {
+    const [r1, r2, r3] = await Promise.all([
+      fetch(`${WORKER_URL}/kv?key=${STORE_KEY}`),
+      fetch(`${WORKER_URL}/kv?key=${CIERRES_KEY}`),
+      fetch(`${WORKER_URL}/kv?key=${BECAS_KEY}`)
+    ]);
+    const [d1, d2, d3] = await Promise.all([r1.json(), r2.json(), r3.json()]);
+    items          = d1.value ? JSON.parse(d1.value) : JSON.parse(JSON.stringify(DEFAULTS));
+    bdata.cierres  = d2.value ? JSON.parse(d2.value) : JSON.parse(JSON.stringify(CIERRES_DEFAULTS));
+    bdata.becas    = d3.value ? JSON.parse(d3.value) : JSON.parse(JSON.stringify(BECAS_DEFAULTS));
+  } catch(e) {
+    items         = JSON.parse(JSON.stringify(DEFAULTS));
+    bdata.cierres = JSON.parse(JSON.stringify(CIERRES_DEFAULTS));
+    bdata.becas   = JSON.parse(JSON.stringify(BECAS_DEFAULTS));
+  }
+  renderGrid();
+  if (DATA_URL) loadMarcaData();
+}
+
+async function loadMarcaData() {
+  try {
+    const res = await fetch(DATA_URL);
+    const data = await res.json();
+    const now = new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+    ['obs','inesdi','esdesign','ucma'].forEach(m => {
+      const d = data[m] || {};
+      const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val ?? '—'; };
+      set(`${m}-brutas`, d.brutas); set(`${m}-bajas`, d.bajas);
+      set(`${m}-ccce`, d.ccce);     set(`${m}-pendings`, d.pendings);
+      const upd = document.getElementById(`${m}-updated`);
+      if(upd) upd.textContent = `Actualizado · ${now}`;
+    });
+  } catch(e) { console.error('Error datos marca:', e); }
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─── Grid reportes ─────────────────────────────────────────────
+function renderGrid() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = items.filter(r => !q || r.title.toLowerCase().includes(q) || (r.desc||'').toLowerCase().includes(q));
+  document.getElementById('totalPill').textContent = items.length + ' reporte' + (items.length!==1?'s':'');
+  const grid = document.getElementById('grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <svg width="44" height="44" viewBox="0 0 30 30" fill="none"><path d="M3 26l7-10 6 5 6-11 6 7" stroke="#22D3EE" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>${items.length ? 'Ningún reporte coincide' : 'No hay reportes todavía'}</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((r, fi) => {
+    const ri = items.indexOf(r);
+    const color = r.color || '#00E6FF';
+    const isCierres = r.url === '__CIERRES__' || r.title.toLowerCase().includes('cierres');
+    const isBecas   = r.url === '__BECAS__'   || r.title.toLowerCase().includes('becas');
+    const clickAction = isCierres ? `openBModal('cierres')`
+                      : isBecas   ? `openBModal('becas')`
+                      : (r.url    ? `window.open('${esc(r.url)}','_blank')` : '');
+    return `<div class="rnode" style="animation:fadeUp 0.35s ease ${fi*0.05}s both">
+      <div class="rbubble" style="border-color:${color}55;" onclick="${clickAction}">
+        <svg width="32" height="32" viewBox="0 0 30 30" fill="none">
+          <path d="M3 26l7-10 6 5 6-11 6 7" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="rbubble-edit" onclick="event.stopPropagation();openEdit(${ri})">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(0,210,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+        </div>
+      </div>
+      <span class="rnode-label" style="color:${color}cc">${esc(r.title)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ─── Modal burbujas genérico ───────────────────────────────────
+const BMODAL_KEYS = { cierres: CIERRES_KEY, becas: BECAS_KEY };
+
+function openBModal(type) {
+  renderBNodes(type);
+  document.getElementById(type + 'Overlay').classList.add('open');
+}
+
+function closeBModal(type) {
+  document.getElementById(type + 'Overlay').classList.remove('open');
+}
+
+function renderBNodes(type) {
+  const container = document.getElementById(type + 'Nodes');
+  const nodes = bdata[type].map((c, i) => {
+    const color = c.color || '#00E6FF';
+    const clickAction = c.url ? `window.open('${esc(c.url)}','_blank')` : '';
+    return `<div class="cnode">
+      <div class="cbubble" style="border:1.5px solid ${color}55;" onclick="${clickAction}" title="${esc(c.nombre)}">
+        <svg width="36" height="36" viewBox="0 0 30 30" fill="none">
+          <path d="M3 26l7-10 6 5 6-11 6 7" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="rbubble-edit" onclick="event.stopPropagation();openEditEntry('${type}',${i})" title="Editar">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(0,210,255,0.6)" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+        </div>
+      </div>
+      <span class="cnode-label" style="color:${color}cc;">${esc(c.nombre)}</span>
+    </div>`;
+  }).join('');
+
+  const addNode = `<div class="cnode cnode-add" onclick="openAddEntry('${type}')">
+    <div class="cbubble" style="border:1.5px dashed rgba(0,230,255,0.3);">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(0,230,255,0.5)" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <span class="cnode-label">Añadir</span>
+  </div>`;
+
+  container.innerHTML = nodes + addNode;
+}
+
+// ─── Sub-modal añadir/editar entrada ──────────────────────────
+function openAddEntry(type) {
+  activeCollection = type;
+  editEntryIdx = null;
+  document.getElementById('addEntryTitle').textContent = 'Añadir entrada';
+  document.getElementById('eNombre').value = '';
+  document.getElementById('eUrl').value = '';
+  document.getElementById('deleteEntryBtn').style.display = 'none';
+  selectedSwatchColor = SWATCH_COLORS[0];
+  renderEntrySwatches();
+  document.getElementById('addEntryOverlay').classList.add('open');
+}
+
+function openEditEntry(type, idx) {
+  const c = bdata[type][idx]; if (!c) return;
+  activeCollection = type;
+  editEntryIdx = idx;
+  document.getElementById('addEntryTitle').textContent = 'Editar entrada';
+  document.getElementById('eNombre').value = c.nombre;
+  document.getElementById('eUrl').value = c.url || '';
+  document.getElementById('deleteEntryBtn').style.display = 'flex';
+  selectedSwatchColor = c.color || SWATCH_COLORS[0];
+  renderEntrySwatches();
+  document.getElementById('addEntryOverlay').classList.add('open');
+}
+
+function closeAddEntry() {
+  document.getElementById('addEntryOverlay').classList.remove('open');
+}
+
+function renderEntrySwatches() {
+  document.getElementById('entrySwatches').innerHTML = SWATCH_COLORS.map(c => `
+    <div class="swatch ${c === selectedSwatchColor ? 'selected' : ''}"
+      style="background:${c};" onclick="selectEntrySwatch('${c}')"></div>`).join('');
+}
+
+function selectEntrySwatch(color) {
+  selectedSwatchColor = color;
+  renderEntrySwatches();
+}
+
+async function saveEntry() {
+  const nombre = document.getElementById('eNombre').value.trim();
+  if (!nombre) { alert('El nombre es obligatorio.'); return; }
+  const url = document.getElementById('eUrl').value.trim();
+  const obj = { nombre, url, color: selectedSwatchColor };
+  if (editEntryIdx !== null) {
+    bdata[activeCollection][editEntryIdx] = obj;
+  } else {
+    bdata[activeCollection].push(obj);
+  }
+  await persistBData(activeCollection);
+  closeAddEntry();
+  renderBNodes(activeCollection);
+}
+
+async function deleteEntry() {
+  const c = bdata[activeCollection][editEntryIdx];
+  if (!c || !confirm(`¿Eliminar "${c.nombre}"?`)) return;
+  bdata[activeCollection].splice(editEntryIdx, 1);
+  await persistBData(activeCollection);
+  closeAddEntry();
+  renderBNodes(activeCollection);
+}
+
+async function persistBData(type) {
+  try {
+    await fetch(`${WORKER_URL}/kv`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ key: BMODAL_KEYS[type], value: bdata[type] })
+    });
+  } catch(e) { console.error('KV error:', e); }
+}
+
+// ─── Modal reporte genérico ────────────────────────────────────
+function openAdd() {
+  editIdx = null;
+  document.getElementById('formTitle').textContent = 'Nuevo reporte';
+  document.getElementById('fTitle').value = '';
+  document.getElementById('fDesc').value = '';
+  document.getElementById('fUrl').value = '';
+  document.getElementById('fColor').value = '#00E6FF';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('formOverlay').classList.add('open');
+}
+
+function openEdit(idx) {
+  const r = items[idx]; if (!r) return;
+  editIdx = idx;
+  document.getElementById('formTitle').textContent = 'Editar reporte';
+  document.getElementById('fTitle').value = r.title;
+  document.getElementById('fDesc').value = r.desc || '';
+  const specialUrls = ['__CIERRES__','__BECAS__'];
+  document.getElementById('fUrl').value = specialUrls.includes(r.url) ? '' : (r.url || '');
+  document.getElementById('fColor').value = r.color || '#00E6FF';
+  document.getElementById('deleteBtn').style.display = 'flex';
+  document.getElementById('formOverlay').classList.add('open');
+}
+
+async function saveReport() {
+  const title = document.getElementById('fTitle').value.trim();
+  if (!title) { alert('El nombre es obligatorio.'); return; }
+  const rawUrl = document.getElementById('fUrl').value.trim();
+  const prevUrl = editIdx !== null ? items[editIdx]?.url : '';
+  const specialUrls = ['__CIERRES__','__BECAS__'];
+  const obj = {
+    title,
+    desc:  document.getElementById('fDesc').value.trim(),
+    url:   specialUrls.includes(prevUrl) ? prevUrl : rawUrl,
+    color: document.getElementById('fColor').value,
+    date:  editIdx !== null ? items[editIdx].date : new Date().toLocaleDateString('es-ES')
+  };
+  if (editIdx !== null) items[editIdx] = obj; else items.unshift(obj);
+  await persist(); closeOverlay(); renderGrid();
+}
+
+async function deleteReport() {
+  const r = items[editIdx];
+  if (!r || !confirm(`¿Eliminar "${r.title}"?`)) return;
+  items.splice(editIdx, 1);
+  await persist(); closeOverlay(); renderGrid();
+}
+
+async function persist() {
+  try {
+    await fetch(`${WORKER_URL}/kv`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ key: STORE_KEY, value: items })
+    });
+  } catch(e) { console.error('KV error:', e); }
+}
+
+function closeOverlay() { document.getElementById('formOverlay').classList.remove('open'); }
+document.getElementById('formOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('formOverlay')) closeOverlay();
+});
+
+load();
+</script>
+</body>
+</html>
+ead>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reportes — Admin Hub</title>
